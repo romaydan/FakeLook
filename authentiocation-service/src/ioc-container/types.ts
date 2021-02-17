@@ -1,7 +1,16 @@
 export const TYPES = {
-    IFakeLookAuthenticationService : Symbol('IFakeLookAuthenticationService'),
-    IJwtService : Symbol('IJwtService'),
     Sequelize: Symbol('Sequelize'),
-    IUserRepository: Symbol('IUserRepository'),
-    FakeLookAuthController: Symbol('FakeLookAuthController')
+    IFakeLookUserRepository: Symbol('IFakLookUserRepository'),
+    IFacebookUserRepository: Symbol('IFacebookUserRepository'),
+    
+    IJwtService : Symbol('IJwtService'),
+
+    IFakeLookAuthenticationService : Symbol('IFakeLookAuthenticationService'),
+    FakeLookAuthController: Symbol('FakeLookAuthController'),
+
+    GoogleAuthController: Symbol('GoogleAuthController'),
+    IGoogleAuthenticationService: Symbol('IGoogleAuthenticationService'),
+
+    IFacebookAuthenticationService: Symbol('IFacebookAuthenticationService'),
+    FacebookAuthController: Symbol('FacebookAuthController')
 }

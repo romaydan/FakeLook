@@ -1,5 +1,5 @@
 "use strict";
-
+import { IJwtService } from "../services/jwt-service";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../ioc-container/types";
 import { IFakeLookAuthenticationService } from "../services/fakelook-authentication-service";
@@ -8,7 +8,8 @@ import UserError from "../errors/UserError";
 
 @injectable()
 export class FakeLookAuthController {
-    constructor(@inject(TYPES.IFakeLookAuthenticationService) private service: IFakeLookAuthenticationService) {
+    constructor(@inject(TYPES.IFakeLookAuthenticationService) private service: IFakeLookAuthenticationService,
+        @inject(TYPES.IJwtService) private jwtService: IJwtService) {
         this.signIn = this.signIn.bind(this);
         this.signUp = this.signUp.bind(this);
     }
@@ -16,10 +17,13 @@ export class FakeLookAuthController {
     async signIn(req: Request, res: Response, next: NextFunction) {
         try {
             const { email, password } = req.body;
-            const token = await this.service.signIn(email, password);
 
-            res.cookie('token', token);
-            res.status(200).send('sign in successful');
+            const userId = await this.service.signIn(email, password);
+            const token = this.jwtService.signToken({ userId: userId });
+            
+            res.cookie('access_token', token);
+            res.status(200).end();
+
         } catch (error) {
             if (error instanceof UserError)
                 res.status(400).send(error.message);

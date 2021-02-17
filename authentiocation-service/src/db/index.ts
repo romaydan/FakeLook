@@ -1,4 +1,5 @@
-import { User } from '../models/user.model';
+import { FakLookUser } from '../models/fakelook-user.model';
+import { FacebookUser } from '../models/facebook-user.model';
 import { Sequelize } from 'sequelize-typescript';
 
 const db = new Sequelize({
@@ -6,6 +7,6 @@ const db = new Sequelize({
     storage: `${__dirname}\\data\\authDb.db`
 });
 
-db.addModels([User]);
+db.addModels([FakLookUser, FacebookUser]);
 
 export default db; 

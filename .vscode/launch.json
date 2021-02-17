@@ -8,11 +8,31 @@
             "type": "node",
             "request": "launch",
             "name": "Launch Authentication",
-            "args": ["${workspaceRoot}/authentiocation-service/src/index.ts"],
-            "runtimeArgs": ["--nolazy", "-r", "ts-node/register"],
+            "args": [
+                "${workspaceRoot}/authentiocation-service/src/index.ts"
+            ],
+            "runtimeArgs": [
+                "--nolazy",
+                "-r",
+                "ts-node/register"
+            ],
             "sourceMaps": true,
             "cwd": "${workspaceRoot}/authentiocation-service/",
             "protocol": "inspector"
-        }
+        },
+        {
+            "name": "Debug Jest Tests",
+            "type": "node",
+            "request": "launch",
+            "runtimeArgs": [
+              "--inspect-brk",
+              "${workspaceRoot}/authentiocation-service/node_modules/jest/bin/jest.js",
+              "--runInBand"
+            ],
+            "cwd": "${workspaceFolder}/authentiocation-service",
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen",
+            "port": 9229
+          }
     ]
 }

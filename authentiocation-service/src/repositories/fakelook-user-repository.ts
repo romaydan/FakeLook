@@ -2,31 +2,31 @@ import { inject, injectable } from 'inversify';
 import { Op } from 'sequelize';
 import { Sequelize } from 'sequelize-typescript';
 import { TYPES } from '../ioc-container/types';
-import { IUser, User } from '../models/user.model';
+import { IFakeLookUser, FakLookUser } from '../models/fakelook-user.model';
 import * as uuid from 'uuid';
+import 'reflect-metadata';
 
-export interface IUserRepository {
-    addUser(user: IUser) : Promise<IUser>,
-    getByEmail(email: string): Promise<IUser>,
-    getUsersById(ids: string[]) : Promise<IUser[]>,
+export interface IFakeLookUserRepository {
+    addUser(user: IFakeLookUser): Promise<IFakeLookUser>,
+    getByEmail(email: string): Promise<IFakeLookUser>,
+    getUsersById(ids: string[]): Promise<IFakeLookUser[]>,
     removeUserById(userId: string): Promise<boolean>,
-    UpdateUser(user: IUser): Promise<boolean>
+    UpdateUser(user: IFakeLookUser): Promise<boolean>
 }
 
 @injectable()
-export class UserRepository implements IUserRepository {
+export class FakeLookUserRepository implements IFakeLookUserRepository {
     constructor(@inject(TYPES.Sequelize) private db: Sequelize) {
-        this.db.sync();
     }
 
-    async addUser(user: IUser): Promise<IUser> {
+    async addUser(user: IFakeLookUser): Promise<IFakeLookUser> {
         const newUser = { id: uuid.v4(), ...user };
-        await User.build(newUser).save();
+        await FakLookUser.build(newUser).save();
         return newUser;
     }
 
-    async getByEmail(email: string): Promise<IUser> {
-        const user: IUser = await User.findOne({
+    async getByEmail(email: string): Promise<IFakeLookUser> {
+        const user: IFakeLookUser = await FakLookUser.findOne({
             where: {
                 email: {
                     [Op.eq]: email
@@ -37,8 +37,8 @@ export class UserRepository implements IUserRepository {
         return user;
     }
 
-    async getUsersById(ids: string[]) : Promise<IUser[]> {
-        const users : IUser[] = await User.findAll({
+    async getUsersById(ids: string[]): Promise<IFakeLookUser[]> {
+        const users: IFakeLookUser[] = await FakLookUser.findAll({
             where: {
                 id: {
                     [Op.contained]: ids
@@ -50,7 +50,7 @@ export class UserRepository implements IUserRepository {
     }
 
     async removeUserById(userId: string): Promise<boolean> {
-        const count = await User.destroy({
+        const count = await FakLookUser.destroy({
             where: {
                 id: {
                     [Op.eq]: userId
@@ -61,8 +61,8 @@ export class UserRepository implements IUserRepository {
         return count > 0;
     }
 
-    async UpdateUser(user: IUser): Promise<boolean> {
-        const updated = await User.update(user, {
+    async UpdateUser(user: IFakeLookUser): Promise<boolean> {
+        const updated = await FakLookUser.update(user, {
             where: {
                 id: {
                     [Op.eq]: user.id

@@ -11,9 +11,9 @@
     
     "esModuleInterop": true,
     "resolveJsonModule": true,
-    "types": [
-      "reflect-metadata"
-    ],
+    // "types": [
+    //   "reflect-metadata"
+    // ],
     "moduleResolution": "node",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true

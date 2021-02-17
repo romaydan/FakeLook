@@ -1,5 +1,6 @@
 import { Secret, sign, SignOptions, verify } from 'jsonwebtoken';
 import { injectable} from 'inversify'
+import ms from 'ms';
 import settings from '../settings';
 
 export interface IJwtService {
@@ -14,7 +15,7 @@ export class JwtService implements IJwtService {
     
     signToken(payload: string | object | Buffer): string {
         return sign(payload, settings.jwtSettings.secret, {
-            expiresIn: settings.jwtSettings.expiresIn
+            expiresIn: ms(settings.jwtSettings.expiresIn)
         });
     }
     verifyToken(token: string): string | object {
