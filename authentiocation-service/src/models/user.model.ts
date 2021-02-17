@@ -1,16 +1,16 @@
 import { Table, Column, PrimaryKey, AllowNull, NotEmpty, Model, DataType, Unique } from 'sequelize-typescript';
 
-export interface IFakeLookUser {
+export interface IUser {
     id?: string,
-    email: string,
+    credential: string,
     password: string,
-    isEditable: boolean
+    isOAuthUser: boolean
 }
 
 @Table({
-    tableName: 'fl-users'
+    tableName: 'users'
 })
-export class FakLookUser extends Model implements IFakeLookUser {
+export class User extends Model implements IUser {
     @PrimaryKey
     @Column(DataType.STRING)
     public id: string;
@@ -19,7 +19,7 @@ export class FakLookUser extends Model implements IFakeLookUser {
     @NotEmpty
     @Unique
     @Column(DataType.STRING)
-    public email: string;
+    public credential: string;
 
     @AllowNull(false)
     @NotEmpty
@@ -29,5 +29,5 @@ export class FakLookUser extends Model implements IFakeLookUser {
     @AllowNull(false)
     @NotEmpty
     @Column(DataType.BOOLEAN)
-    public isEditable: boolean;
+    public isOAuthUser: boolean;
 }

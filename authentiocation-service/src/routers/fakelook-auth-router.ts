@@ -6,7 +6,8 @@ import { TYPES } from '../ioc-container/types';
 const controller = continer.get<FakeLookAuthController>(TYPES.FakeLookAuthController);
 const router = express.Router();
 
-router.post('/singup', controller.signUp);
+router.put('/reset', controller.resetPassword);
+router.post('/signin', controller.signIn);
 router.post('/signin', controller.signIn);
 
 export default router;

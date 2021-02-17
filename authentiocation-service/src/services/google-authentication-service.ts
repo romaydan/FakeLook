@@ -1,10 +1,10 @@
 import { inject, injectable } from "inversify";
 import settings from '../settings';
 import { OAuth2Client } from 'google-auth-library';
-import * as uuid from 'uuid';
 import { TYPES } from "../ioc-container/types";
-import { IFakeLookUserRepository } from "../repositories/fakelook-user-repository";
+import { IUserRepository } from "../repositories/user-repository";
 import UserError from "../errors/UserError";
+import  pswhasher from 'password-hash';
 
 export interface IGoogleAuthenticationService {
     signIn(tokenId: string): Promise<string>
@@ -12,7 +12,7 @@ export interface IGoogleAuthenticationService {
 
 @injectable()
 export class GoogleAuthenticationService {
-    constructor(@inject(TYPES.IFakeLookUserRepository) private repository: IFakeLookUserRepository) {
+    constructor(@inject(TYPES.IUserRepository) private repository: IUserRepository) {
     }
 
     async signIn(tokenId: string): Promise<string> {
@@ -28,7 +28,7 @@ export class GoogleAuthenticationService {
 
         const payload = ticket.getPayload();
 
-        let user = await this.repository.getByEmail(payload.email);
+        let user = await this.repository.getByUserCredential(payload.email);
 
         if (user) return user.id;
 
@@ -36,7 +36,7 @@ export class GoogleAuthenticationService {
     }
 
     private async addGoogleUser(email: string) {
-        const user = await this.repository.addUser({ email, password: email+'_google-oauth-user', isEditable: false });
+        const user = await this.repository.addUser({ credential: email, password: pswhasher.generate(email), isOAuthUser: true });
         return user.id;
     }
 }

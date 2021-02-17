@@ -13,15 +13,20 @@ export class FacebookAuthController {
 
     async signIn(req: Request, res: Response, next: NextFunction) {
         try {
-            const { fb_token, user_id } = req.headers;
-            
-            const userId = await this.service.signIn(fb_token as string, user_id as string);
+            const { fb_token, facebook_id } = req.headers;
+
+            const userId = await this.service.signIn(fb_token as string, facebook_id as string);
             const token = this.jwt.signToken({ id: userId });
 
             res.cookie('access_token', token);
-            res.status(200).end();
+            res.json({ status: 200, message: 'Sign in successfull!' });
+            
         } catch (error) {
-            res.status(400).send(error);
+            if (error instanceof Error)
+                res.status(400).json({ statusCode: 400, error: error.message });
+            else {
+                res.status(400).json({ statusCode: 400, error: error });
+            }
         }
     }
 }

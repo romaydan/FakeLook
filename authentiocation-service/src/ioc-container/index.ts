@@ -4,8 +4,7 @@ import { Sequelize } from 'sequelize-typescript';
 import { FakeLookAuthController } from '../controllers/fakelook-auth-controller';
 import { GoogleAuthController } from '../controllers/google-auth-controller';
 import { FacebookAuthController } from '../controllers/facebook-auth-controller';
-import { IFakeLookUserRepository, FakeLookUserRepository } from '../repositories/fakelook-user-repository';
-import { IFacebookUserRepository, FacebookUserRepository } from '../repositories/facebook-user-repository';
+import { IUserRepository, UserRepository } from '../repositories/user-repository';
 import { FakeLookAuthenticationService, IFakeLookAuthenticationService } from '../services/fakelook-authentication-service';
 import { GoogleAuthenticationService, IGoogleAuthenticationService } from '../services/google-authentication-service';
 import { FacebookAuthenticationService, IFacebookAuthenticationService } from '../services/facebook-authentication-service';
@@ -28,8 +27,7 @@ container.bind<IJwtService>(TYPES.IJwtService).to(JwtService).inSingletonScope()
 container.bind<Sequelize>(TYPES.Sequelize).toDynamicValue(() => db).inSingletonScope();
 
 //repositories
-container.bind<IFakeLookUserRepository>(TYPES.IFakeLookUserRepository).to(FakeLookUserRepository).inSingletonScope();
-container.bind<IFacebookUserRepository>(TYPES.IFacebookUserRepository).to(FacebookUserRepository).inSingletonScope();
+container.bind<IUserRepository>(TYPES.IUserRepository).to(UserRepository).inSingletonScope();
 
 //controllers
 container.bind<FakeLookAuthController>(TYPES.FakeLookAuthController).to(FakeLookAuthController).inTransientScope();

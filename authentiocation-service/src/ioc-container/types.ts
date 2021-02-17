@@ -1,7 +1,6 @@
 export const TYPES = {
     Sequelize: Symbol('Sequelize'),
-    IFakeLookUserRepository: Symbol('IFakLookUserRepository'),
-    IFacebookUserRepository: Symbol('IFacebookUserRepository'),
+    IUserRepository: Symbol('IFakLookUserRepository'),
     
     IJwtService : Symbol('IJwtService'),
 
