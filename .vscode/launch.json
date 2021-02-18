@@ -5,6 +5,17 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Launch Image Server",
+            "program": "${workspaceFolder}/images-server/src/index.js",
+            "args": [
+                "${workspaceRoot}/images-server/src/index.js"
+            ],
+            "request": "launch",
+            "localRoot": "${workspaceFolder}/images-server/src",
+            "cwd": "${workspaceFolder}/images-server/",
+            "type": "node"
+        },
+        {
             "type": "node",
             "request": "launch",
             "name": "Launch Authentication",
@@ -25,14 +36,14 @@
             "type": "node",
             "request": "launch",
             "runtimeArgs": [
-              "--inspect-brk",
-              "${workspaceRoot}/authentiocation-service/node_modules/jest/bin/jest.js",
-              "--runInBand"
+                "--inspect-brk",
+                "${workspaceRoot}/authentiocation-service/node_modules/jest/bin/jest.js",
+                "--runInBand"
             ],
             "cwd": "${workspaceFolder}/authentiocation-service",
             "console": "integratedTerminal",
             "internalConsoleOptions": "neverOpen",
             "port": 9229
-          }
+        }
     ]
 }

@@ -13,9 +13,9 @@ export class FacebookAuthController {
 
     async signIn(req: Request, res: Response, next: NextFunction) {
         try {
-            const { fb_token, facebook_id } = req.headers;
+            const { facebook_token, facebook_id } = req.headers;
 
-            const userId = await this.service.signIn(fb_token as string, facebook_id as string);
+            const userId = await this.service.signIn(facebook_token as string, facebook_id as string);
             const token = this.jwt.signToken({ id: userId });
 
             res.cookie('access_token', token);

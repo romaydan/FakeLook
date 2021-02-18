@@ -22,9 +22,9 @@ export class FakeLookAuthController {
             const success = await this.service.resetPassword(email, oldPassword, newPassword, confirmNewPassword);
 
             if(success) {
-                res.json({statusCode: 200, message: 'Password change was successfull!'})
+                res.json({statusCode: 200, message: 'Password reset was successfull!'})
             } else {
-                res.status(500).json({ statusCode: 500, error: 'Update unsuccessfull, please try again later!' });
+                res.status(500).json({ statusCode: 500, error: 'Reset unsuccessfull, please try again later!' });
             }
 
         } catch (error) {
