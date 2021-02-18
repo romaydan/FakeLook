@@ -28,7 +28,7 @@ export class GoogleAuthenticationService {
 
         const payload = ticket.getPayload();
 
-        let user = await this.repository.getByUserCredential(payload.email);
+        let user = await this.repository.getByUserIdentifier(payload.email);
 
         if (user) return user.id;
 
@@ -36,7 +36,7 @@ export class GoogleAuthenticationService {
     }
 
     private async addGoogleUser(email: string) {
-        const user = await this.repository.addUser({ credential: email, password: pswhasher.generate(email), isOAuthUser: true });
+        const user = await this.repository.addUser({ identifier: email, password: pswhasher.generate(email), isOAuthUser: true });
         return user.id;
     }
 }

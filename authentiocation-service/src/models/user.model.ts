@@ -2,7 +2,7 @@ import { Table, Column, PrimaryKey, AllowNull, NotEmpty, Model, DataType, Unique
 
 export interface IUser {
     id?: string,
-    credential: string,
+    identifier: string,
     password: string,
     isOAuthUser: boolean
 }
@@ -19,7 +19,7 @@ export class User extends Model implements IUser {
     @NotEmpty
     @Unique
     @Column(DataType.STRING)
-    public credential: string;
+    public identifier: string;
 
     @AllowNull(false)
     @NotEmpty

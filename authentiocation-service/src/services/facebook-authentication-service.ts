@@ -25,14 +25,14 @@ export class FacebookAuthenticationService implements IFacebookAuthenticationSer
 
         const { id: facebook_id } = resposnse.data;
 
-        const user = await this.repository.getByUserCredential(facebook_id);
+        const user = await this.repository.getByUserIdentifier(facebook_id);
         if (user) return user.id;
 
         return await this.addFacebookUser(facebook_id);
     }
 
     private async addFacebookUser(facebookId: string) {
-        const user = await this.repository.addUser({ credential: facebookId, password: pswhasher.generate(facebookId), isOAuthUser: true });
+        const user = await this.repository.addUser({ identifier: facebookId, password: pswhasher.generate(facebookId), isOAuthUser: true });
         return user.id;
     }
 }

@@ -8,7 +8,7 @@ import 'reflect-metadata';
 
 export interface IUserRepository {
     addUser(user: IUser): Promise<IUser>,
-    getByUserCredential(credential: string): Promise<IUser>,
+    getByUserIdentifier(identifier: string): Promise<IUser>,
     getUsersById(ids: string[]): Promise<IUser[]>,
     removeUserById(userId: string): Promise<boolean>,
     UpdateUser(user: IUser): Promise<boolean>
@@ -25,11 +25,11 @@ export class UserRepository implements IUserRepository {
         return newUser;
     }
 
-    async getByUserCredential(credential: string): Promise<IUser> {
+    async getByUserIdentifier(identifier: string): Promise<IUser> {
         const user: IUser = await User.findOne({
             where: {
-                credential: {
-                    [Op.eq]: credential
+                identifier: {
+                    [Op.eq]: identifier
                 }
             }
         });

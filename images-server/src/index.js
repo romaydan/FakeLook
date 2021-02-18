@@ -10,7 +10,7 @@ const app = express();
 
 const imagesDir = path.join(__dirname.replace('\\src', ''), 'public');
 
-app.use(bodyParser.urlencoded({ extended: true, type: 'multipart/form' }))
+app.use(bodyParser.json())
 
 app.use('/images', express.static(imagesDir));
 app.use('/image', router);

@@ -41,8 +41,8 @@
                 "--runInBand"
             ],
             "cwd": "${workspaceFolder}/authentiocation-service",
-            "console": "integratedTerminal",
             "internalConsoleOptions": "neverOpen",
+            "console": "integratedTerminal",
             "port": 9229
         }
     ]

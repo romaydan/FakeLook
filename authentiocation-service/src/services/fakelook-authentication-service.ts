@@ -2,7 +2,7 @@ import 'reflect-metadata';
 import { injectable, inject } from 'inversify'
 import { TYPES } from "../ioc-container/types";
 import { IUserRepository } from "../repositories/user-repository";
-import pswHasher from 'password-hash';
+import { verify, generate } from 'password-hash';
 import UserError from '../errors/UserError';
 
 export interface IFakeLookAuthenticationService {
@@ -20,7 +20,7 @@ export class FakeLookAuthenticationService implements IFakeLookAuthenticationSer
     }
 
     async resetPassword(email: string, oldPassword: string, newPassword: string, cofrimNewPassowrd: string): Promise<boolean> {
-        const user = await this.repository.getByUserCredential(email);
+        const user = await this.repository.getByUserIdentifier(email);
 
         if (!user)
             throw new UserError('Incorrect email! please check it before trying again');
@@ -28,7 +28,7 @@ export class FakeLookAuthenticationService implements IFakeLookAuthenticationSer
         if (user.isOAuthUser)
             throw new UserError('Can not update a user registered using google or facebook');
 
-        if (!pswHasher.verify(oldPassword, user.password))
+        if (!verify(oldPassword, user.password))
             throw new UserError('The original password is incorrect! please check old password bfore tryin again!');
 
         if (newPassword !== cofrimNewPassowrd)
@@ -36,16 +36,16 @@ export class FakeLookAuthenticationService implements IFakeLookAuthenticationSer
 
         const success = await this.repository.UpdateUser({
             id: user.id,
-            credential: user.credential,
-            password: pswHasher.generate(newPassword),
+            identifier: user.identifier,
+            password: generate(newPassword),
             isOAuthUser: user.isOAuthUser
         });
         return success;
     }
 
     async signIn(email: string, password: string): Promise<string> {
-        const user = await this.repository.getByUserCredential(email);
-        if (user)
+        const user = await this.repository.getByUserIdentifier(email);
+        if (!user)
             throw new UserError('SignIn unseccessful! invalid email or password!');
 
 
@@ -53,13 +53,13 @@ export class FakeLookAuthenticationService implements IFakeLookAuthenticationSer
             throw new UserError('Can not sign with a user registered using facebook or google authentication!');
 
 
-        if (pswHasher.verify(password, user.password))
+        if (verify(password, user.password))
             return user.id;
 
     }
 
     async signUp(email: string, password: string, confirmPassword: string): Promise<boolean> {
-        const signedUser = await this.repository.getByUserCredential(email);
+        const signedUser = await this.repository.getByUserIdentifier(email);
         if (signedUser)
             throw new UserError('Email already taken! please try again with different email!');
 
@@ -67,8 +67,8 @@ export class FakeLookAuthenticationService implements IFakeLookAuthenticationSer
         if (password === confirmPassword)
             throw new UserError('Passwords do not match! please try again!');
 
-        const hashedPassword = pswHasher.generate(password);
-        const newUser = await this.repository.addUser({ credential: email, password: hashedPassword, isOAuthUser: false });
+        const hashedPassword = generate(password);
+        const newUser = await this.repository.addUser({ identifier: email, password: hashedPassword, isOAuthUser: false });
         return newUser ? true : false;
     }
 }
