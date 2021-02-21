@@ -1,11 +1,10 @@
-import { sign, verify, decode } from 'jsonwebtoken';
+import jwt, { sign, verify, decode } from 'jsonwebtoken';
 import { injectable } from 'inversify'
-import ms from 'ms';
 import settings from '../settings';
 
 export interface IJwtService {
-    signToken(payload: string | Buffer | object): string,
-    verifyToken(token: string): object | string,
+    signToken(payload: string | Buffer | object, expiresIn: number | string): string,
+    verifyToken(token: string): { userId: string, iat: number, exp: number },
     decode(token: string): object
 }
 
@@ -18,12 +17,16 @@ export class JwtService implements IJwtService {
         return decode(token, { json: true });
     }
 
-    signToken(payload: string | object | Buffer): string {
+    signToken(payload: string | object | Buffer, expiresIn: number | string): string {
         return sign(payload, settings.jwtSettings.secret, {
-            expiresIn: ms(settings.jwtSettings.expiresIn)
+            expiresIn: expiresIn,
+            mutatePayload: true
         });
     }
-    verifyToken(token: string): string | object {
-        return verify(token, settings.jwtSettings.secret);
+    verifyToken(token: string): { userId: string, iat: number, exp: number } {
+        return verify(token, settings.jwtSettings.secret, {
+            ignoreExpiration: false,
+            ignoreNotBefore: false
+        }) as any;
     }
 }

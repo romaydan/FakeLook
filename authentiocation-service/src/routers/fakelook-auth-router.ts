@@ -8,6 +8,6 @@ const router = express.Router();
 
 router.put('/reset', controller.resetPassword);
 router.post('/signin', controller.signIn);
-router.post('/signin', controller.signIn);
+router.post('/signup', controller.signUp);
 
 export default router;

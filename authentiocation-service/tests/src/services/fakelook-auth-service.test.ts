@@ -16,13 +16,6 @@ jest.mock('password-hash', () => {
     })
 });
 
-// jest.mock('password-hash', () => {
-//     return jest.fn().mockImplementation(() => ({
-//         verify: (password: string, hashedPassword: string) => password == hashedPassword,
-//         generate: (password: string) => password
-//     }))
-// })
-
 jest.mock('../../../src/repositories/user-repository');
 
 const mockRepository = <jest.Mock<UserRepository>>UserRepository;

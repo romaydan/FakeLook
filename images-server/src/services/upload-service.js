@@ -1,11 +1,7 @@
-const multer = require("multer");
+const multer = require('multer');
 const fs = require('fs');
-const path = require('path');
 const { promisify } = require('util');
 
-const regex = /\.[^.]+$/g
-
-const writeFile = promisify(fs.writeFile);
 const mkdir = promisify(fs.mkdir);
 const opendir = promisify(fs.opendir);
 
@@ -31,7 +27,8 @@ const storage = multer.diskStorage({
 
     filename: (req, file, cb) => {
         const { userId, postId } = req.body;
-        const fileExtention = regex.exec(file.originalname)[0];
+        const rgxResult = /\.[^.]+$/g.exec(file.originalname);
+        const fileExtention = rgxResult[0];
         const filename = `${postId}${fileExtention}`;
         cb(null, filename);
     }
@@ -44,5 +41,4 @@ const fileFilter = (req, file, cb) => {
         cb(null, false);
 }
 
-
-module.exports = { storage: storage, fileFilter: fileFilter };
+module.exports = multer({ storage: storage, fileFilter: fileFilter });

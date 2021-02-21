@@ -11,6 +11,7 @@ export interface IUser {
     tableName: 'users'
 })
 export class User extends Model implements IUser {
+
     @PrimaryKey
     @Column(DataType.STRING)
     public id: string;

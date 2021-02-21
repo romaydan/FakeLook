@@ -64,7 +64,7 @@ export class FakeLookAuthenticationService implements IFakeLookAuthenticationSer
             throw new UserError('Email already taken! please try again with different email!');
 
 
-        if (password === confirmPassword)
+        if (password !== confirmPassword)
             throw new UserError('Passwords do not match! please try again!');
 
         const hashedPassword = generate(password);

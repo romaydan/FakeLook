@@ -1,7 +1,5 @@
-import { inject, injectable } from 'inversify';
+import { injectable } from 'inversify';
 import { Op } from 'sequelize';
-import { Sequelize } from 'sequelize-typescript';
-import { TYPES } from '../ioc-container/types';
 import { IUser, User } from '../models/user.model';
 import * as uuid from 'uuid';
 import 'reflect-metadata';
@@ -9,6 +7,7 @@ import 'reflect-metadata';
 export interface IUserRepository {
     addUser(user: IUser): Promise<IUser>,
     getByUserIdentifier(identifier: string): Promise<IUser>,
+    getUserById(id: string): Promise<IUser>,
     getUsersById(ids: string[]): Promise<IUser[]>,
     removeUserById(userId: string): Promise<boolean>,
     UpdateUser(user: IUser): Promise<boolean>
@@ -16,7 +15,7 @@ export interface IUserRepository {
 
 @injectable()
 export class UserRepository implements IUserRepository {
-    constructor(@inject(TYPES.Sequelize) private db: Sequelize) {
+    constructor() {
     }
 
     async addUser(user: IUser): Promise<IUser> {
@@ -30,6 +29,18 @@ export class UserRepository implements IUserRepository {
             where: {
                 identifier: {
                     [Op.eq]: identifier
+                }
+            }
+        });
+
+        return user;
+    }
+
+    async getUserById(id: string): Promise<IUser> {
+        const user: IUser = await User.findOne({
+            where: {
+                id: {
+                    [Op.eq]: id
                 }
             }
         });

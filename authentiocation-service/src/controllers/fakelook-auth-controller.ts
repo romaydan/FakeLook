@@ -5,33 +5,45 @@ import { TYPES } from "../ioc-container/types";
 import { IFakeLookAuthenticationService } from "../services/fakelook-authentication-service";
 import { Request, Response, NextFunction } from 'express'
 import UserError from "../errors/UserError";
+import settings from "../settings";
+import { IEmailValidator } from "../services/email-validator";
 
 @injectable()
 export class FakeLookAuthController {
+
     constructor(@inject(TYPES.IFakeLookAuthenticationService) private service: IFakeLookAuthenticationService,
-        @inject(TYPES.IJwtService) private jwtService: IJwtService) {
+        @inject(TYPES.IJwtService) private jwtService: IJwtService,
+        @inject(TYPES.IEmailValidator) private emailValidator: IEmailValidator) {
+
         this.resetPassword = this.resetPassword.bind(this);
         this.signIn = this.signIn.bind(this);
         this.signUp = this.signUp.bind(this);
+        this.validateEmail = this.validateEmail.bind(this);
     }
 
     async resetPassword(req: Request, res: Response, next: NextFunction) {
         try {
             const { email, oldPassword, newPassword, confirmNewPassword } = req.body;
 
-            const success = await this.service.resetPassword(email, oldPassword, newPassword, confirmNewPassword);
+            this.validateEmail(email);
 
-            if(success) {
-                res.json({statusCode: 200, message: 'Password reset was successfull!'})
-            } else {
-                res.status(500).json({ statusCode: 500, error: 'Reset unsuccessfull, please try again later!' });
+            const success = await this.service.resetPassword(email, oldPassword, newPassword, confirmNewPassword);
+            if (success) {
+                res.json({ statusCode: 200, message: 'Password reset was successfull!' });
+                return;
             }
 
+            res.status(500).json({ statusCode: 500, error: 'Reset unsuccessfull, please try again later!' });
+
         } catch (error) {
-            if (error instanceof UserError)
-            res.status(400).json({ statusCode: 400, error: error.message });
-        else
-            res.status(500).json({ statusCode: 500, error: 'Unable to proccess request at this time please try again later!' });
+            switch (true) {
+                case error instanceof UserError:
+                    res.status(400).json({ statusCode: 400, error: error.message });
+                    break;
+                default:
+                    res.status(500).json({ statusCode: 500, error: 'Unable to proccess request at this time please try again later!' });
+                    break;
+            }
         }
     }
 
@@ -39,17 +51,24 @@ export class FakeLookAuthController {
         try {
             const { email, password } = req.body;
 
-            const userId = await this.service.signIn(email, password);
-            const token = this.jwtService.signToken({ userId: userId });
+            this.validateEmail(email);
 
-            res.cookie('access_token', token);
-            res.json({ status: 200, message: 'Sign in successfull!' });
+            const userId = await this.service.signIn(email, password);
+            const accessToken = this.jwtService.signToken({ userId: userId }, settings.jwtSettings.accessToken.expiration);
+            const refreshToken = this.jwtService.signToken({ userId: userId }, settings.jwtSettings.refreshToken.expiration);
+
+            res.cookie('refresh_token', refreshToken);
+            res.json({ status: 200, message: 'Signup successfull!', accessToken: accessToken });
 
         } catch (error) {
-            if (error instanceof UserError)
-                res.status(400).json({ statusCode: 400, error: error.message });
-            else
-                res.status(500).json({ statusCode: 500, error: 'Unable to proccess request at this time please try again later!' });
+            switch (true) {
+                case error instanceof UserError:
+                    res.status(400).json({ statusCode: 400, error: error.message });
+                    break;
+                default:
+                    res.status(500).json({ statusCode: 500, error: 'Unable to proccess request at this time please try again later!' });
+                    break;
+            }
         }
     }
 
@@ -57,19 +76,29 @@ export class FakeLookAuthController {
         try {
             const { email, password, confirmPassword } = req.body;
 
-            const success = await this.service.signUp(email, password, confirmPassword);
+            this.validateEmail(email);
 
+            const success = await this.service.signUp(email, password, confirmPassword);
             if (success) {
-                res.json({ status: 200, message: 'Sign in successfull!' });
-            } else {
-                res.status(500).json({ status: 500, error: 'Unable to proccess request at this time please try again later!' });
+                res.json({ status: 200, message: 'Signup successfull!' });
+                return;
             }
 
+            res.status(500).json({ status: 500, error: 'Unable to proccess request at this time please try again later!' });
+
         } catch (error) {
-            if (error instanceof UserError)
-                res.status(400).json({ statusCode: 400, error: error.message });
-            else
-                res.status(500).json({ statusCode: 500, error: 'Unable to proccess request at this time please try again later!' });
+            switch (true) {
+                case error instanceof UserError:
+                    res.status(400).json({ statusCode: 400, error: error.message });
+                    break;
+                default:
+                    res.status(500).json({ statusCode: 500, error: 'Unable to proccess request at this time please try again later!' });
+                    break;
+            }
         }
+    }
+
+    private validateEmail(email: string): boolean | UserError {
+        return this.emailValidator.validate(email);
     }
 }
