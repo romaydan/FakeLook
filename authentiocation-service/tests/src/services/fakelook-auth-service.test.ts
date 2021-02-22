@@ -56,4 +56,4 @@ describe('testing signIn', () => {
         expect(userId).toEqual('1')
         done();
     })
-})
+});

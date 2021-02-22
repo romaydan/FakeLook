@@ -44,6 +44,22 @@
             "internalConsoleOptions": "neverOpen",
             "console": "integratedTerminal",
             "port": 9229
-        }
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch Posts",
+            "args": [
+                "${workspaceRoot}/posts-service/src/index.ts"
+            ],
+            "runtimeArgs": [
+                "--nolazy",
+                "-r",
+                "ts-node/register"
+            ],
+            "sourceMaps": true,
+            "cwd": "${workspaceRoot}/authentiocation-service/",
+            "protocol": "inspector"
+        },
     ]
 }
