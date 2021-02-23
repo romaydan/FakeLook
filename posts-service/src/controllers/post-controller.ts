@@ -10,9 +10,13 @@ export default class PostController {
     }
 
     getFilteredPosts(req: Request, res: Response, next: NextFunction) {
-        const { users, tags } = req.body;
+        const { users, tags, publishers, location, distance, fromDate, toDate } = req.body;
 
-        const posts = this.service.getFilteredPosts(users ?? [], tags ?? []);
+        
+
+        const to = toDate ?? new Date();
+        const from = fromDate ?? new Date(new Date().setMonth(to.getMonth() - 2));
+        const posts = this.service.getFilteredPosts(users ?? [], tags ?? [], publishers ?? [], distance, from, to);
 
         res.status(200).json({ posts: posts });
     }

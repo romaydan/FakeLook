@@ -11,15 +11,19 @@ export enum ShowOptions {
 
 export interface IPost {
     id?: string;
-    userId: string;
+    publisherId: string;
     imageUrl: string;
-    location: string;
+    location: {
+        type: 'Point',
+        coordinates: number[]
+    };
     textContent: string;
     showTo: ShowOptions;
     likes: Like[];
     comments: Comment[];
     userTags: UserTag[];
     tags: Tag[];
+    createdAt: Date;
 }
 
 @Table
@@ -30,15 +34,18 @@ export class Post extends Model implements IPost {
 
     @AllowNull(false)
     @Column(DataType.STRING)
-    userId: string;
+    publisherId: string;
 
     @AllowNull(false)
     @Column(DataType.STRING)
     imageUrl: string;
 
     @AllowNull(false)
-    @Column(DataType.STRING)
-    location: string;
+    @Column(DataType.GEOMETRY('POINT', 4326))
+    location: {
+        type: 'Point',
+        coordinates: number[]
+    };
 
     @AllowNull(false)
     @Column(DataType.STRING)
@@ -59,4 +66,7 @@ export class Post extends Model implements IPost {
 
     @BelongsToMany(() => Tag, () => PostTag)
     tags: Tag[];
+
+    @Column(DataType.DATE)
+    createdAt: Date
 }

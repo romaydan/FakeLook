@@ -7,7 +7,7 @@ import { IPostRepository } from "../repositories/post-repository";
 export interface IPostService {
     addPost(post: IPost): Promise<IPost>;
     removePostById(postId: string): Promise<boolean>;
-    getFilteredPosts(userFilter: string[], tagFilter: string[]): Promise<IPost[]>;
+    getFilteredPosts(userFilter: string[], tagFilter: string[], publishers: string[], distance: number[], from: Date, to: Date): Promise<IPost[]>;
     getPostDataById(postId: string): Promise<IPost>;
     getAllPostsByUserId(userId: string): Promise<IPost[]>;
     updatePost(post: IPost): Promise<boolean>;
@@ -40,8 +40,8 @@ export class PostService implements IPostService {
         return this.repository.removePost(postId);
     }
 
-    getFilteredPosts(userFilter: string[], tagFilter: string[]): Promise<IPost[]> {
-        return this.repository.getFilteredPost(userFilter, tagFilter);
+    getFilteredPosts(userFilter: string[], tagFilter: string[], publishers: string[], distance: number[], from: Date, to: Date): Promise<IPost[]> {
+        return this.repository.getFilteredPost(userFilter, tagFilter, publishers, distance, from, to);
     }
 
     getPostDataById(postId: string): Promise<IPost> {

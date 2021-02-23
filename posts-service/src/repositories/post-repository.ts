@@ -6,10 +6,11 @@ import { UserTag } from "../models/user-tag.model";
 import { Like } from "../models/like.model";
 import { Comment } from "../models/comment.model";
 import { PostTag, Tag } from "../models/tag.model";
+import sequelize from "sequelize";
 
 export interface IPostRepository {
     getAllPostsByUserId(userId: string): Promise<IPost[]>;
-    getFilteredPost(userFilter: string[], tagFilter: string[]): Promise<IPost[]>;
+    getFilteredPost(userFilter: string[], tagFilter: string[], publishers: string[], distance: number, from: Date, to: Date): Promise<IPost[]>;
     getPostById(postId: string): Promise<IPost>;
     addPost(post: IPost): Promise<IPost>;
     removePost(postId: string): Promise<boolean>;
@@ -46,14 +47,34 @@ export class PostRepository implements IPostRepository {
         })
     }
 
-    getFilteredPost(userFilter: string[], tagFilter: string[]): Promise<IPost[]> {
+    getFilteredPost(userFilter: string[], tagFilter: string[], publishers: string[], distance: number, from: Date, to: Date): Promise<IPost[]> {
         return Post.findAll({
-            include: {
+            include: [{
                 model: Tag,
                 attributes: [],
-                through: { attributes: [], where: tagFilter?.length > 0 ? { tagId: { [Op.in]: tagFilter } } : {} }
+                through: {
+                    attributes: [], where: userFilter?.length > 0 ? { tagId: { [Op.in]: userFilter } } : { tagId: { [Op.not]: null } },
+                }
             },
-            where: userFilter?.length > 0 ? { userId: { [Op.in]: userFilter } } : {}
+            {
+                model: UserTag,
+                attributes: [],
+                where: tagFilter?.length > 0 ? { userId: { [Op.in]: tagFilter } } : { userId: { [Op.not]: null } }
+            }, Like, Comment],
+            where: {
+                [Op.and]: [
+                    (sequelize.fn('ST_DWithin', sequelize.col('location'), sequelize.fn('ST_SetSRID', sequelize.fn('ST_MakePoint', 34.8754289039092, 32.02753787187709), 4326), distance, false)),
+                    {
+                        createdAt: {
+                            [Op.gte]: from,
+                            [Op.lte]: to
+                        }
+                    },
+                    {
+                        publisherId: publishers?.length > 0 ? { [Op.in]: publishers } : { [Op.not]: null }
+                    }
+                ]
+            }
         });
     }
 
