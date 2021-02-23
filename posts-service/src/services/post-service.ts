@@ -40,7 +40,7 @@ export class PostService implements IPostService {
         return this.repository.removePost(postId);
     }
 
-    getFilteredPosts(userFilter: string[], tagFilter: string[], publishers: string[], distance: number[], from: Date, to: Date): Promise<IPost[]> {
+    getFilteredPosts(userFilter: string[], tagFilter: string[], publishers: string[], distance: number, from: Date, to: Date): Promise<IPost[]> {
         return this.repository.getFilteredPost(userFilter, tagFilter, publishers, distance, from, to);
     }
 

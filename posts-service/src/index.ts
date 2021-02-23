@@ -10,7 +10,6 @@ import { PostTag, Tag } from './models/tag.model';
 import { UserTag } from './models/user-tag.model';
 import jwtValidation from './middlewares/jwt-validation';
 import sequelize from 'sequelize';
-import { CreatedAt } from 'sequelize-typescript';
 
 const PORT = process.env.PORT || 5001;
 const app = express();
