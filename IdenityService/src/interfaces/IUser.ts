@@ -1,10 +1,12 @@
-import { Address } from '../models/address.model';
+import Address from '../models/address.model';
+import IAddress from './IAddress';
 
-export interface IUser {
+export default interface IUser {
   id?: string;
-  identifier: string;
-  name: string;
+  // identifier: string;
+  firstName: string;
+  lastName: string;
   birthDate: Date;
   authId: string;
-  address: Address;
+  address: IAddress;
 }

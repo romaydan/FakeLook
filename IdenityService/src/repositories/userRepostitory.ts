@@ -1,22 +1,77 @@
-import { IUser } from '../interfaces/IUser';
-import { IUserRepository } from '../interfaces/IUserRepository';
-import { User } from '../models/user.model';
-
-class UserRepository implements IUserRepository {
+import Address from './../models/address.model';
+import IAddress from './../interfaces/IAddress';
+import IUser from '../interfaces/IUser';
+import IUserRepository from '../interfaces/IUserRepository';
+import User from '../models/user.model';
+import * as uuid from 'uuid';
+export default class UserRepository implements IUserRepository {
   constructor() {}
-  addUser(user: IUser): Promise<IUser> {
-    throw new Error('Method not implemented.');
+  getUsers(): Promise<IUser[]> {
+    return User.findAll({ include: [Address] });
   }
-  getByUserId(identifier: string): Promise<IUser> {
-    throw new Error('Method not implemented.');
+
+  async addUser(user: IUser, address: IAddress): Promise<IUser> {
+    let newUser;
+    try {
+      newUser = await User.create(
+        { id: uuid.v4(), ...user, address: { id: uuid.v4(), ...address } },
+        { include: Address }
+      );
+    } catch (error) {
+      console.log('error', error);
+    }
+    return newUser;
   }
-  getUserById(id: string): Promise<IUser> {
-    throw new Error('Method not implemented.');
+  async getUserById(id: string): Promise<IUser> {
+    const userFromDb = await User.findOne({
+      where: { id },
+      include: [Address],
+    });
+    if (userFromDb === null) {
+      console.log('USER NOT FOUND');
+      throw new Error('user not found');
+    } else {
+      console.log('userFormDb', userFromDb);
+      return userFromDb;
+    }
   }
-  removeUserById(userId: string): Promise<boolean> {
-    throw new Error('Method not implemented.');
+  async removeUserById(userId: string): Promise<boolean> {
+    const user = await this.findUserbyId(userId);
+    try {
+      await user.destroy();
+      return true;
+    } catch (error) {
+      throw new Error('user was not deleted');
+    }
   }
-  updateUser(user: IUser): Promise<boolean> {
-    throw new Error('Method not implemented.');
+  async updateUser(
+    id: string,
+    user: IUser,
+    address: IAddress
+  ): Promise<boolean> {
+    console.log('here');
+
+    // const { id, firstName, lastName, birthDate } = user;
+    user.address = address;
+    console.log('user', user);
+    const [addressRowsAffected, addresses] = await Address.update(address, {
+      where: { userId: id },
+    });
+    const [userRowsAffected, users] = await User.update(user, {
+      where: { id },
+    });
+    console.log('users', users);
+    return addressRowsAffected + userRowsAffected > 0 ? true : false;
+  }
+  private async findUserbyId(id): Promise<User> {
+    const userFromDb = await User.findOne({
+      where: { id },
+      include: [Address],
+    });
+    if (userFromDb === null) {
+      throw new Error('user not found');
+    } else {
+      return userFromDb;
+    }
   }
 }

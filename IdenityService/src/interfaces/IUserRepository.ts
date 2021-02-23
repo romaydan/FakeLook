@@ -1,8 +1,9 @@
-import { IUser } from './IUser';
-export interface IUserRepository {
-  addUser(user: IUser): Promise<IUser>;
-  getByUserId(identifier: string): Promise<IUser>;
+import IAddress from './IAddress';
+import IUser from './IUser';
+export default interface IUserRepository {
+  getUsers(): Promise<IUser[]>;
+  addUser(user: IUser, address: IAddress): Promise<IUser>;
   getUserById(id: string): Promise<IUser>;
   removeUserById(userId: string): Promise<boolean>;
-  updateUser(user: IUser): Promise<boolean>;
+  updateUser(id: string, user: IUser, address: IAddress): Promise<boolean>;
 }

@@ -1,4 +1,3 @@
-import { Address, IAddress } from './address.model';
 import {
   Table,
   Column,
@@ -11,37 +10,45 @@ import {
   ForeignKey,
   HasOne,
 } from 'sequelize-typescript';
+import IAddress from '../interfaces/IAddress';
+import Address from './address.model';
+
+import IUser from '../interfaces/IUser';
 
 @Table({
   tableName: 'users',
 })
-export class User extends Model implements IUser {
+export default class User extends Model implements IUser {
   @PrimaryKey
-  @Column(DataType.STRING)
+  @Column(DataType.UUID)
   public id: string;
 
-  @AllowNull(false)
-  @NotEmpty
-  @Unique
-  @Column(DataType.STRING)
-  public identifier: string;
+  // @AllowNull(false)
+  // @NotEmpty
+  // @Unique
+  // @Column(DataType.STRING)
+  // public identifier: string;
 
   @AllowNull(false)
   @NotEmpty
   @Column(DataType.STRING)
-  public name: string;
+  public firstName: string;
+
+  @AllowNull(false)
+  @NotEmpty
+  @Column(DataType.STRING)
+  public lastName: string;
 
   @AllowNull(false)
   @NotEmpty
   @Column(DataType.DATE)
   public birthDate: Date;
 
-  @AllowNull(false)
+  @AllowNull(true)
   @NotEmpty
   @Column(DataType.STRING)
   public authId: string;
 
   @HasOne(() => Address)
-  @ForeignKey(() => Address)
-  public address: IAddress;
+  public address: Address;
 }

@@ -8,13 +8,15 @@ import {
   DataType,
   Unique,
   BelongsTo,
+  NotNull,
+  ForeignKey,
 } from 'sequelize-typescript';
-import { IAddress } from '../interfaces/IAddress';
-
+import IAddress from '../interfaces/IAddress';
+import User from './user.model';
 @Table({
-  tableName: 'users',
+  tableName: 'addresses',
 })
-export class Address extends Model implements IAddress {
+export default class Address extends Model implements IAddress {
   @PrimaryKey
   @Column(DataType.UUIDV4)
   public id: string;
@@ -37,10 +39,17 @@ export class Address extends Model implements IAddress {
   @AllowNull(false)
   @NotEmpty
   @Column(DataType.STRING)
-  public aptNo: string;
+  public houseNo: string;
 
-  @AllowNull(false)
+  @AllowNull(true)
   @NotEmpty
   @Column(DataType.STRING)
-  public houseNo: string;
+  public aptNo: string;
+
+  @ForeignKey(() => User)
+  @Column(DataType.STRING)
+  public userId;
+
+  @BelongsTo(() => User)
+  public user: User;
 }

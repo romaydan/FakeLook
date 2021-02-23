@@ -1,6 +1,6 @@
 import express from 'express';
 import { Application } from 'express';
-import sequelize from './db/data/index';
+import sequelize from './db/index';
 class App {
   public app: Application;
   public port: number;
