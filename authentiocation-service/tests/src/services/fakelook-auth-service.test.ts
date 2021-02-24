@@ -1,6 +1,6 @@
 import { IUser } from '../../../src/models/user.model';
-import { FakeLookAuthenticationService } from '../../../src/services/fakelook-authentication-service';
-import { UserRepository } from '../../../src/repositories/user-repository';
+import { FakeLookAuthenticationService } from '../../../src/services/fakelook.authentication.service';
+import { UserRepository } from '../../../src/repositories/user.repository';
 import passwordHasher from 'password-hash';
 
 

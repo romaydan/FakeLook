@@ -2,7 +2,7 @@ import { AllowNull, Column, DataType, PrimaryKey, Table, Model, HasMany, Belongs
 import { IComment, Comment } from "./comment.model";
 import { ILike, Like } from "./like.model";
 import { ITag, PostTag, Tag } from "./tag.model";
-import { IUserTag, UserTag } from "./user-tag.model";
+import { IUserTag, UserTag } from "./usertag.model";
 
 export enum ShowOptions {
     All,

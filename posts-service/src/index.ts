@@ -7,8 +7,8 @@ import { Comment } from './models/comment.model';
 import { Like } from './models/like.model';
 import { Post, ShowOptions } from './models/post.model';
 import { PostTag, Tag } from './models/tag.model';
-import { UserTag } from './models/user-tag.model';
-import jwtValidation from './middlewares/jwt-validation';
+import { UserTag } from './models/usertag.model';
+import jwtValidation from './middlewares/jwt.validation';
 import sequelize from 'sequelize';
 
 const PORT = process.env.PORT || 5001;

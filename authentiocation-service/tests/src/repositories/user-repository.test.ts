@@ -1,4 +1,4 @@
-import { UserRepository } from '../../../src/repositories/user-repository';
+import { UserRepository } from '../../../src/repositories/user.repository';
 import { User, IUser } from '../../../src/models/user.model';
 import { Sequelize } from 'sequelize-typescript';
 

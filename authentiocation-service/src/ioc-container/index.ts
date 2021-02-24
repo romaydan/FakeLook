@@ -1,20 +1,20 @@
-import { FakeLookAuthenticationService, IFakeLookAuthenticationService } from '../services/fakelook-authentication-service';
-import { GoogleAuthenticationService, IGoogleAuthenticationService } from '../services/google-authentication-service';
-import { FacebookAuthenticationService, IFacebookAuthenticationService } from '../services/facebook-authentication-service';
-import { JwtValidtaionController as JwtController } from '../controllers/jwt-controller';
-import { IRefreshTokenRepository, RefreshTokenRepository } from '../repositories/refresh-token-repository';
-import { ITokenBlackListService, TokenBlackListService } from '../services/token-blacklist-service';
-import { FakeLookAuthController } from '../controllers/fakelook-auth-controller';
-import { GoogleAuthController } from '../controllers/google-auth-controller';
-import { FacebookAuthController } from '../controllers/facebook-auth-controller';
-import { IUserRepository, UserRepository } from '../repositories/user-repository';
-import { IJwtService, JwtService } from '../services/jwt-service';
+import { FakeLookAuthenticationService, IFakeLookAuthenticationService } from '../services/fakelook.authentication.service';
+import { GoogleAuthenticationService, IGoogleAuthenticationService } from '../services/google.authentication.service';
+import { FacebookAuthenticationService, IFacebookAuthenticationService } from '../services/facebook.authentication.service';
+import { JwtValidtaionController as JwtController } from '../controllers/jwt.controller';
+import { IRefreshTokenRepository, RefreshTokenRepository } from '../repositories/refreshtoken.repository';
+import { ITokenBlackListService, TokenBlackListService } from '../services/token.blacklist.service';
+import { FakeLookAuthController } from '../controllers/fakelook.auth.controller';
+import { GoogleAuthController } from '../controllers/google.auth.controller';
+import { FacebookAuthController } from '../controllers/facebook.auth.controller';
+import { IUserRepository, UserRepository } from '../repositories/user.repository';
+import { IJwtService, JwtService } from '../services/jwt.service';
 import { Container } from 'inversify';
 import { Sequelize } from 'sequelize-typescript';
 import { TYPES } from './types';
 import db from '../db';
 import "reflect-metadata"
-import { EmailValidator, IEmailValidator } from '../services/email-validator';
+import { EmailValidator, IEmailValidator } from '../services/emailvalidator';
 
 const container = new Container();
 
