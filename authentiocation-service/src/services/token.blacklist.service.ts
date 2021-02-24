@@ -1,7 +1,7 @@
 import { inject, injectable } from "inversify";
-import UserError from "../errors/UserError";
+import UserError from "../errors/user.error";
 import { TYPES } from "../ioc-container/types";
-import { IRefreshTokenRepository } from "../repositories/refresh-token-repository";
+import { IRefreshTokenRepository } from "../repositories/refreshtoken.repository";
 
 export interface ITokenBlackListService {
     blackListToken(token: string): Promise<boolean>,

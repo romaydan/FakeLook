@@ -1,5 +1,5 @@
 import { injectable } from "inversify";
-import UserError from "../errors/UserError";
+import UserError from "../errors/user.error";
 
 export interface IEmailValidator {
     validate(email: string): boolean | UserError

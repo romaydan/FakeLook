@@ -1,6 +1,6 @@
 import { injectable } from "inversify";
 import { Op } from "sequelize";
-import RefreshToken from "../models/refresh-token.model";
+import RefreshToken from "../models/refreshtoken.model";
 
 export interface IRefreshTokenRepository {
     blackListToken(token: string): Promise<boolean>

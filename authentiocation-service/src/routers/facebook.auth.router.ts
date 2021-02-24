@@ -1,5 +1,5 @@
 import express from 'express';
-import { FacebookAuthController } from '../controllers/facebook-auth-controller';
+import { FacebookAuthController } from '../controllers/facebook.auth.controller';
 import container from '../ioc-container';
 import { TYPES } from '../ioc-container/types';
 

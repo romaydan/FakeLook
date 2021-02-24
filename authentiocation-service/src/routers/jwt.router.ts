@@ -1,5 +1,5 @@
 import express from 'express';
-import { JwtValidtaionController } from '../controllers/jwt-controller';
+import { JwtValidtaionController } from '../controllers/jwt.controller';
 import container from '../ioc-container';
 import { TYPES } from '../ioc-container/types';
 

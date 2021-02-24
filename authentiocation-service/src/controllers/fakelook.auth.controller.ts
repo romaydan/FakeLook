@@ -1,12 +1,12 @@
 "use strict";
-import { IJwtService } from "../services/jwt-service";
+import { IJwtService } from "../services/jwt.service";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../ioc-container/types";
-import { IFakeLookAuthenticationService } from "../services/fakelook-authentication-service";
+import { IFakeLookAuthenticationService } from "../services/fakelook.authentication.service";
 import { Request, Response, NextFunction } from 'express'
-import UserError from "../errors/UserError";
+import UserError from "../errors/user.error";
 import settings from "../settings";
-import { IEmailValidator } from "../services/email-validator";
+import { IEmailValidator } from "../services/emailvalidator";
 
 @injectable()
 export class FakeLookAuthController {

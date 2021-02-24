@@ -1,13 +1,13 @@
 import { inject, injectable } from "inversify";
 import TYPES from "../ioc-container/types";
 import { IPost } from "../models/post.model";
-import { IPostRepository } from "../repositories/post-repository";
+import { IPostRepository } from "../repositories/post.repository";
 
 
 export interface IPostService {
     addPost(post: IPost): Promise<IPost>;
     removePostById(postId: string): Promise<boolean>;
-    getFilteredPosts(userFilter: string[], tagFilter: string[], publishers: string[], distance: number[], from: Date, to: Date): Promise<IPost[]>;
+    getFilteredPosts(userFilter: string[], tagFilter: string[], publishers: string[], distance: number, from: Date, to: Date): Promise<IPost[]>;
     getPostDataById(postId: string): Promise<IPost>;
     getAllPostsByUserId(userId: string): Promise<IPost[]>;
     updatePost(post: IPost): Promise<boolean>;

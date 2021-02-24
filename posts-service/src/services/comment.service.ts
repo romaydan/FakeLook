@@ -1,7 +1,7 @@
 import { inject, injectable } from "inversify";
 import TYPES from "../ioc-container/types";
 import { IComment } from "../models/comment.model";
-import { ICommentRepository } from "../repositories/comment-repository";
+import { ICommentRepository } from "../repositories/comment.repository";
 
 export interface ICommentService {
     addComment(comment: IComment, postId: string): Promise<IComment>;

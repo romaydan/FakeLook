@@ -1,11 +1,11 @@
 import { inject, injectable } from "inversify";
 import { Request, Response, NextFunction } from 'express';
 import { TYPES } from "../ioc-container/types";
-import { IJwtService } from "../services/jwt-service";
+import { IJwtService } from "../services/jwt.service";
 import { JsonWebTokenError, TokenExpiredError } from "jsonwebtoken";
-import { IUserRepository } from "../repositories/user-repository";
+import { IUserRepository } from "../repositories/user.repository";
 import settings from "../settings";
-import { ITokenBlackListService } from "../services/token-blacklist-service";
+import { ITokenBlackListService } from "../services/token.blacklist.service";
 
 @injectable()
 export class JwtValidtaionController {

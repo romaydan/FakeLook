@@ -2,8 +2,8 @@ import { inject, injectable } from "inversify";
 import settings from '../settings';
 import { OAuth2Client } from 'google-auth-library';
 import { TYPES } from "../ioc-container/types";
-import { IUserRepository } from "../repositories/user-repository";
-import UserError from "../errors/UserError";
+import { IUserRepository } from "../repositories/user.repository";
+import UserError from "../errors/user.error";
 import  pswhasher from 'password-hash';
 
 export interface IGoogleAuthenticationService {

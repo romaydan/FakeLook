@@ -1,9 +1,9 @@
 import { inject, injectable } from "inversify";
 import { TYPES } from '../ioc-container/types';
-import { IGoogleAuthenticationService } from "../services/google-authentication-service";
+import { IGoogleAuthenticationService } from "../services/google.authentication.service";
 import { Request, Response, NextFunction } from 'express';
 import settings from '../settings';
-import { IJwtService } from "../services/jwt-service";
+import { IJwtService } from "../services/jwt.service";
 
 @injectable()
 export class GoogleAuthController {

@@ -2,7 +2,7 @@ import { injectable } from "inversify";
 import { Op } from "sequelize";
 import { IPost, Post } from "../models/post.model";
 import uuid from 'uuid';
-import { UserTag } from "../models/user-tag.model";
+import { UserTag } from "../models/usertag.model";
 import { Like } from "../models/like.model";
 import { Comment } from "../models/comment.model";
 import { PostTag, Tag } from "../models/tag.model";

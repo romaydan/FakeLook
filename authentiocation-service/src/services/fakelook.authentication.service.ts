@@ -1,9 +1,9 @@
 import 'reflect-metadata';
 import { injectable, inject } from 'inversify'
 import { TYPES } from "../ioc-container/types";
-import { IUserRepository } from "../repositories/user-repository";
+import { IUserRepository } from "../repositories/user.repository";
 import { verify, generate } from 'password-hash';
-import UserError from '../errors/UserError';
+import UserError from '../errors/user.error';
 
 export interface IFakeLookAuthenticationService {
     signIn(email: string, password: string): Promise<string>,

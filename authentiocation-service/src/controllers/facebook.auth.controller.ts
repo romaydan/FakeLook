@@ -1,8 +1,8 @@
 import { inject, injectable } from "inversify";
 import { Request, Response, NextFunction } from 'express';
 import { TYPES } from "../ioc-container/types";
-import { IFacebookAuthenticationService } from "../services/facebook-authentication-service";
-import { IJwtService } from "../services/jwt-service";
+import { IFacebookAuthenticationService } from "../services/facebook.authentication.service";
+import { IJwtService } from "../services/jwt.service";
 import settings from "../settings";
 
 @injectable()

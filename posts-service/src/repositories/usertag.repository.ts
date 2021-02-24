@@ -1,5 +1,5 @@
 import { injectable } from "inversify";
-import { IUserTag, UserTag } from "../models/user-tag.model";
+import { IUserTag, UserTag } from "../models/usertag.model";
 import uuid from 'uuid';
 
 export interface IUserTagRepository {

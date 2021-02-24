@@ -1,5 +1,5 @@
 import express from 'express';
-import { GoogleAuthController } from '../controllers/google-auth-controller';
+import { GoogleAuthController } from '../controllers/google.auth.controller';
 import continer from '../ioc-container';
 import { TYPES } from '../ioc-container/types';
 

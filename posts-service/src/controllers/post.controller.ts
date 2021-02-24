@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { inject, injectable } from "inversify";
 import TYPES from "../ioc-container/types";
-import { IPostService } from "../services/post-service";
+import { IPostService } from "../services/post.service";
 
 @injectable()
 export default class PostController {
