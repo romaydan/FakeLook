@@ -13,7 +13,7 @@ export interface IPostRepository {
     getFilteredPost(userFilter: string[], tagFilter: string[], publishers: string[], distance: number, from: Date, to: Date): Promise<IPost[]>;
     getPostById(postId: string): Promise<IPost>;
     addPost(post: IPost): Promise<IPost>;
-    removePost(postId: string): Promise<boolean>;
+    removePost(postId: string): Promise<IPost>;
     updatePost(post: IPost): Promise<boolean>;
 }
 
@@ -28,6 +28,10 @@ export class PostRepository implements IPostRepository {
     }
 
     getAllPostsByUserId(userId: string): Promise<IPost[]> {
+        if(!userId) {
+            throw new ReferenceError('No user id given!');
+        }
+
         return Post.findAll({
             where: {
                 userId: userId
@@ -36,6 +40,10 @@ export class PostRepository implements IPostRepository {
     }
 
     getPostById(postId: string): Promise<IPost> {
+        if(!postId) {
+            throw new ReferenceError('No post id given!');
+        }
+
         return Post.findOne({
             include: [
                 {
@@ -79,11 +87,25 @@ export class PostRepository implements IPostRepository {
     }
 
     addPost(post: IPost): Promise<IPost> {
-        return new Post({ id: uuid.v4(), ...post }).save();
+        if(!post) {
+            throw new ReferenceError('No post provided!');
+        }
+
+        return new Post(post).save();
     }
 
-    removePost(postId: string): Promise<boolean> {
-        return Post.destroy({
+    async removePost(postId: string): Promise<IPost> {
+        if(!postId) {
+            throw new ReferenceError('No post id given!');
+        }
+
+        const post = await Post.findOne({
+            where: {
+                id: postId
+            }
+        })
+
+        const success = await Post.destroy({
             where: {
                 id: postId
             }
@@ -119,9 +141,20 @@ export class PostRepository implements IPostRepository {
 
             return false;
         });
+
+        if(success) {
+            return post;
+        }
+
+        throw new Error('Unable to delete post! Please try again later.');
     }
 
     async updatePost(post: IPost): Promise<boolean> {
+        if(!post) {
+            throw new ReferenceError('No update data provided!');
+        }
+
+
         const [count] = await Post.update(post, {
             where: {
                 id: post.id

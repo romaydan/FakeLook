@@ -18,13 +18,13 @@ export class JwtService implements IJwtService {
     }
 
     signToken(payload: string | object | Buffer, expiresIn: number | string): string {
-        return sign(payload, settings.jwtSettings.secret, {
+        return sign(payload, process.env.JWT_SECRET_KEY, {
             expiresIn: expiresIn,
             mutatePayload: true
         });
     }
     verifyToken(token: string): { userId: string, iat: number, exp: number } {
-        return verify(token, settings.jwtSettings.secret, {
+        return verify(token, process.env.JWT_SECRET_KEY, {
             ignoreExpiration: false,
             ignoreNotBefore: false
         }) as any;

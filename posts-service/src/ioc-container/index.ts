@@ -1,13 +1,21 @@
+import "reflect-metadata";
 import { Container } from "inversify";
 import { Sequelize } from "sequelize/types";
-import db from "../db";
+import PostController from "../controllers/post.controller";
 import { CommentRepository, ICommentRepository } from "../repositories/comment.repository";
 import { IPostRepository, PostRepository } from "../repositories/post.repository";
 import { ITagRepository, TagRepository } from "../repositories/tag.repository";
 import { IUserTagRepository, UserTagRepository } from "../repositories/usertag.repository";
 import { CommentService, ICommentService } from "../services/comment.service";
 import { IPostService, PostService } from "../services/post.service";
+import { IImageUploader, ImageUploader } from "../services/image.uploader";
+import { IUserTagService, UserTagService } from "../services/usertag.service";
 import TYPES from "./types";
+import db from "../db";
+import { ITagService, TagService } from "../services/tag.service";
+import CommentController from "../controllers/comment.controller";
+import UserTagController from "../controllers/usertag.controller";
+import TagController from "../controllers/tag.controller";
 
 const container = new Container();
 
@@ -22,6 +30,13 @@ container.bind<IUserTagRepository>(TYPES.IUserTagRepository).to(UserTagRepositor
 
 container.bind<IPostService>(TYPES.IPostService).to(PostService).inSingletonScope();
 container.bind<ICommentService>(TYPES.ICommentService).to(CommentService).inSingletonScope();
+container.bind<IUserTagService>(TYPES.IUserTagService).to(UserTagService).inSingletonScope();
+container.bind<ITagService>(TYPES.ITagService).to(TagService).inSingletonScope();
+container.bind<IImageUploader>(TYPES.IImageUploader).to(ImageUploader).inSingletonScope();
 
+container.bind<PostController>(TYPES.PostController).to(PostController).inTransientScope();
+container.bind<CommentController>(TYPES.CommentController).to(CommentController).inTransientScope();
+container.bind<UserTagController>(TYPES.UserTagController).to(UserTagController).inTransientScope();
+container.bind<TagController>(TYPES.TagController).to(TagController).inTransientScope();
 
 export default container;

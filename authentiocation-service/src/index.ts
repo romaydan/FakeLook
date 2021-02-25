@@ -1,3 +1,4 @@
+import env from 'dotenv';
 import express from 'express';
 import settings from './settings';
 import flAuthRotuer from './routers/fakelook.auth.router';
@@ -10,7 +11,9 @@ import cookieParser from 'cookie-parser';
 import { Sequelize } from 'sequelize-typescript';
 import { TYPES } from './ioc-container/types';
 
-const PORT = process.env.PORT || settings.PORT;
+env.config();
+
+const PORT = process.env.PORT || 5000;
 const app = express();
 
 const db = container.get<Sequelize>(TYPES.Sequelize);

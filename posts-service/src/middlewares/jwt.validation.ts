@@ -1,5 +1,5 @@
 import axios from "axios";
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, Request, response, Response } from "express";
 
 
 const validateToken = async (req: Request, res: Response, next: NextFunction) => {
@@ -18,7 +18,9 @@ const validateToken = async (req: Request, res: Response, next: NextFunction) =>
 
     const { statusCode, error } = data;
 
-    if (statusCode < 300) {
+    if (!error) {
+        req['userId'] = data.userId;
+        
         next();
         return;
     }

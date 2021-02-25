@@ -3,7 +3,7 @@ import { IUserTag, UserTag } from "../models/usertag.model";
 import uuid from 'uuid';
 
 export interface IUserTagRepository {
-    addUserTagToPost(userTag: IUserTag, postId: string): Promise<IUserTag>;
+    addUserTagToPost(userTag: IUserTag): Promise<IUserTag>;
     removeUserTagFromPost(userTagId: string, postId: string): Promise<boolean>;
     getAllUserTagsByPostId(postId: string): Promise<IUserTag[]>
 }
@@ -16,8 +16,8 @@ export class UserTagRepository implements IUserTagRepository {
         this.removeUserTagFromPost = this.removeUserTagFromPost.bind(this);
     }
 
-    addUserTagToPost(userTag: IUserTag, postId: string): Promise<IUserTag> {
-        return UserTag.create({ id: uuid.v4(), ...userTag, postId: postId });
+    addUserTagToPost(userTag: IUserTag): Promise<IUserTag> {
+        return UserTag.create({ id: uuid.v4(), ...userTag });
     }
 
     async removeUserTagFromPost(userTagId: string, postId: string): Promise<boolean> {
@@ -30,6 +30,7 @@ export class UserTagRepository implements IUserTagRepository {
 
         return count > 0;
     }
+
     getAllUserTagsByPostId(postId: string): Promise<IUserTag[]> {
         return UserTag.findAll({
             where: {

@@ -7,6 +7,7 @@ import { Request, Response, NextFunction } from 'express'
 import UserError from "../errors/user.error";
 import settings from "../settings";
 import { IEmailValidator } from "../services/emailvalidator";
+import UniqueConstraintError from "sequelize/lib/errors/validation/unique-constraint-error";
 
 @injectable()
 export class FakeLookAuthController {
@@ -90,6 +91,9 @@ export class FakeLookAuthController {
             switch (true) {
                 case error instanceof UserError:
                     res.status(400).json({ statusCode: 400, error: error.message });
+                    break;
+                case error instanceof UniqueConstraintError:
+                    res.status(400).json({ statusCode: 400, error: 'Email address already taken!' });
                     break;
                 default:
                     res.status(500).json({ statusCode: 500, error: 'Unable to proccess request at this time please try again later!' });

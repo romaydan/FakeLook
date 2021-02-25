@@ -4,7 +4,7 @@ import { OAuth2Client } from 'google-auth-library';
 import { TYPES } from "../ioc-container/types";
 import { IUserRepository } from "../repositories/user.repository";
 import UserError from "../errors/user.error";
-import  pswhasher from 'password-hash';
+import pswhasher from 'password-hash';
 
 export interface IGoogleAuthenticationService {
     signIn(tokenId: string): Promise<string>
@@ -16,27 +16,34 @@ export class GoogleAuthenticationService {
     }
 
     async signIn(tokenId: string): Promise<string> {
-        if(!tokenId) {
+        if (!tokenId) {
             throw new UserError('tokenId is empty!');
         }
 
-        const client = new OAuth2Client(settings.googleSettings.clientId);
+        const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
         const ticket = await client.verifyIdToken({
             idToken: tokenId,
-            audience: settings.googleSettings.clientId,
+            audience: process.env.GOOGLE_CLIENT_ID,
         });
 
         const payload = ticket.getPayload();
+        const user = await this.repository.getByUserIdentifier(payload.email);
 
-        let user = await this.repository.getByUserIdentifier(payload.email);
+        if (user) {
+            if (user.isOAuthUser) return user.id;
 
-        if (user) return user.id;
+            throw new UserError('This account can\'t be loged in with google authentication!');
+        }
 
         return await this.addGoogleUser(payload.email);
     }
 
     private async addGoogleUser(email: string) {
-        const user = await this.repository.addUser({ identifier: email, password: pswhasher.generate(email), isOAuthUser: true });
+        const user = await this.repository.addUser({
+            identifier: email,
+            password: pswhasher.generate(email),
+            isOAuthUser: true
+        });
         return user.id;
     }
 }

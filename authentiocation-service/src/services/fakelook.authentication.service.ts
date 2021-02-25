@@ -59,11 +59,6 @@ export class FakeLookAuthenticationService implements IFakeLookAuthenticationSer
     }
 
     async signUp(email: string, password: string, confirmPassword: string): Promise<boolean> {
-        const signedUser = await this.repository.getByUserIdentifier(email);
-        if (signedUser)
-            throw new UserError('Email already taken! please try again with different email!');
-
-
         if (password !== confirmPassword)
             throw new UserError('Passwords do not match! please try again!');
 

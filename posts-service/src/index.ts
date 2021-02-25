@@ -1,3 +1,4 @@
+import env from 'dotenv';
 import express from 'express';
 import { Op } from 'sequelize';
 import { Sequelize } from 'sequelize/types';
@@ -10,6 +11,12 @@ import { PostTag, Tag } from './models/tag.model';
 import { UserTag } from './models/usertag.model';
 import jwtValidation from './middlewares/jwt.validation';
 import sequelize from 'sequelize';
+import postRouter from './routers/post.router';
+import commentRouter from './routers/comment.router';
+import usertagRouter from './routers/usertag.router';
+import tagRouter from './routers/tag.router';
+
+env.config();
 
 const PORT = process.env.PORT || 5001;
 const app = express();
@@ -71,14 +78,16 @@ const dbTest = async () => {
 
 db.sync({ force: true })
     .then(async () => {
-
         app.use(jwtValidation);
+        app.use('/posts', postRouter);
+        app.use('/commets', commentRouter);
+        app.use('/usertags', usertagRouter);
+        app.use('/tags', tagRouter);
 
         app.listen(PORT, () => {
             console.log(`Listening on port: ${PORT}...`);
         });
 
-        //await dbTest();
     })
     .catch(async err => {
         await db.close();

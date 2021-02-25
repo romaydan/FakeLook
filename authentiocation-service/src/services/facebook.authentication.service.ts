@@ -3,7 +3,7 @@ import { TYPES } from '../ioc-container/types';
 import axios from 'axios';
 import UserError from '../errors/user.error';
 import { IUserRepository } from '../repositories/user.repository';
-import  pswhasher from 'password-hash';
+import pswhasher from 'password-hash';
 
 export interface IFacebookAuthenticationService {
     signIn(token: string, facebookId: string): Promise<string>
@@ -32,7 +32,11 @@ export class FacebookAuthenticationService implements IFacebookAuthenticationSer
     }
 
     private async addFacebookUser(facebookId: string) {
-        const user = await this.repository.addUser({ identifier: facebookId, password: pswhasher.generate(facebookId), isOAuthUser: true });
+        const user = await this.repository.addUser({
+            identifier: facebookId,
+            password: pswhasher.generate(facebookId),
+            isOAuthUser: true
+        });
         return user.id;
     }
 }

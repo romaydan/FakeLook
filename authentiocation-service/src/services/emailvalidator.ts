@@ -7,7 +7,7 @@ export interface IEmailValidator {
 
 @injectable()
 export class EmailValidator implements IEmailValidator {
-    private emailRgx = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
+    private emailRgx = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
 
     constructor() {
         this.validate = this.validate.bind(this);

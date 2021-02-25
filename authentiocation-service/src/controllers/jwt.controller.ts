@@ -27,6 +27,7 @@ export class JwtValidtaionController {
 
             if (!token) {
                 res.status(400).json({ statusCode: 400, error: 'No token provided!' });
+                return;
             }
 
             const payload = this.service.verifyToken(token);
@@ -34,6 +35,7 @@ export class JwtValidtaionController {
 
             if (!user) {
                 res.status(403).json({ statusCode: 403, error: 'User does not exist!' });
+                return;
             }
 
             res.json(payload);
