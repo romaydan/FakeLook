@@ -5,9 +5,12 @@ import { Sequelize } from 'sequelize-typescript';
 const path = __dirname + '\\db\\authDb.test.db';
 const db = new Sequelize({
     dialect: 'sqlite',
-    storage: path
+    storage: path,
+    logging: false
 });
 db.addModels([User]);
+
+
 
 beforeEach(async () => {
     await db.sync({ force: true });

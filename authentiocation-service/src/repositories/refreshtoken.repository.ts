@@ -1,6 +1,9 @@
 import { injectable } from "inversify";
 import { Op } from "sequelize";
+import UserError from "../errors/user.error";
 import RefreshToken from "../models/refreshtoken.model";
+
+const JWT_REGEX = /^[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.[A-Za-z0-9-_.+/=]*$/;
 
 export interface IRefreshTokenRepository {
     blackListToken(token: string): Promise<boolean>
@@ -13,6 +16,10 @@ export class RefreshTokenRepository implements IRefreshTokenRepository {
 
     }
     async blackListToken(token: string): Promise<boolean> {
+        if(!JWT_REGEX.test(token)) {
+            throw new UserError('Token does not match the JWT schema!');
+        }
+
         const rt = await RefreshToken.build({ token: token }).save();
         return !isNaN(rt.id);
     }

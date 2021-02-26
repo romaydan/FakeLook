@@ -1,11 +1,10 @@
-import jwt, { sign, verify, decode } from 'jsonwebtoken';
-import { injectable } from 'inversify'
-import settings from '../settings';
+import { sign, verify, decode } from 'jsonwebtoken';
+import { injectable } from 'inversify';
 
 export interface IJwtService {
-    signToken(payload: string | Buffer | object, expiresIn: number | string): string,
-    verifyToken(token: string): { userId: string, iat: number, exp: number },
-    decode(token: string): object
+    signToken(payload: string | Buffer | object, expiresIn: number | string): string;
+    verifyToken(token: string): { userId: string, iat: number, exp: number };
+    decode(token: string): object;
 }
 
 @injectable()
