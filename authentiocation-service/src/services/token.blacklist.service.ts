@@ -15,6 +15,7 @@ export class TokenBlackListService implements ITokenBlackListService {
         this.isBlackedListed = this.isBlackedListed.bind(this);
     }
 
+    //Adds a new refresh token to the token blacklist
     blackListToken(token: string): Promise<boolean> {
         if(!token) {
             throw new UserError('Token not provided!');
@@ -23,6 +24,7 @@ export class TokenBlackListService implements ITokenBlackListService {
         return this.repository.blackListToken(token);
     }
 
+    //Checks if a refresh token is in the blacklist.
     isBlackedListed(token: string): Promise<boolean> {
         if(!token) {
             throw new UserError('Token not provided!');

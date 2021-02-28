@@ -13,6 +13,7 @@ export class EmailValidator implements IEmailValidator {
         this.validate = this.validate.bind(this);
     }
 
+    //Validates email format.
     validate(email: string): boolean | UserError {
         const success = this.emailRgx.test(email);
 

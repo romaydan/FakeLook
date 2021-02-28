@@ -19,21 +19,25 @@ export class FakeLookAuthenticationService implements IFakeLookAuthenticationSer
         this.signUp = this.signUp.bind(this);
     }
 
+    //Resets a users password to a new password.
     async resetPassword(email: string, oldPassword: string, newPassword: string, cofrimNewPassowrd: string): Promise<boolean> {
         const user = await this.repository.getByUserIdentifier(email);
 
         if (!user)
             throw new UserError('Incorrect email! please check it before trying again');
 
+        //checks if the user is an OAuth user. If so, the user can't change his password.
         if (user.isOAuthUser)
             throw new UserError('Can not update a user registered using google or facebook');
 
+        //varifies the given password to the one save in the db.
         if (!verify(oldPassword, user.password))
             throw new UserError('The original password is incorrect! please check old password bfore tryin again!');
 
         if (newPassword !== cofrimNewPassowrd)
             throw new UserError('The new passwords do not match! please try again!');
 
+        //updates the user.
         const success = await this.repository.UpdateUser({
             id: user.id,
             identifier: user.identifier,
@@ -49,10 +53,13 @@ export class FakeLookAuthenticationService implements IFakeLookAuthenticationSer
             throw new UserError('SignIn unseccessful! invalid email or password!');
 
 
+        //Checks if the user had registered with facebook/google OAuth services. 
+        //If so, the user can't signin in the regular way. 
         if (user.isOAuthUser)
             throw new UserError('Can not sign with a user registered using facebook or google authentication!');
 
 
+        //varifies that the password matches the hashed password from the db.
         if (verify(password, user.password))
             return user.id;
 
@@ -62,7 +69,9 @@ export class FakeLookAuthenticationService implements IFakeLookAuthenticationSer
         if (password !== confirmPassword)
             throw new UserError('Passwords do not match! please try again!');
 
+        //hashes the users password.
         const hashedPassword = generate(password);
+        //adds the new user to the database.
         const newUser = await this.repository.addUser({ identifier: email, password: hashedPassword, isOAuthUser: false });
         return newUser ? true : false;
     }

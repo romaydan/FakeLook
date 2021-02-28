@@ -1,5 +1,6 @@
 import env from 'dotenv';
 import express from 'express';
+import cors from 'cors';
 import { Op } from 'sequelize';
 import { Sequelize } from 'sequelize/types';
 import container from './ioc-container';
@@ -78,6 +79,8 @@ const dbTest = async () => {
 
 db.sync({ force: true })
     .then(async () => {
+        app.use(cors());
+        app.use(express.json());
         app.use(jwtValidation);
         app.use('/posts', postRouter);
         app.use('/commets', commentRouter);

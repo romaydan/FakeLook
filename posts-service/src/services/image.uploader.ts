@@ -27,6 +27,7 @@ export class ImageUploader implements IImageUploader {
 
     async uploadImage(userId: string, postId: string, uploadFile: any, accessToken: string): Promise<string> {
         
+        //generates multipart/form-data body for the image upload. 
         const form = new FormData();
         form.append('userId', userId);
         form.append('postId', postId);

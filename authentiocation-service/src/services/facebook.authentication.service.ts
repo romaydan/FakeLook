@@ -16,10 +16,14 @@ export class FacebookAuthenticationService implements IFacebookAuthenticationSer
         this.addFacebookUser = this.addFacebookUser.bind(this);
     }
 
+    //Signs in a facebook user.
+    //If it is the first time the user will be registered and then signed in.
+    //The return values is the user's id.
     async signIn(token: string, facebookId: string): Promise<string> {
         if (!token || !facebookId)
             throw new UserError('access token or user id is empty!');
 
+        //facebook OAuth api url 
         const url = `https://graph.facebook.com/v2.11/${facebookId}?fields=id&access_token=${token}`;
         const resposnse = await axios.get(url);
 
@@ -31,6 +35,7 @@ export class FacebookAuthenticationService implements IFacebookAuthenticationSer
         return await this.addFacebookUser(facebook_id);
     }
 
+    //Adds a new facebook user to the database.
     private async addFacebookUser(facebookId: string) {
         const user = await this.repository.addUser({
             identifier: facebookId,

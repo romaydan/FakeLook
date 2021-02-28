@@ -17,6 +17,7 @@ const io = new Server(server, {
 });
 const clientManager = new ClientManager();
 
+//Socket.io
 io.on('connection', (socket: Socket) => {
 
     socket.on('init', (userId: string) => {
@@ -34,6 +35,8 @@ io.on('connection', (socket: Socket) => {
     });
 });
 
+
+//Redis pub/sub
 redisClient.on('message', (channel: string, message: string) => {
     if (channel === 'notification') {
         const { userIds, notification } = JSON.parse(message);
@@ -43,12 +46,12 @@ redisClient.on('message', (channel: string, message: string) => {
     }
 });
 
-redisClient.subscribe('notification');
-
 const notifyUser = (userId: string, notification: object) => {
     const client = clientManager.getClientByUserId(userId);
     client.socket.emit('notification', notification);
 }
+
+redisClient.subscribe('notification');
 
 server.listen(PORT, () => {
     console.log(`Server now listening on port ${PORT}...`);

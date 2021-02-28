@@ -16,12 +16,16 @@ export class JwtService implements IJwtService {
         return decode(token, { json: true });
     }
 
+    //signs a new Json Web Token.
     signToken(payload: string | object | Buffer, expiresIn: number | string): string {
         return sign(payload, process.env.JWT_SECRET_KEY, {
             expiresIn: expiresIn,
             mutatePayload: true
         });
     }
+
+    //Verifies a JWT.
+    //Throws an error if the token is expired.
     verifyToken(token: string): { userId: string, iat: number, exp: number } {
         return verify(token, process.env.JWT_SECRET_KEY, {
             ignoreExpiration: false,

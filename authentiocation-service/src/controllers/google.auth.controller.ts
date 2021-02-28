@@ -17,7 +17,9 @@ export class GoogleAuthController {
             const { token_id } = req.headers;
             const userId = await this.service.signIn(token_id as string);
 
+            //generates an access token with the user id.
             const accessToken = this.jwt.signToken({ id: userId }, settings.jwtSettings.accessToken.expiration);
+            //generates a refresh token with the user id.
             const refreshToken = this.jwt.signToken({ id: userId }, settings.jwtSettings.refreshToken.expiration);
 
             res.cookie('refresh_token', refreshToken);

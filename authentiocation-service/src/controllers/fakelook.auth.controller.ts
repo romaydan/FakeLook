@@ -26,8 +26,10 @@ export class FakeLookAuthController {
         try {
             const { email, oldPassword, newPassword, confirmNewPassword } = req.body;
 
+            //validates that the email is in the correct format.
             this.validateEmail(email);
 
+            //trys to reset the user's password.
             const success = await this.service.resetPassword(email, oldPassword, newPassword, confirmNewPassword);
             if (success) {
                 res.json({ statusCode: 200, message: 'Password reset was successfull!' });
@@ -52,10 +54,13 @@ export class FakeLookAuthController {
         try {
             const { email, password } = req.body;
 
+            //validates that the email is in the correct format.
             this.validateEmail(email);
 
             const userId = await this.service.signIn(email, password);
+            //generates an access token with the user id.
             const accessToken = this.jwtService.signToken({ userId: userId }, settings.jwtSettings.accessToken.expiration);
+            //generates a refresh token with the user id.
             const refreshToken = this.jwtService.signToken({ userId: userId }, settings.jwtSettings.refreshToken.expiration);
 
             res.cookie('refresh_token', refreshToken);
@@ -76,9 +81,9 @@ export class FakeLookAuthController {
     async signUp(req: Request, res: Response, next: NextFunction) {
         try {
             const { email, password, confirmPassword } = req.body;
-
+            //validates that the email is in the correct format.
             this.validateEmail(email);
-
+            //trys to register the new user.
             const success = await this.service.signUp(email, password, confirmPassword);
             if (success) {
                 res.json({ status: 200, message: 'Signup successfull!' });

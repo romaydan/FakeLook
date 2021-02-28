@@ -20,7 +20,7 @@ export class RefreshTokenRepository implements IRefreshTokenRepository {
             throw new UserError('Token does not match the JWT schema!');
         }
 
-        const rt = await RefreshToken.build({ token: token }).save();
+        const rt = await RefreshToken.create({ token: token });
         return !isNaN(rt.id);
     }
 

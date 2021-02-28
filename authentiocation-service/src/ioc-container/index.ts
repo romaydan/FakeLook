@@ -15,6 +15,7 @@ import { TYPES } from './types';
 import db from '../db';
 import "reflect-metadata"
 import { EmailValidator, IEmailValidator } from '../services/emailvalidator';
+import { IUserService, UserService } from '../services/user.service';
 
 const container = new Container();
 
@@ -25,6 +26,7 @@ container.bind<IFacebookAuthenticationService>(TYPES.IFacebookAuthenticationServ
 container.bind<IJwtService>(TYPES.IJwtService).to(JwtService).inSingletonScope();
 container.bind<ITokenBlackListService>(TYPES.ITokenBlackListService).to(TokenBlackListService).inSingletonScope();
 container.bind<IEmailValidator>(TYPES.IEmailValidator).to(EmailValidator).inSingletonScope();
+container.bind<IUserService>(TYPES.IUserService).to(UserService).inSingletonScope();
 
 //db
 container.bind<Sequelize>(TYPES.Sequelize).toDynamicValue(() => db).inSingletonScope();

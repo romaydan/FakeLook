@@ -3,7 +3,7 @@ import { IPostRepository } from "../repositories/post.repository";
 import { IImageUploader } from "./image.uploader";
 import { IPost } from "../models/post.model";
 import TYPES from "../ioc-container/types";
-import uuid from 'uuid';
+import * as uuid from 'uuid';
 
 
 export interface IPostService {
@@ -32,9 +32,19 @@ export class PostService implements IPostService {
             throw new ReferenceError('No post proivded!');
         }
 
+        if(!uploadFile) {
+            throw new ReferenceError('No image provided!');
+        }
+
+        if(!accessToken) {
+            throw new ReferenceError('No access token provided!');
+        }
+
         post.id = uuid.v4();
+        //uploads the uploadFile to the static image server and reviece the url.
         post.imageUrl = await this.uploader.uploadImage(post.publisherId, post.id, uploadFile, accessToken);
 
+        //adds the new post to the database. 
         return this.repository.addPost(post);
     }
 
@@ -43,7 +53,9 @@ export class PostService implements IPostService {
             throw new ReferenceError('No post id proivded!');
         }
 
+        //removes the post from the database.
         const post = await this.repository.removePost(postId);
+        //deletes the image from the static image server.
         const success = await this.uploader.deleteImage(post.imageUrl, accessToken);
 
         return post != undefined;

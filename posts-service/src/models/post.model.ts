@@ -19,10 +19,10 @@ export interface IPost {
     };
     textContent: string;
     showTo: ShowOptions;
-    likes?: Like[];
-    comments?: Comment[];
-    userTags?: UserTag[];
-    tags?: Tag[];
+    likes?: ILike[];
+    comments?: IComment[];
+    userTags?: IUserTag[];
+    tags?: ITag[];
     createdAt?: Date;
 }
 
