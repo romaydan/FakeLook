@@ -1,13 +1,5 @@
-import {
-  Table,
-  Column,
-  PrimaryKey,
-  AllowNull,
-  NotEmpty,
-  Model,
-  DataType,
-} from 'sequelize-typescript';
-import IBlockedUser from '../interfaces/IBlockedUser';
+import { Table, Column, PrimaryKey, AllowNull, NotEmpty, Model, DataType } from 'sequelize-typescript';
+import IBlockedUser from '../interfaces/models/blocked-user.interface';
 @Table({
   tableName: 'blockedUsers',
 })

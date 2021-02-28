@@ -1,15 +1,6 @@
-import {
-  Table,
-  Column,
-  PrimaryKey,
-  AllowNull,
-  NotEmpty,
-  Model,
-  DataType,
-  BelongsToMany,
-} from 'sequelize-typescript';
-import IFriend from '../interfaces/IFriend';
-import IGroup from '../interfaces/IGroup';
+import { Table, Column, PrimaryKey, AllowNull, NotEmpty, Model, DataType, BelongsToMany } from 'sequelize-typescript';
+import IFriend from '../interfaces/models/friend.interface';
+import IGroup from '../interfaces/models/group.interface';
 import GroupFriends from './group-friends.model';
 import Group from './group.model';
 
@@ -29,7 +20,4 @@ export default class Friend extends Model implements IFriend {
   @AllowNull(false)
   @Column(DataType.UUIDV4)
   public friendId: string;
-
-  @BelongsToMany(() => Group, () => GroupFriends)
-  groups: IGroup[];
 }

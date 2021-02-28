@@ -1,5 +1,5 @@
 import { Sequelize } from 'sequelize-typescript';
-import BlockedUser from '../models/friend-block.model';
+import BlockedUser from '../models/block-user.model';
 import FriendRequest from '../models/friend-request.model';
 import Friend from '../models/friend.model';
 import GroupFriends from '../models/group-friends.model';

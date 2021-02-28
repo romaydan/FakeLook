@@ -1,5 +1,5 @@
 export default interface IFriendRequest {
   id?: string;
-  fromId: string;
+  senderId: string;
   recipientId: string;
 }
