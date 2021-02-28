@@ -1,15 +1,4 @@
-import {
-  Table,
-  Column,
-  PrimaryKey,
-  AllowNull,
-  NotEmpty,
-  Model,
-  DataType,
-  Unique,
-  ForeignKey,
-  HasOne,
-} from 'sequelize-typescript';
+import { Table, Column, PrimaryKey, AllowNull, NotEmpty, Model, DataType, Unique, ForeignKey, HasOne } from 'sequelize-typescript';
 import IAddress from '../interfaces/IAddress';
 import Address from './address.model';
 
@@ -32,12 +21,7 @@ export default class User extends Model implements IUser {
   @AllowNull(false)
   @NotEmpty
   @Column(DataType.STRING)
-  public firstName: string;
-
-  @AllowNull(false)
-  @NotEmpty
-  @Column(DataType.STRING)
-  public lastName: string;
+  public name: string;
 
   @AllowNull(false)
   @NotEmpty

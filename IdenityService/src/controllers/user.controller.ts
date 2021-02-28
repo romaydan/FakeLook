@@ -1,54 +1,66 @@
+import { TYPES } from './../ioc-container/types';
 import IAddress from './../interfaces/IAddress';
 import IUser from './../interfaces/IUser';
 import * as express from 'express';
 import { Request, Response } from 'express';
 import { userInfo } from 'os';
 import IControllerBase from '../interfaces/Icontroller';
-import UserRepo from '../repositories/userRepostitory';
-class HomeController implements IControllerBase {
-  public path = '/api/users';
-  public router = express.Router();
-  private userRepo: UserRepo;
-  constructor() {
-    this.userRepo = new UserRepo();
-    this.initRoutes();
-  }
+import UserRepo from '../repositories/user.repostitory';
+import { inject, injectable } from 'inversify';
+import IUserService from '../interfaces/user-service.interface';
 
-  public initRoutes() {
-    this.router.get('/', this.getUsers);
-    this.router.post('/', this.addUser);
-    this.router.get('/:id', this.getUser);
-    this.router.delete('/:id', this.deleteUser);
-    this.router.put('/:id', this.updateUser);
-  }
+@injectable()
+class UsersController {
+  constructor(@inject(TYPES.IUserService) private userServ: IUserService) {}
 
-  private getUsers = async (req: Request, res: Response) => {
-    const users = await this.userRepo.getUsers();
-    res.status(200).send(users);
-  };
-  private addUser = async (req: Request, res: Response) => {
-    const { user, address } = req.body;
-    const newUser = await this.userRepo.addUser(user, address);
-    res.send(newUser);
-  };
-  private getUser = async (req: Request, res: Response) => {
+  getUsers = async (req: Request, res: Response) => {
     try {
-      const result = await this.userRepo.getUserById(req.params.id);
-      res.send(result);
+      const { userIds } = req.body;
+      const users = await this.userServ.getUsersById(userIds);
+      res.status(200).send(users);
     } catch (error) {
-      res.status(500).send(error);
+      res.status(500).send(error.message);
     }
   };
-  private deleteUser = async (req: Request, res: Response) => {
-    const result = await this.userRepo.removeUserById(req.params.id);
-    result ? res.status(200).send(true) : res.status(404).send(false);
+
+  addUser = async (req: Request, res: Response) => {
+    try {
+      const { user, address } = req.body;
+      const newUser = await this.userServ.addUser(user, address);
+      res.send(newUser);
+    } catch (error) {
+      res.status(500).send(error.message);
+    }
   };
-  private updateUser = async (req: Request, res: Response) => {
-    const { user, address } = req.body;
-    const result = await this.userRepo.updateUser(req.params.id, user, address);
-    console.log('result', result);
-    result ? res.status(200).send(true) : res.status(404).send(false);
+
+  getUser = async (req: Request, res: Response) => {
+    try {
+      const result = await this.userServ.getUserById(req.params.id);
+      res.send(result);
+    } catch (error) {
+      res.status(500).send(error.message);
+    }
+  };
+
+  deleteUser = async (req: Request, res: Response) => {
+    try {
+      const result = await this.userServ.removeUserById(req.params.id);
+      result ? res.send('delete complete') : res.status(404).send('delete failed');
+    } catch (error) {
+      res.status(500).send(error.message);
+    }
+  };
+
+  updateUser = async (req: Request, res: Response) => {
+    try {
+      const { user, address } = req.body;
+      const result = await this.userServ.updateUser(req.params.id, user, address);
+      console.log('result', result);
+      result ? res.send('update complete') : res.status(404).send('update failed');
+    } catch (error) {
+      res.status(500).send(error.message);
+    }
   };
 }
 
-export default HomeController;
+export default UsersController;

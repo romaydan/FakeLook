@@ -1,22 +1,24 @@
-import Address from './../models/address.model';
-import IAddress from './../interfaces/IAddress';
-import IUser from '../interfaces/IUser';
-import IUserRepository from '../interfaces/IUserRepository';
-import User from '../models/user.model';
+import { injectable } from 'inversify';
+import { Op } from 'sequelize';
 import * as uuid from 'uuid';
+
+import Address from '../models/address.model';
+import IAddress from '../interfaces/IAddress';
+import IUser from '../interfaces/IUser';
+import IUserRepository from '../interfaces/user-repository.interface';
+import User from '../models/user.model';
+
+@injectable()
 export default class UserRepository implements IUserRepository {
   constructor() {}
-  getUsers(): Promise<IUser[]> {
-    return User.findAll({ include: [Address] });
+  getUsersById(userIds: string[]): Promise<IUser[]> {
+    return User.findAll({ where: { Id: userIds }, include: [Address] });
   }
 
   async addUser(user: IUser, address: IAddress): Promise<IUser> {
     let newUser;
     try {
-      newUser = await User.create(
-        { id: uuid.v4(), ...user, address: { id: uuid.v4(), ...address } },
-        { include: Address }
-      );
+      newUser = await User.create({ id: uuid.v4(), ...user, address: { id: uuid.v4(), ...address } }, { include: Address });
     } catch (error) {
       console.log('error', error);
     }
@@ -44,11 +46,7 @@ export default class UserRepository implements IUserRepository {
       throw new Error('user was not deleted');
     }
   }
-  async updateUser(
-    id: string,
-    user: IUser,
-    address: IAddress
-  ): Promise<boolean> {
+  async updateUser(id: string, user: IUser, address: IAddress): Promise<boolean> {
     console.log('here');
 
     // const { id, firstName, lastName, birthDate } = user;
