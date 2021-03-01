@@ -19,13 +19,15 @@ class App {
 
   private routes(routers: { forEach: (arg0: (controller: any) => void) => void }) {
     routers.forEach((router) => {
+      console.log('router', router);
+
       this.app.use(router.path, router.router);
     });
   }
 
   public listen() {
     this.app.listen(this.port, async () => {
-      await sequelize.sync({ force: true });
+      await sequelize.sync({ force: false });
       console.log(`App listening on the http://localhost:${this.port}`);
     });
   }

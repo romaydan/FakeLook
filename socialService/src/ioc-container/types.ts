@@ -1,7 +1,7 @@
 export const TYPES = {
   IFriendRequestRepository: Symbol('IFriendRequestRepository'),
   IFriendRequestService: Symbol('IFriendRequestService'),
-  FriendRequestController: Symbol('FriendRequestController'),
+  FriendsController: Symbol('FriendsController'),
 
   IFriendsRepository: Symbol('IFriendsRepository'),
   IFriendsService: Symbol('IFriendsService'),

@@ -1,15 +1,10 @@
-import { inject } from 'inversify';
-import IFriendRequest from '../interfaces/models/friend-request.interface';
-import IFriendRequestRepository from '../interfaces/repositories/friend-request-repository.interface';
-import IFriendsRepository from '../interfaces/repositories/friends-repository.interaface';
-import IFriendRequestService from '../interfaces/services/friend-request-service.interface';
+import { inject, injectable } from 'inversify';
 import { TYPES } from '../ioc-container/types';
-import friendRequestModel from '../models/friend-request.model';
-import * as uuid from 'uuid';
+
 import IBlockUserService from '../interfaces/services/user-block-service.interface';
 import IBlockedUser from '../interfaces/models/blocked-user.interface';
 import IBlockUserRepository from '../interfaces/repositories/user-block-repository.interface';
-
+@injectable()
 export default class BlockUserService implements IBlockUserService {
   constructor(
     @inject(TYPES.IBlockUserRepository)

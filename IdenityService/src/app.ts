@@ -5,12 +5,12 @@ class App {
   public app: Application;
   public port: number;
 
-  constructor(appInit: { port: number; middleWares: any; routes: any }) {
+  constructor(appInit: { port: number; middleWares: any; routers: any }) {
     this.app = express();
     this.port = appInit.port;
 
     this.middlewares(appInit.middleWares);
-    this.routes(appInit.routes);
+    this.routes(appInit.routers);
   }
   private middlewares(middleWares: { forEach: (arg0: (middleWare: any) => void) => void }) {
     middleWares.forEach((middleWare) => {
@@ -18,15 +18,16 @@ class App {
     });
   }
 
-  private routes(routes: { forEach: (arg0: (router: any) => void) => void }) {
-    routes.forEach((router) => {
-      this.app.use('/api/users', router);
+  private routes(routers: { forEach: (arg0: (router: any) => void) => void }) {
+    routers.forEach((router) => {
+      console.log('router', router);
+      this.app.use(router.path, router.router);
     });
   }
 
   public listen() {
     this.app.listen(this.port, async () => {
-      await sequelize.sync({ force: true });
+      await sequelize.sync({ force: false });
       console.log(`App listening on the http://localhost:${this.port}`);
     });
   }

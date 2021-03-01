@@ -1,9 +1,9 @@
-import { TYPES } from './../ioc-container/types';
 import { inject, injectable } from 'inversify';
+import { TYPES } from './../ioc-container/types';
+
 import IGroupsService from '../interfaces/services/groups-service.interface';
 import IGroupsRepository from '../interfaces/repositories/group-repository.interafce';
 import IGroup from '../interfaces/models/group.interface';
-import { checkServerIdentity } from 'tls';
 @injectable()
 export default class GroupsService implements IGroupsService {
   constructor(@inject(TYPES.IGroupsRepository) private groupsRepo: IGroupsRepository) {}

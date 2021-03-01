@@ -1,5 +1,6 @@
 import { inject, injectable } from 'inversify';
 import { Request, Response } from 'express';
+
 import { TYPES } from '../ioc-container/types';
 import IGroupsService from '../interfaces/services/groups-service.interface';
 
@@ -14,16 +15,6 @@ export default class GroupsController {
     this.addFriendToGroup = this.addFriendToGroup.bind(this);
     this.remvoeFriendFromGroup = this.remvoeFriendFromGroup.bind(this);
   }
-
-  // initRoutes() {
-  //   this.router.get('/:groupId', this.getGroup);
-  //   this.router.get('/user/:id', this.getUsersGroup);
-  //   this.router.post('/', this.addGroup);
-  //   this.router.delete('/:groupId', this.deleteGroup);
-  //   this.router.put('/name', this.changeGroupName);
-  //   this.router.put('/addFriend', this.addFriendToGroup);
-  //   this.router.put('/removeFriend', this.remvoeFriendFromGroup);
-  // }
 
   async addGroup(req: Request, res: Response) {
     const { userId, name } = req.body;

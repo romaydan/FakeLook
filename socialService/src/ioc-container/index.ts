@@ -23,16 +23,16 @@ import FriendsController from '../controllers/friends.controller';
 const container = new Container();
 //controllers
 container.bind<GroupsController>(TYPES.GroupsController).to(GroupsController).inTransientScope();
-container.bind<FriendsController>(TYPES.FriendRequestController).to(FriendsController).inTransientScope();
+container.bind<FriendsController>(TYPES.FriendsController).to(FriendsController).inTransientScope();
 
 //services
 container.bind<IFriendRequestService>(TYPES.IFriendRequestService).to(FriendRequestService).inSingletonScope();
-container.bind<IFriendsService>(TYPES.IFriendRequestRepository).to(FriendsService).inSingletonScope();
+container.bind<IFriendsService>(TYPES.IFriendsService).to(FriendsService).inSingletonScope();
 container.bind<IBlockUserService>(TYPES.IBlockUserService).to(BlockUserService).inSingletonScope();
 container.bind<IGroupsService>(TYPES.IGroupsService).to(GroupsService).inSingletonScope();
 //repositories
 container.bind<IFriendRequestRepository>(TYPES.IFriendRequestRepository).to(FriendRequestRepositorySequelize).inSingletonScope();
-container.bind<IFriendsRepository>(TYPES.IFriendRequestRepository).to(FriendsRepositorySequelize).inSingletonScope();
+container.bind<IFriendsRepository>(TYPES.IFriendsRepository).to(FriendsRepositorySequelize).inSingletonScope();
 container.bind<IBlockUserRepository>(TYPES.IBlockUserRepository).to(BlockUserRepositorySequelize).inSingletonScope();
 container.bind<IGroupsRepository>(TYPES.IGroupsRepository).to(GroupsRepositorySequelize).inSingletonScope();
 
