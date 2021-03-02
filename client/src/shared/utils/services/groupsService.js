@@ -1,8 +1,26 @@
 import axios from "axios";
 const url = process.env.REACT_APP_SOCIAL_API_URL
 export const getUsersGroup = (userId) => {
-    console.log('url', url)
-    return mockGroups;
+    // return axios.get(url + userId);
+    return mockGroups
+}
+export const removeGroup = (groupId, userId) => {
+    // return axios.delete(url, { data: { groupId, userId } })
+    return new Promise((resolve, reject) => {
+        resolve(mockGroups.filter(g =>
+            g.id !== groupId
+        ))
+    })
+}
+export const addNewGroup = (groupId, userId) => {
+    return axios.post(url, { data: { groupId, userId } })
+
+}
+export const addFriendToGroup = (groupId, userId) => {
+    return axios.put(url + '/addfriend', { data: { groupId, userId } })
+}
+export const removeFriendToGroup = (groupId, userId) => {
+    return axios.post(url, { data: { groupId, userId } })
 }
 
 
