@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+      "target": "ES6",
+      "lib": [ "ES6" ],
+      "allowJs": true,
+      "outDir": "./dist",
+      "noImplicitAny": false,
+      
+      "esModuleInterop": true,
+      "moduleResolution": "node",
+      "experimentalDecorators": true,
+      "emitDecoratorMetadata": true
+    }
+  }
