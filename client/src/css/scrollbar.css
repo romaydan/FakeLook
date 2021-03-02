@@ -1,0 +1,24 @@
+.scrollbar-a::-webkit-scrollbar {
+    width: 10px;
+}
+
+.scrollbar-a::-webkit-scrollbar-track {
+    border: 7px solid #eaeaee;
+}
+
+.scrollbar-right-curve::-webkit-scrollbar-track {
+    border-radius: 0px 10px 10px 0px;
+}
+
+.scrollbar-left-curve::-webkit-scrollbar-track {
+    border-radius: 10px 0px 0px 10px;
+}
+
+.scrollbar-curve::-webkit-scrollbar-track {
+    border-radius: 10px;
+}
+
+.scrollbar-a::-webkit-scrollbar-thumb {
+    background-color: gray;
+    border-radius: 10px;
+}
