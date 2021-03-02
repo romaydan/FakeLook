@@ -1,38 +1,55 @@
 import React, { useState, useEffect } from 'react';
-import Button from '../shared/Button';
-import Card from '../shared/Card';
-import { getUsersGroup } from '../shared/utils/services/groupsService';
+import Section from '../components/Section';
+import Button from '../shared/components/Button';
+import Modal from '../shared/components/Modal';
+import { getUsersGroup, removeGroup } from '../shared/utils/services/groupsService';
 
-const GroupsFriendsPage = () => {
+const GroupsFriendsPage = (props) => {
+  // const { userId } = props;
+  const userId = '87d5efa2-46ea-4604-86a6-b390f459ba74';
   const [friends, setFriends] = useState([]);
   const [groups, setGroups] = useState([]);
+  const [showModal, setShowModal] = useState(false);
   useEffect(() => {
-    //   get users friend and groups axios
     setFriends(mockFriends);
-    setGroups(getUsersGroup(1));
+    setGroups(getUsersGroup(userId));
   }, []);
 
-  const blockFriend = (friendId) => {};
-  const removeGroup = (groupId) => {};
+  const blockFriend = async (friendId) => {};
+  const removeGroupHandler = async (groupId) => {
+    const res = await removeGroup(groupId, props.userId);
+    setGroups(res);
+  };
 
+  const groupsModalHandler = () => {
+    setShowModal(true);
+  };
+
+  const closeModalHandler = () => {
+    setShowModal(false);
+  };
   return (
     <div className=' grid grid-cols-2'>
       <div>
-        <h1 className='text-center text-xl font-bold'>Groups</h1>
-        {groups.map((group) => (
-          <Card title={group.name} key={group.id}>
-            <Button click={() => removeGroup(group.id)}>X</Button>
-          </Card>
-        ))}
+        <Section title='groups' list={groups} itemBtnClick={removeGroupHandler} createBtnClick={groupsModalHandler}></Section>
       </div>
       <div>
-        <h1 className='text-center text-xl font-bold'>Friends</h1>
-        {friends.map((friend) => (
-          <Card title={friend.name} key={friend.id}>
-            <Button click={() => blockFriend(friend.id)}>Block</Button>
-          </Card>
-        ))}
+        <Section title='friends' list={friends} itemBtnClick={blockFriend}></Section>
       </div>
+      {showModal ? (
+        <Modal
+          closeModal={closeModalHandler}
+          footer={
+            <>
+              {' '}
+              <Button type='button' style={{ transition: 'all .15s ease' }} onClick={closeModalHandler}>
+                Close
+              </Button>
+              <Button color='green-500'>Save Changes</Button>
+            </>
+          }
+        ></Modal>
+      ) : null}
     </div>
   );
 };
