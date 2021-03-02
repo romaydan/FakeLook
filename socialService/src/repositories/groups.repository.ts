@@ -9,6 +9,10 @@ import Group from '../models/group.model';
 
 @injectable()
 export default class GroupsRepositorySequelize implements IGroupsRepository {
+  async checkIfUserIsCreator(groupId: string, userId: string): Promise<boolean> {
+    const groupDb = await Group.findOne({ where: { id: groupId } });
+    return groupDb.creatorId === userId;
+  }
   async checkIfNameValid(name: string): Promise<boolean> {
     const res = await Group.findAll({ where: { name } });
     return res.length === 0;

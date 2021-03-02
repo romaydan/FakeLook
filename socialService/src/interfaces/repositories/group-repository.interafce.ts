@@ -9,4 +9,5 @@ export default interface IGroupsRepository {
   removeFriendFromGroup(groupId: string, friendId: string): Promise<boolean>;
   updateGroup(groupId: string, group: IGroup): Promise<IGroup>;
   checkIfNameValid(name: string): Promise<boolean>;
+  checkIfUserIsCreator(groupId: string, userId: string): Promise<boolean>;
 }
