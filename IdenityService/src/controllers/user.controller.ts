@@ -27,7 +27,7 @@ class UsersController {
     try {
       const { user, address } = req.body;
       const newUser = await this.userServ.addUser(user, address);
-      res.send(newUser);
+      res.json(newUser);
     } catch (error) {
       res.status(500).send(error.message);
     }
@@ -35,8 +35,8 @@ class UsersController {
 
   getUser = async (req: Request, res: Response) => {
     try {
-      const result = await this.userServ.getUserById(req.params.id);
-      res.send(result);
+      const result = await this.userServ.getUserByAuthId(req['userId']);
+      res.json(result);
     } catch (error) {
       res.status(500).send(error.message);
     }

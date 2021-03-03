@@ -5,7 +5,7 @@ import { FaUserTag } from 'react-icons/fa';
 const PostView = props => {
     const { post } = props;
     return (
-        <div className='flex flex-col h-full w-5/6 justify-center'>
+        <div className='flex flex-col max-h-max w-5/6 justify-center'>
             <span className='flex justify-center p-2
              border-4 border-gray-100'>
                 <img src={post.imageUrl} className='m-0 object-contain max-h-max' />
