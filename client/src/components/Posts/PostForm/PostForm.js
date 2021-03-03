@@ -1,9 +1,9 @@
 import { ErrorMessage, Field, FieldArray, Formik } from "formik";
 import { createRef, useMemo, useRef, useState } from "react";
 import * as yup from 'yup';
-import SelectionDropdown from "../Dropdowns/SelectionDropdown";
+import SelectionDropdown from "../../Dropdowns/SelectionDropdown";
 import Modal from 'react-modal';
-import Dropdown from '../Dropdowns/Dropdown';
+import Dropdown from '../../Dropdowns/Dropdown';
 import { BsFillPlusCircleFill } from 'react-icons/bs';
 
 const BUTTON_CLASS = `bg-gradient-to-t from-blue-500 

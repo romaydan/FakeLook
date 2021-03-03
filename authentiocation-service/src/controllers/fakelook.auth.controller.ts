@@ -64,7 +64,7 @@ export class FakeLookAuthController {
             const refreshToken = this.jwtService.signToken({ userId: userId }, settings.jwtSettings.refreshToken.expiration);
 
             res.cookie('refresh_token', refreshToken);
-            res.json({ status: 200, message: 'Signup successfull!', accessToken: accessToken });
+            res.json({ statusCode: 200, message: 'Signup successfull!', accessToken: accessToken });
 
         } catch (error) {
             switch (true) {
@@ -84,13 +84,13 @@ export class FakeLookAuthController {
             //validates that the email is in the correct format.
             this.validateEmail(email);
             //trys to register the new user.
-            const success = await this.service.signUp(email, password, confirmPassword);
-            if (success) {
-                res.json({ status: 200, message: 'Signup successfull!' });
+            const userId = await this.service.signUp(email, password, confirmPassword);
+            if (userId) {
+                res.json({ statusCode: 201, message: 'Signup successfull!', userId  });
                 return;
             }
 
-            res.status(500).json({ status: 500, error: 'Unable to proccess request at this time please try again later!' });
+            res.status(500).json({ statusCode: 500, error: 'Unable to proccess request at this time please try again later!' });
 
         } catch (error) {
             switch (true) {

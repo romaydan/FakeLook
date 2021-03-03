@@ -7,19 +7,36 @@ import pswhasher from 'password-hash';
 
 export interface IFacebookAuthenticationService {
     signIn(token: string, facebookId: string): Promise<string>
+    signUp(token: string, facebookId: string): Promise<string>
 }
 
 @injectable()
 export class FacebookAuthenticationService implements IFacebookAuthenticationService {
     constructor(@inject(TYPES.IUserRepository) private repository: IUserRepository) {
         this.signIn = this.signIn.bind(this);
+        this.signUp = this.signUp.bind(this);
         this.addFacebookUser = this.addFacebookUser.bind(this);
+        this.getFacebookId = this.getFacebookId.bind(this);
     }
 
     //Signs in a facebook user.
     //If it is the first time the user will be registered and then signed in.
     //The return values is the user's id.
     async signIn(token: string, facebookId: string): Promise<string> {
+        const facebook_id = await this.getFacebookId(token, facebookId);
+
+        const user = await this.repository.getByUserIdentifier(facebook_id);
+        if (user) return user.id;
+
+        throw new UserError('User does\'t exist!');
+    }
+
+    public async signUp(token: string, facebookId: string) {
+        const facebook_id = await this.getFacebookId(token, facebookId);
+        return await this.addFacebookUser(facebook_id);
+    }
+
+    private async getFacebookId(token: string, facebookId: string) {
         if (!token || !facebookId)
             throw new UserError('access token or user id is empty!');
 
@@ -29,10 +46,7 @@ export class FacebookAuthenticationService implements IFacebookAuthenticationSer
 
         const { id: facebook_id } = resposnse.data;
 
-        const user = await this.repository.getByUserIdentifier(facebook_id);
-        if (user) return user.id;
-
-        return await this.addFacebookUser(facebook_id);
+        return facebook_id;
     }
 
     //Adds a new facebook user to the database.

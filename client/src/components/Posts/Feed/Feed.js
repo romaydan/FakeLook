@@ -1,5 +1,5 @@
-import Container from "../Posts/Container/Container";
-import { createFakeFriends, createFakePosts } from '../../fake-data/fake.data';
+import Container from "../Container/Container";
+import { createFakeFriends, createFakePosts } from '../../../fake-data/fake.data';
 import { useState } from 'react';
 import { AiFillLike } from 'react-icons/ai/index';
 import PostView from '../PostView/PostVIew';

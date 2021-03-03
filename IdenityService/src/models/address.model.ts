@@ -42,7 +42,6 @@ export default class Address extends Model implements IAddress {
   public houseNo: string;
 
   @AllowNull(true)
-  @NotEmpty
   @Column(DataType.STRING)
   public aptNo: string;
 

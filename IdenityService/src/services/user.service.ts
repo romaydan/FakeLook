@@ -15,8 +15,8 @@ export default class UserService implements IUserService {
   getUsersById(ids: string[]): Promise<IUser[]> {
     return this.usersRepo.getUsersById(ids);
   }
-  getUserById(id: string): Promise<IUser> {
-    return this.usersRepo.getUserById(id);
+  getUserByAuthId(id: string): Promise<IUser> {
+    return this.usersRepo.getUserByAuthId(id);
   }
   removeUserById(id: string): Promise<boolean> {
     return this.usersRepo.removeUserById(id);
