@@ -5,6 +5,7 @@ import './App.css';
 import Modal from 'react-modal';
 import { BrowserRouter } from 'react-router-dom';
 import AuthenticationRouter from './components/Routers/AuthenticationRouter';
+import PostRouter from './components/Routers/PostRouter';
 
 Modal.setAppElement('#root');
 
@@ -13,6 +14,7 @@ function App() {
     <div className='h-full'>
       <BrowserRouter>
         <AuthenticationRouter />
+        <PostRouter />
       </BrowserRouter>
     </div>
   );

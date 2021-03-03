@@ -45,7 +45,7 @@ const Container = props => {
 
 
     return (
-        <div className='w-full h-full m-0 flex'>
+        <div className='w-full h-full m-0 flex' onClick={(e) => e.preventDefault()}>
             <motion.div
                 className={'fixed h-full z-10 flex flex-col m-0 bg-gradient-to-t from-blue-500 to-blue-400'}
                 animate={filterWidthAnimation}
@@ -62,7 +62,7 @@ const Container = props => {
                 }
             </div>
             <BsFillPlusCircleFill className='fixed w-100px h-100px right-10 bottom-10 fill-like-blue hover:scale-110 transform transition cursor-pointer'
-                onClick={onAddPostClicked} title='Add post'/>
+                onClick={onAddPostClicked} title='Add post' />
         </div>
     );
 }
