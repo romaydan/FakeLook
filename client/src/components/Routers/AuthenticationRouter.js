@@ -1,6 +1,6 @@
 import { Switch, Route } from 'react-router-dom';
-import Login from '../components/Authentication/Login/Login';
-import Register from '../components/Authentication/Register/Register';
+import Login from '../Authentication/Login/Login';
+import Register from '../Authentication/Register/Register';
 
 const AuthenticationRouter = props => {
 
