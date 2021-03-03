@@ -10,6 +10,7 @@ export class GoogleAuthController {
     constructor(@inject(TYPES.IGoogleAuthenticationService) private service: IGoogleAuthenticationService,
         @inject(TYPES.IJwtService) private jwt: IJwtService) {
         this.signIn = this.signIn.bind(this);
+        this.signUp = this.signUp.bind(this);
     }
 
     async signIn(req: Request, res: Response, next: NextFunction) {
@@ -24,6 +25,25 @@ export class GoogleAuthController {
 
             res.cookie('refresh_token', refreshToken);
             res.json({ status: 200, message: 'Sign in successfull!', accessToken: accessToken });
+
+        } catch (error) {
+            if (error instanceof Error)
+                res.status(400).json({ statusCode: 400, error: error.message });
+            else {
+                res.status(400).json({ statusCode: 400, error: error });
+            }
+        }
+    }
+
+    async signUp(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { token_id } = req.headers;
+            const userId = await this.service.signUp(token_id as string);
+
+            if (userId) {
+                res.json({ statusCode: 201, message: 'Signup successfull!', userId });
+                return;
+            }
 
         } catch (error) {
             if (error instanceof Error)

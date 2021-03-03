@@ -3,8 +3,8 @@ import { useMemo } from 'react';
 import * as yup from 'yup';
 import { GoogleLogin } from 'react-google-login';
 import FacebookLogin from 'react-facebook-login';
-import axios from 'axios';
-import { ReactComponent as FacebookLogo } from '../../../Assets/facebook-app-logo.svg'
+import { facebookLogin, fakelookLogin, googleLogin } from '../../../services/Authentication/login.service';
+import { NavLink } from 'react-router-dom';
 
 const Login = props => {
 
@@ -14,24 +14,28 @@ const Login = props => {
     }), []);
 
     const onFacebookResponse = async response => {
-        const { data } = await axios.get(`http://localhost:5000/auth/facebook/signin`, {
-            headers: {
-                facebook_token: response.accessToken,
-                facebook_id: response.id
-            }
-        });
-
-        console.log(data);
+        console.log(response);
+        const { id: facebookId, accessToken } = response;
+        facebookLogin(accessToken, facebookId)
+            .then(res => {
+                console.log(res);
+            })
+            .catch(console.error);
     }
 
-    const onGoogleResponse = async response => {
-        const { data } = await axios.get('http://localhost:5000/auth/google/signin', {
-            headers: {
-                token_id: response.tokenId
-            }
-        });
+    const onGoogleResponse = response => {
+        const { tokenId } = response;
+        googleLogin(tokenId)
+            .then(res => {
+                console.log(res);
+            })
+            .catch(console.error);
+    }
 
-        console.log(data);
+    const login = (email, password) => {
+        fakelookLogin(email, password)
+            .then(res => console.log('res', res))
+            .catch(err => console.error('error', err))
     }
 
     return (
@@ -44,7 +48,7 @@ const Login = props => {
                     validationSchema={validationSchema}
                     initialValues={{ password: '', email: '' }}
                     onSubmit={(values) => {
-                        console.log(values);
+                        login(values.email, values.password)
                     }}>
                     {
                         ({ values, errors, touched, dirty, submitForm }) => (
@@ -55,8 +59,8 @@ const Login = props => {
                                 </span>
                                     <Field type='email' name='email' className={'w-full outline-none'} />
                                 </label>
-                                <ErrorMessage name='email' 
-                                render={msg => <div className='text-red-500'>{msg}</div>}/>
+                                <ErrorMessage name='email'
+                                    render={msg => <div className='text-red-500'>{msg}</div>} />
 
                                 <label className={'flex flex-row mt-7 w-full border-2 p-1.5 border-gray-300 ' + (errors.password && touched.password ? 'border-red-500' : null)}>
                                     <span className='w-24'>
@@ -64,8 +68,8 @@ const Login = props => {
                                 </span>
                                     <Field type='password' name='password' className={'w-full outline-none'} />
                                 </label>
-                                <ErrorMessage name='password' 
-                                render={msg => <div className='text-red-500'>{msg}</div>}/>
+                                <ErrorMessage name='password'
+                                    render={msg => <div className='text-red-500'>{msg}</div>} />
 
                                 <button className=' bg-gradient-to-t from-blue-500 
                             to-blue-400 text-white border-blue-600 border-0.5 rounded-md w-32 p-1 
@@ -74,8 +78,10 @@ const Login = props => {
                             mt-7' type='submit' onClick={submitForm}>Log in</button>
 
                                 <span className='flex flex-row justify-around text-xs mt-8'>
-                                    <a href='#' className='text-blue-600 font-bold underline'>Forgot password?</a>
-                                    <a href='#' className='text-blue-600 font-bold underline'>Don't have an account?</a>
+                                    <NavLink to='/'
+                                        className='text-blue-600 font-bold underline'>Forgot password?</NavLink>
+                                    <NavLink to='/register'
+                                        className='text-blue-600 font-bold underline'>Don't have an account?</NavLink>
                                 </span>
                             </>
                         )
@@ -90,6 +96,8 @@ const Login = props => {
                     <FacebookLogin
                         cssClass='w-44 p-1.5 bg-facebook text-white 
                     rounded-md self-center shadow-md h-10 self-center'
+                        appId={'453933415731261'}
+                        autoLoad={false}
                         fields={'name,email,picture'}
                         callback={onFacebookResponse} />
                 </div>
@@ -97,7 +105,5 @@ const Login = props => {
         </div>
     );
 }
-
-// 4c69ba
 
 export default Login;

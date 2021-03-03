@@ -10,6 +10,7 @@ export class FacebookAuthController {
     constructor(@inject(TYPES.IFacebookAuthenticationService) private service: IFacebookAuthenticationService,
         @inject(TYPES.IJwtService) private jwt: IJwtService) {
         this.signIn = this.signIn.bind(this);
+        this.signUp = this.signUp.bind(this);
     }
 
     async signIn(req: Request, res: Response, next: NextFunction) {
@@ -31,6 +32,23 @@ export class FacebookAuthController {
             else {
                 res.status(400).json({ statusCode: 400, error: error });
             }
+        }
+    }
+
+    async signUp(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { facebook_token, facebook_id } = req.headers;
+
+            const userId = await this.service.signUp(facebook_token as string, facebook_id as string);
+            
+            res.json({ statusCode: 201, message: 'Signup successfull!', userId  });
+
+        } catch (error) {
+            if (error instanceof Error)
+            res.status(400).json({ statusCode: 400, error: error.message });
+        else {
+            res.status(400).json({ statusCode: 400, error: error });
+        }
         }
     }
 }

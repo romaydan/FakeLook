@@ -24,9 +24,9 @@ export default class UserRepository implements IUserRepository {
     }
     return newUser;
   }
-  async getUserById(id: string): Promise<IUser> {
+  async getUserByAuthId(id: string): Promise<IUser> {
     const userFromDb = await User.findOne({
-      where: { id },
+      where: { authId: id },
       include: [Address],
     });
     if (userFromDb === null) {

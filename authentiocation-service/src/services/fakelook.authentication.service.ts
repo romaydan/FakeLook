@@ -7,7 +7,7 @@ import UserError from '../errors/user.error';
 
 export interface IFakeLookAuthenticationService {
     signIn(email: string, password: string): Promise<string>,
-    signUp(email: string, password: string, confirmPassword: string): Promise<boolean>
+    signUp(email: string, password: string, confirmPassword: string): Promise<string>
     resetPassword(email: string, oldPassword: string, newPassword: string, cofrimNewPassowrd: string): Promise<boolean>
 }
 
@@ -65,7 +65,7 @@ export class FakeLookAuthenticationService implements IFakeLookAuthenticationSer
 
     }
 
-    async signUp(email: string, password: string, confirmPassword: string): Promise<boolean> {
+    async signUp(email: string, password: string, confirmPassword: string): Promise<string> {
         if (password !== confirmPassword)
             throw new UserError('Passwords do not match! please try again!');
 
@@ -73,6 +73,6 @@ export class FakeLookAuthenticationService implements IFakeLookAuthenticationSer
         const hashedPassword = generate(password);
         //adds the new user to the database.
         const newUser = await this.repository.addUser({ identifier: email, password: hashedPassword, isOAuthUser: false });
-        return newUser ? true : false;
+        return newUser.id;
     }
 }
