@@ -13,11 +13,11 @@ import IUserService from '../interfaces/user-service.interface';
 class UsersController {
   constructor(@inject(TYPES.IUserService) private userServ: IUserService) {}
 
-  getUsers = async (req: Request, res: Response) => {
+  getUsersByIds = async (req: Request, res: Response) => {
     try {
-      const { userIds } = req.body;
+      const { userIds } = req.body.data;
       const users = await this.userServ.getUsersById(userIds);
-      res.status(200).send(users);
+      res.send(users);
     } catch (error) {
       res.status(500).send(error.message);
     }
@@ -25,7 +25,7 @@ class UsersController {
 
   addUser = async (req: Request, res: Response) => {
     try {
-      const { user, address } = req.body;
+      const { user, address } = req.body.data;
       const newUser = await this.userServ.addUser(user, address);
       res.json(newUser);
     } catch (error) {
@@ -53,10 +53,20 @@ class UsersController {
 
   updateUser = async (req: Request, res: Response) => {
     try {
-      const { user, address } = req.body;
+      const { user, address } = req.body.data;
       const result = await this.userServ.updateUser(req.params.id, user, address);
       console.log('result', result);
       result ? res.send('update complete') : res.status(404).send('update failed');
+    } catch (error) {
+      res.status(500).send(error.message);
+    }
+  };
+
+  getUsersByName = async (req: Request, res: Response) => {
+    try {
+      const { name } = req.params;
+      const result = await this.userServ.getUsersByName(name);
+      res.send(result);
     } catch (error) {
       res.status(500).send(error.message);
     }

@@ -1,10 +1,16 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
+import { addNewGroup } from '../../services/Social/groupsService';
 
-const NewGroup = () => {
+const NewGroup = ({ userId }) => {
   const { register, handleSubmit } = useForm();
-  const onSubmit = (data) => {
-    console.log();
+  const onSubmit = async (data) => {
+    try {
+      console.log('data :>> ', data);
+      await addNewGroup(userId, data.name);
+    } catch (error) {
+      console.log('error :>> ', error);
+    }
   };
   return (
     <div>

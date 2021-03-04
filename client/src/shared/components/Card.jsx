@@ -3,15 +3,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 const Card = (props) => {
-  const { children, title } = props;
-  return (
-    <div className='flex justify-between border-1 rounded  border-black shadow p-3 m-2'>
-      <h2 className='text-gray-800 capitalize text-xl font-bold'>{title}</h2>
-      <div>{children}</div>
-    </div>
-  );
+  const { children } = props;
+  return <div className='flex justify-between border-1 rounded bg-green-100 border-gray-900 shadow p-4 m-1'>{children}</div>;
 };
-
-Card.propTypes = {};
 
 export default Card;

@@ -26,12 +26,9 @@ export default class FriendRequestService implements IFriendRequestService {
     return this.friendReqRepo.addFriendRequest(fromId, toId);
   }
 
-  async acceptFriendRequest(fromId: string, toId: string) {
-    try {
-      Promise.all([await this.friendReqRepo.removeFriendRequests(fromId, toId), await this.friendsRepo.addFriend(fromId, toId)]);
-    } catch (error) {
-      console.log('error');
-    }
+  async acceptFriendRequest(userId: string, senderId: string) {
+    await this.friendReqRepo.removeFriendRequests(senderId, userId);
+    return this.friendsRepo.addFriend(userId, senderId);
   }
 
   async declineFriendRequest(fromId: string, toId: string) {

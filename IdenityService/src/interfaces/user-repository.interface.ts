@@ -6,4 +6,5 @@ export default interface IUserRepository {
   getUserByAuthId(id: string): Promise<IUser>;
   removeUserById(userId: string): Promise<boolean>;
   updateUser(id: string, user: IUser, address: IAddress): Promise<boolean>;
+  getUsersByName(name: string): Promise<IUser[]>;
 }

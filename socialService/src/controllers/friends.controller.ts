@@ -40,7 +40,7 @@ export default class FriendsController {
 
   removeFriend = async (req: Request, res: Response) => {
     try {
-      const { userId, friendId } = req.body;
+      const { userId, friendId } = req.body.data;
       const result = await this.friendsSrv.removeFriend(userId, friendId);
       res.send(result);
     } catch (error) {
@@ -60,17 +60,22 @@ export default class FriendsController {
 
   newFriendRequest = async (req: Request, res: Response) => {
     try {
-      const { userId, recepientId } = req.body;
+      const { userId, recepientId } = req.body.data;
+      console.log('req.body', req.body);
+      console.log('userId', userId);
+      console.log('recepientId', recepientId);
       const result = await this.friendReqSrv.newFriendRequest(userId, recepientId);
+      console.log('result', result);
       res.send(result);
     } catch (error) {
+      console.log('error', error);
       res.status(500).send(error.message);
     }
   };
 
   acceptfriendRequest = async (req: Request, res: Response) => {
     try {
-      const { userId, recepientId } = req.body;
+      const { userId, recepientId } = req.body.data;
       const result = await this.friendReqSrv.acceptFriendRequest(userId, recepientId);
       res.send(result);
     } catch (error) {
@@ -80,7 +85,7 @@ export default class FriendsController {
 
   declinefriendRequest = async (req: Request, res: Response) => {
     try {
-      const { userId, recepientId } = req.body;
+      const { userId, recepientId } = req.body.data;
       const result = await this.friendReqSrv.declineFriendRequest(userId, recepientId);
       res.send(result);
     } catch (error) {
