@@ -33,14 +33,14 @@ export class JwtValidtaionController {
 
             //verifies the token and recives its payload
             const payload = this.service.verifyToken(token);
-            const user = await this.userService.getUserById(payload.userId);
+            const user = await this.userService.getUserById(payload.id);
 
             if (!user) {
                 res.status(403).json({ statusCode: 403, error: 'User does not exist!' });
                 return;
             }
 
-            res.json(payload);
+            res.json({ userId: payload.id, exp: payload.exp, iat: payload.iat });
 
         } catch (error) {
             switch (true) {
@@ -76,7 +76,7 @@ export class JwtValidtaionController {
             }
 
             //verifies the refresh token and recives its payload.
-            const { userId } = this.service.verifyToken(token);
+            const { id: userId } = this.service.verifyToken(token);
             //finds the user by the userId.
             const user = await this.userService.getUserById(userId);
 

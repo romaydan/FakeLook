@@ -37,7 +37,7 @@ export class GoogleAuthController {
 
     async signUp(req: Request, res: Response, next: NextFunction) {
         try {
-            const { token_id } = req.headers;
+            const { token_id } = req.body;
             const userId = await this.service.signUp(token_id as string);
 
             if (userId) {

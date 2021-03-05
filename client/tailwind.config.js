@@ -155,8 +155,10 @@ module.exports = {
       current: 'currentColor',
       facebook: '#4c69ba',
       'like-blue': '#3b82f6',
+      'red': '#DD4042',
       'check-green': 'lightgreen',
-      'transparent': 'transparent'
+      'transparent': 'transparent',
+      'white': 'white'
     },
     flex: {
       1: '1 1 0%',
@@ -366,6 +368,7 @@ module.exports = {
       '500px': '500px',
       '100px': '100px',
       '50px': '50px',
+      '35px': '35px',
       '25px': '25px',
       '15px': '15px'
     }),
@@ -456,7 +459,8 @@ module.exports = {
       '1/2': '50%',
       screen: '100vh',
       max: 'max-content',
-      fit: 'fit-content'
+      fit: 'fit-content',
+      '95%': '95%'
     }),
     maxWidth: (theme, { breakpoints }) => ({
       none: 'none',
@@ -483,6 +487,10 @@ module.exports = {
       0: '0px',
       full: '100%',
       screen: '100vh',
+      '1/4': '25%',
+      '1/2': '50%',
+      '1/3': '33.333%',
+      '50px': '50px'
     },
     minWidth: {
       0: '0px',
@@ -729,8 +737,14 @@ module.exports = {
       screen: '100vw',
       min: 'min-content',
       max: 'max-content',
+      '800px': '800px',
+      '600px': '600px',
+      '500px': '500px',
+      '250px': '250px',
+      '200px': '200px',
       '100px': '100px',
       '50px': '50px',
+      '35px': '35px',
       '25px': '25px',
       '15px': '15px'
     }),

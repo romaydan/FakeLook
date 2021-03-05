@@ -18,7 +18,7 @@ const app = express();
 
 const db = container.get<Sequelize>(TYPES.Sequelize);
 
-db.sync({ force: true })
+db.sync()
     .then(() => {
         app.use(cors());
         app.use(express.json())

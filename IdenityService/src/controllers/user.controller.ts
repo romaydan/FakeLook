@@ -15,8 +15,8 @@ class UsersController {
 
   getUsers = async (req: Request, res: Response) => {
     try {
-      const { userIds } = req.body;
-      const users = await this.userServ.getUsersById(userIds);
+      const { userIds } = req.query;
+      const users = await this.userServ.getUsersById(userIds as string[]);
       res.status(200).send(users);
     } catch (error) {
       res.status(500).send(error.message);

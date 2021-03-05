@@ -10,7 +10,7 @@ import sequelize from "sequelize";
 
 export interface IPostRepository {
     getAllPostsByUserId(userId: string): Promise<IPost[]>;
-    getFilteredPost(userFilter: string[], tagFilter: string[], publishers: string[], distance: number, from: Date, to: Date): Promise<IPost[]>;
+    getFilteredPost(userFilter: string[], tagFilter: string[], publishers: string[], location: number[], distance: number, from: Date, to: Date): Promise<IPost[]>;
     getPostById(postId: string): Promise<IPost>;
     addPost(post: IPost): Promise<IPost>;
     removePost(postId: string): Promise<IPost>;
@@ -28,7 +28,7 @@ export class PostRepository implements IPostRepository {
     }
 
     getAllPostsByUserId(userId: string): Promise<IPost[]> {
-        if(!userId) {
+        if (!userId) {
             throw new ReferenceError('No user id given!');
         }
 
@@ -40,7 +40,7 @@ export class PostRepository implements IPostRepository {
     }
 
     getPostById(postId: string): Promise<IPost> {
-        if(!postId) {
+        if (!postId) {
             throw new ReferenceError('No post id given!');
         }
 
@@ -55,23 +55,25 @@ export class PostRepository implements IPostRepository {
         })
     }
 
-    getFilteredPost(userFilter: string[], tagFilter: string[], publishers: string[], distance: number, from: Date, to: Date): Promise<IPost[]> {
+    getFilteredPost(userFilter: string[], tagFilter: string[], publishers: string[], location: number[], distance: number, from: Date, to: Date): Promise<IPost[]> {
         return Post.findAll({
-            include: [{
-                model: Tag,
-                attributes: [],
-                through: {
-                    attributes: [], where: userFilter?.length > 0 ? { tagId: { [Op.in]: userFilter } } : { tagId: { [Op.not]: null } },
-                }
-            },
-            {
-                model: UserTag,
-                attributes: [],
-                where: tagFilter?.length > 0 ? { userId: { [Op.in]: tagFilter } } : { userId: { [Op.not]: null } }
-            }, Like, Comment],
+            include: [
+                // {
+                //     model: Tag,
+                //     attributes: [],
+                //     through: {
+                //         attributes: [], where: tagFilter?.length > 0 ? { tagId: { [Op.in]: tagFilter } } : null,
+                //     }
+                // },
+                // {
+                //     model: UserTag,
+                //     attributes: [],
+                //     where: userFilter?.length > 0 ? { userId: { [Op.in]: userFilter } } : null
+                // }, 
+                Like, Comment],
             where: {
                 [Op.and]: [
-                    (sequelize.fn('ST_DWithin', sequelize.col('location'), sequelize.fn('ST_SetSRID', sequelize.fn('ST_MakePoint', 34.8754289039092, 32.02753787187709), 4326), distance, false)),
+                    (sequelize.fn('ST_DWithin', sequelize.col('location'), sequelize.fn('ST_SetSRID', sequelize.fn('ST_MakePoint', location[0], location[1]), 4326), distance, false)),
                     {
                         createdAt: {
                             [Op.gte]: from,
@@ -87,7 +89,7 @@ export class PostRepository implements IPostRepository {
     }
 
     addPost(post: IPost): Promise<IPost> {
-        if(!post) {
+        if (!post) {
             throw new ReferenceError('No post provided!');
         }
 
@@ -95,7 +97,7 @@ export class PostRepository implements IPostRepository {
     }
 
     async removePost(postId: string): Promise<IPost> {
-        if(!postId) {
+        if (!postId) {
             throw new ReferenceError('No post id given!');
         }
 
@@ -142,7 +144,7 @@ export class PostRepository implements IPostRepository {
             return false;
         });
 
-        if(success) {
+        if (success) {
             return post;
         }
 
@@ -150,7 +152,7 @@ export class PostRepository implements IPostRepository {
     }
 
     async updatePost(post: IPost): Promise<boolean> {
-        if(!post) {
+        if (!post) {
             throw new ReferenceError('No update data provided!');
         }
 

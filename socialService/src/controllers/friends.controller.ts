@@ -1,11 +1,12 @@
 import * as express from 'express';
 import { Request, Response } from 'express';
-import { inject } from 'inversify';
+import { inject, injectable } from 'inversify';
 import IFriendRequestService from '../interfaces/services/friend-request-service.interface';
 import IFriendsService from '../interfaces/services/friend-service.interface';
 import IBlockUserService from '../interfaces/services/user-block-service.interface';
 import { TYPES } from '../ioc-container/types';
 
+@injectable()
 export default class FriendsController {
   public path = '/api/friendRequest';
   public router = express.Router();

@@ -5,8 +5,11 @@ import { GoogleLogin } from 'react-google-login';
 import FacebookLogin from 'react-facebook-login';
 import { facebookLogin, fakelookLogin, googleLogin } from '../../../services/Authentication/login.service';
 import { NavLink } from 'react-router-dom';
+import { setUser } from '../../../actions/user.actions';
+import { connect } from 'react-redux';
 
 const Login = props => {
+    const { history, setUser } = props;
 
     const validationSchema = useMemo(() => yup.object({
         email: yup.string().required().email(),
@@ -17,8 +20,11 @@ const Login = props => {
         console.log(response);
         const { id: facebookId, accessToken } = response;
         facebookLogin(accessToken, facebookId)
-            .then(res => {
-                console.log(res);
+            .then(({ data: { user, accessToken } }) => {
+                localStorage.setItem('access_token', accessToken)
+                console.log(user);
+                setUser(user);
+                history.push('/map');
             })
             .catch(console.error);
     }
@@ -26,15 +32,23 @@ const Login = props => {
     const onGoogleResponse = response => {
         const { tokenId } = response;
         googleLogin(tokenId)
-            .then(res => {
-                console.log(res);
+            .then(({ data: { user, accessToken } }) => {
+                localStorage.setItem('access_token', accessToken)
+                console.log(user);
+                setUser(user);
+                history.push('/map');
             })
             .catch(console.error);
     }
 
     const login = (email, password) => {
         fakelookLogin(email, password)
-            .then(res => console.log('res', res))
+            .then(({ data: { user, accessToken } }) => {
+                localStorage.setItem('access_token', accessToken)
+                console.log(user);
+                setUser(user);
+                history.push('/map');
+            })
             .catch(err => console.error('error', err))
     }
 
@@ -106,4 +120,8 @@ const Login = props => {
     );
 }
 
-export default Login;
+const mapDispatchToProps = dispatch => ({
+    setUser: user => dispatch(setUser(user))
+})
+
+export default connect(null, mapDispatchToProps)(Login);

@@ -16,13 +16,15 @@ export default class PostController {
 
     async getFilteredPosts(req: Request, res: Response, next: NextFunction) {
         try {
-            const { users, tags, publishers, location, distance, fromDate, toDate } = req.body;
+            const { userTags, tags, publishers, location, distance, fromDate, toDate } = req.query;
 
-            const to = toDate ?? new Date();
-            const from = fromDate ?? new Date(new Date().setMonth(to.getMonth() - 2));
-            const posts = await this.service.getFilteredPosts(users, tags, publishers, distance, from, to);
+            const to = new Date(toDate as string) ?? new Date();
+            const from = new Date(fromDate as string) ?? new Date(new Date().setMonth(to.getMonth() - 2));
+            const dis = parseFloat(distance as string);
+            const loc = (location as string[]).map(i => parseFloat(i));
+            const posts = await this.service.getFilteredPosts(userTags as string[], tags  as string[], publishers  as string[], loc, dis, from, to);
 
-            res.json({ posts: posts });
+            res.json(posts);
         } catch (error) {
             this.sendErrorResponse(error, res);
         }
@@ -30,7 +32,7 @@ export default class PostController {
 
     async getPostById(req: Request, res: Response, next: NextFunction) {
         try {
-            const { postId } = req.params
+            const { postId } = req.params;
             const post = await this.service.getPostDataById(postId as string);
 
             res.json(post);
@@ -41,10 +43,11 @@ export default class PostController {
 
     async addPost(req: Request, res: Response, next: NextFunction) {
         try {
-            const { publisherId, coordinates, textContent, showTo, photo: file } = req.body;
+            const { coordinates, textContent, showTo, photo: file } = req.body;
+            const publisherId = req['userId'];
             const { authorization: token } = req.headers
 
-            const [lat, long] = coordinates.split(',').map(val => parseFloat(val));
+            const [long, lat] = coordinates.split(',').map(val => parseFloat(val));
 
             const post = await this.service.addPost({
                 publisherId,

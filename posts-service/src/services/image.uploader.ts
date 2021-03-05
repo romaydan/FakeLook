@@ -9,10 +9,10 @@ export interface IImageUploader {
 
 @injectable()
 export class ImageUploader implements IImageUploader {
-    private baseUrl: string = `http://localhost:${process.env.IMAGE_SERVER_PORT}/`;
+    private baseUrl: string;
 
     constructor() {
-
+        this.baseUrl = `http://localhost:${process.env.IMAGE_SERVER_PORT}/`;
     }
     async deleteImage(imageUrl: string, accessToken: string): Promise<boolean> {
         const response = await axios.delete(this.baseUrl + 'image/delete', { 

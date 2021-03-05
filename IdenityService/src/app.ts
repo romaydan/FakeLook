@@ -26,7 +26,7 @@ class App {
 
   public listen() {
     this.app.listen(this.port, async () => {
-      await sequelize.sync({ force: true });
+      await sequelize.sync();
       console.log(`App listening on the http://localhost:${this.port}`);
     });
   }

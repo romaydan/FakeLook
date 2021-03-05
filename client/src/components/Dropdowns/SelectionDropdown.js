@@ -5,6 +5,8 @@ import '../../css/scrollbar.css';
 const SelectionDropdown = props => {
   const { items, placeholder, onSelected, onDeselected, direction, reset, propertykey } = props;
 
+  console.log('in selection dropdown', items)
+
   const [selectedCount, setSelectedCount] = useState(0);
   const [visibility, setVisibility] = useState(true);
   const [displayItems, setDisplayItems] = useState(items?.map(item => ({ isSelected: false, ...item })));
@@ -13,6 +15,12 @@ const SelectionDropdown = props => {
     console.log(visibility)
     setVisibility(!visibility);
   }
+
+  useEffect(() => {
+    if(items) {
+      setDisplayItems(items?.map(item => ({ isSelected: false, ...item })));
+    }
+  }, [items])
 
   const itemSelected = (item, index) => {
     item.isSelected = !item.isSelected;

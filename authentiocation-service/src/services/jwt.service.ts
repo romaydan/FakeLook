@@ -3,7 +3,7 @@ import { injectable } from 'inversify';
 
 export interface IJwtService {
     signToken(payload: string | Buffer | object, expiresIn: number | string): string;
-    verifyToken(token: string): { userId: string, iat: number, exp: number };
+    verifyToken(token: string): { id: string, iat: number, exp: number };
     decode(token: string): object;
 }
 
@@ -26,7 +26,7 @@ export class JwtService implements IJwtService {
 
     //Verifies a JWT.
     //Throws an error if the token is expired.
-    verifyToken(token: string): { userId: string, iat: number, exp: number } {
+    verifyToken(token: string): { id: string, iat: number, exp: number } {
         return verify(token, process.env.JWT_SECRET_KEY, {
             ignoreExpiration: false,
             ignoreNotBefore: false

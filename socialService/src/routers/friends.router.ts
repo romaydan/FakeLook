@@ -6,7 +6,7 @@ import { TYPES } from '../ioc-container/types';
 const controller = container.get<FriendsController>(TYPES.FriendRequestController);
 const router = Router();
 
-router.get('/friendId', controller.getUsersFriends);
+router.get('/:userId', controller.getUsersFriends);
 router.delete('/', controller.removeFriend);
 router.post('/', controller.newFriendRequest);
 router.put('/accept', controller.acceptfriendRequest);

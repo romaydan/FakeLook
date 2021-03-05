@@ -37,7 +37,7 @@ export class FacebookAuthController {
 
     async signUp(req: Request, res: Response, next: NextFunction) {
         try {
-            const { facebook_token, facebook_id } = req.headers;
+            const { facebook_token, facebook_id } = req.body;
 
             const userId = await this.service.signUp(facebook_token as string, facebook_id as string);
             

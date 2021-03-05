@@ -1,4 +1,7 @@
 import env from 'dotenv';
+env.config();
+
+
 import express from 'express';
 import cors from 'cors';
 import { Op } from 'sequelize';
@@ -16,8 +19,6 @@ import postRouter from './routers/post.router';
 import commentRouter from './routers/comment.router';
 import usertagRouter from './routers/usertag.router';
 import tagRouter from './routers/tag.router';
-
-env.config();
 
 const PORT = process.env.PORT || 5001;
 const app = express();
@@ -77,7 +78,7 @@ const dbTest = async () => {
 
 }
 
-db.sync({ force: true })
+db.sync()
     .then(async () => {
         app.use(cors());
         app.use(express.json());

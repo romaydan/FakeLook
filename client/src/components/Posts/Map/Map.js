@@ -1,16 +1,14 @@
-import * as faker from 'faker';
 import { useState, useMemo, useRef, useEffect } from 'react';
-import { createFakePosts } from '../../../fake-data/fake.data';
-import ReactMapboxGl, { Layer, Feature, Marker } from 'react-mapbox-gl';
-import 'mapbox-gl/dist/mapbox-gl.css';
-import Container from '../Container/Container';
 import { motion, useAnimation } from 'framer-motion';
-
-const posts = createFakePosts();
+import { connect } from 'react-redux';
+import ReactMapboxGl, { Marker } from 'react-mapbox-gl';
+import Container from '../Container/Container';
+import 'mapbox-gl/dist/mapbox-gl.css';
 
 const Map = props => {
+    const { posts, location } = props;
+
     const [scaleFactor, setScaleFactor] = useState(14 * 0.1);
-    const [zoom, setZoom] = useState([14]);
     const mapRef = useRef();
 
     const onZoomChanged = (zoom) => {
@@ -22,27 +20,27 @@ const Map = props => {
         setScaleFactor(zoom * 0.1)
     }
 
-    const viewport = useMemo(() => ({
-        center: [34.8762222964216, 32.02693822368098],
-        zoom: [15]
-    }), [])
+    const defualtSettings = useMemo(() => ({
+        center: location,
+        zoom: [14]
+    }), []);
     const Map = useMemo(() => ReactMapboxGl({
         accessToken: 'pk.eyJ1IjoiaWRvbnYiLCJhIjoiY2tscnpsb2R1MGF1ZzJ2cDM1ZWVsbHQwMyJ9.vd9YaH0VyDnsJnjJbF8DIA',
     }), []);
 
     const FlyToCoordiantes = (coordinates, zoom) => {
         const { state: { map } } = mapRef.current;
-        map.flyTo({ center: coordinates, zoom: zoom })
+        map.flyTo({ center: coordinates, zoom })
     }
 
     return (
         <Container>
             <Map
-                center={viewport.center}
-                zoom={zoom}
+                center={location}
+                zoom={defualtSettings.zoom}
                 containerStyle={{
-                    width: '100%',
-                    height: '100%',
+                    width: '100vw',
+                    height: '100vh',
                 }}
                 onZoomEnd={(map, e) => onZoomChanged(map.getZoom())}
                 ref={mapRef}
@@ -61,9 +59,9 @@ const Map = props => {
                         </Marker>
                     })
                 }
-                <Marker coordinates={viewport.center} anchor='center'>
+                <Marker coordinates={defualtSettings.center} anchor='center'>
                     <div className=' bg-red-600 h-5 w-5 cursor-pointer z-10 hover:scale-125 transform transition' style={{ borderRadius: '50%' }}
-                        onDoubleClick={() => FlyToCoordiantes(viewport.center, zoom)} />
+                        onDoubleClick={() => FlyToCoordiantes(defualtSettings.center, defualtSettings.zoom)} />
                 </Marker>
             </Map>
         </Container>
@@ -95,4 +93,9 @@ const Image = props => {
     )
 }
 
-export default Map;
+const mapStateToProps = state => ({
+    posts: state.posts,
+    location: state.location,
+})
+
+export default connect(mapStateToProps, null)(Map);

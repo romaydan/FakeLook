@@ -1,4 +1,4 @@
-import { inject } from 'inversify';
+import { inject, injectable } from 'inversify';
 import IFriendRequest from '../interfaces/models/friend-request.interface';
 import IFriendRequestRepository from '../interfaces/repositories/friend-request-repository.interface';
 import IFriendsRepository from '../interfaces/repositories/friends-repository.interaface';
@@ -10,6 +10,7 @@ import IBlockUserService from '../interfaces/services/user-block-service.interfa
 import IBlockedUser from '../interfaces/models/blocked-user.interface';
 import IBlockUserRepository from '../interfaces/repositories/user-block-repository.interface';
 
+@injectable()
 export default class BlockUserService implements IBlockUserService {
   constructor(
     @inject(TYPES.IBlockUserRepository)
