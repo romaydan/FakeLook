@@ -13,6 +13,8 @@ export default class BlockUserRepositorySequelize implements IBlockUserRepositor
     return BlockedUser.findAll({ where: { blockerId: userId } });
   }
   addBlockedUser(blockerId: string, blockedId: string): Promise<IBlockedUser> {
+    console.log('blockerId', blockerId);
+    console.log('blockedId', blockedId);
     return BlockedUser.create({ blockerId, blockedId });
   }
   removeBlockedUser(blockerId: string, blockedId: string): Promise<number> {
