@@ -17,19 +17,19 @@ export const addNewGroup = (userId, name) => {
     return axios.post(url, { data: { userId, name } })
 }
 export const deleteGroup = (groupId, userId) => {
-    return axios.delete(url + groupId, { data: { userId } })
+    return axios.delete(`${url}${userId}&${groupId}`)
 }
 
 export const changeGroupName = (groupId, userId, name) => {
     return axios.put(url + '/name', { data: { groupId, userId, name } })
 }
 
-export const addFriendToGroup = (groupId, userId) => {
-    return axios.put(url + '/addfriend', { data: { groupId, userId } })
+export const addFriendToGroup = (userId, groupId, friendId) => {
+    return axios.put(url + 'addfriend', { data: { groupId, userId, friendId } })
 }
 
 export const removeFriendFromGroup = (groupId, userId, friendId) => {
-    return axios.put(url, { data: { groupId, userId, friendId } })
+    return axios.put(url + 'removeFriend', { data: { groupId, userId, friendId } })
 }
 
 
