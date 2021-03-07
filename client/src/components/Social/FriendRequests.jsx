@@ -1,12 +1,12 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import { getUsersByids } from '../../services/Idenity';
 import { acceptFriendRequest, declineFriendRequest, getUsersFriendRequests } from '../../services/Social/friendsService';
 import Button from '../../shared/components/Button';
 import Card from '../../shared/components/Card';
-const getRequests = async (userId) => {
+const getUsersRequests = async (userId) => {
   try {
     const { data } = await getUsersFriendRequests(userId);
-    return await getUsersByids(data);
+    return getUsersByids(data);
   } catch (error) {
     console.log(error.message);
   }
@@ -17,7 +17,10 @@ const FriendRequests = (props) => {
 
   const [requests, setRequests] = useState([]);
   useEffect(() => {
-    setRequests(getRequests(userId));
+    (async () => {
+      const reqRes = await getUsersRequests();
+      setRequests(reqRes);
+    })();
   }, [userId]);
   useEffect(() => {
     console.log('requests :>> ', requests);
@@ -25,7 +28,7 @@ const FriendRequests = (props) => {
   const acceptFriendReqHandler = async (senderId) => {
     try {
       const res = await acceptFriendRequest(userId, senderId);
-      getRequests();
+      await getUsersRequests(userId);
       console.log('res', res);
     } catch (error) {
       console.log(error.message);

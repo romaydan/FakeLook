@@ -8,31 +8,36 @@ import { deleteGroup, getUsersGroup } from '../services/Social/groupsService';
 import Card from '../shared/components/Card';
 import Button from '../shared/components/Button';
 import FriendRequests from '../components/Social/FriendRequests';
+import { getUsersByids } from '../services/Idenity';
 
 const getUsersData = async (userId) => {
   const { data: blocks } = await getUsersBlocks(userId);
   const { data: friendsRes } = await getUsersFriends(userId);
   const friends = friendsRes.map((f) => (blocks.includes(f.id) ? { ...f, blocked: true } : f));
+  const { data: userRes } = await getUsersByids([userId]);
+  const user = userRes[0];
   let groups = [];
   try {
     let { data: groupsRes } = await getUsersGroup(userId);
     groups = groupsRes;
   } catch (error) {}
-  return { groups, friends };
+  return { groups, friends, user };
 };
 const GroupsFriendsPage = (props) => {
   const { userId } = props;
   const [friends, setFriends] = useState([]);
   const [groups, setGroups] = useState([]);
+  const [user, setUser] = useState({ name: 'name' });
   const [modalPage, setModalPage] = useState(null);
   const [showModal, setShowModal] = useState(false);
   useEffect(() => {}, [friends]);
   useEffect(() => {
     (async () => {
       try {
-        let { friends, groups } = await getUsersData(userId);
+        let { friends, groups, user: userRes } = await getUsersData(userId);
         setFriends(friends);
         setGroups(groups);
+        setUser(userRes);
       } catch (error) {
         console.log('error.message :>> ', error);
       }
@@ -95,6 +100,7 @@ const GroupsFriendsPage = (props) => {
   return (
     <div className=' grid grid-cols-2'>
       <div>
+        <h2 className='text-center'>{user.name}</h2>
         <div className='p-3'>
           <div className='flex justify-evenly'>
             <h1 className='text-center text-4xl capitalize p-2 font-bold'>Groups</h1>
