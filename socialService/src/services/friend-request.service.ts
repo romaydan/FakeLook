@@ -1,11 +1,12 @@
 import { inject, injectable } from 'inversify';
-import * as uuid from 'uuid';
-import { TYPES } from '../ioc-container/types';
-
+import IFriendRequest from '../interfaces/models/friend-request.interface';
 import IFriendRequestRepository from '../interfaces/repositories/friend-request-repository.interface';
 import IFriendsRepository from '../interfaces/repositories/friends-repository.interaface';
 import IFriendRequestService from '../interfaces/services/friend-request-service.interface';
-import IFriendRequest from '../interfaces/models/friend-request.interface';
+import { TYPES } from '../ioc-container/types';
+import friendRequestModel from '../models/friend-request.model';
+import * as uuid from 'uuid';
+
 @injectable()
 export default class FriendRequestService implements IFriendRequestService {
   constructor(

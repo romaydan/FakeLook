@@ -1,12 +1,14 @@
 import { ITag, PostTag, Tag } from "../models/tag.model";
-import uuid from 'uuid';
+import * as uuid from 'uuid';
 import { Post } from "../models/post.model";
 import { injectable } from "inversify";
+import { Op } from 'sequelize';
 
 export interface ITagRepository {
     addTagToPost(tag: ITag, postId: string): Promise<ITag>;
+    addTagsToPost(tags: ITag[], postId: string): Promise<ITag[]>;
     removeTagFromPost(tagId: string, postId: string): Promise<boolean>
-    getAllTagsByPostId(postId: string): Promise<ITag[]>
+    getAllTagsByPostId(postId: string): Promise<ITag[]>;
 }
 
 @injectable()
@@ -15,6 +17,26 @@ export class TagRepository implements ITagRepository {
         this.addTagToPost = this.addTagToPost.bind(this);
         this.removeTagFromPost = this.removeTagFromPost.bind(this);
         this.getAllTagsByPostId = this.getAllTagsByPostId.bind(this);
+        this.addTags = this.addTags.bind(this);
+        this.addTagsToPost = this.addTagsToPost.bind(this);
+    }
+
+    private async addTags(tags: ITag[]): Promise<ITag[]> {
+        const existingTags = await Tag.findAll({
+            where: {
+                content: { [Op.in]: tags.map(t => t.content) }
+            }
+        })
+
+        tags = tags.filter(tag => !existingTags.find(t => t.content === tag.content));
+
+        const newTags = [];
+        
+        for (const tag of tags) {
+           newTags.push(await Tag.create({...tag, id: uuid.v4()}));
+        }
+
+        return [...newTags, ...existingTags];
     }
 
     async addTagToPost(tag: ITag, postId: string): Promise<ITag> {
@@ -33,6 +55,16 @@ export class TagRepository implements ITagRepository {
         await new PostTag({ tagId: newTag.id, postId: postId }).save();
 
         return newTag;
+    }
+
+    async addTagsToPost(tags: ITag[], postId: string): Promise<ITag[]> {
+        const tagsToAdd = await this.addTags(tags);
+
+        for (const tag of tagsToAdd) {
+            await PostTag.create({ postId, tagId: tag.id, id: uuid.v4() });
+        }
+
+        return tagsToAdd;
     }
 
     async removeTagFromPost(tagId: string, postId: string): Promise<boolean> {

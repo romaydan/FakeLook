@@ -7,6 +7,6 @@ const controller = continer.get<GoogleAuthController>(TYPES.GoogleAuthController
 const router = express.Router();
 
 router.get('/signin', controller.signIn);
-router.get('/signup', controller.signUp);
+router.post('/signup', controller.signUp);
 
 export default router;

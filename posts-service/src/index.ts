@@ -1,4 +1,7 @@
 import env from 'dotenv';
+env.config();
+
+
 import express from 'express';
 import cors from 'cors';
 import { Op } from 'sequelize';
@@ -16,8 +19,7 @@ import postRouter from './routers/post.router';
 import commentRouter from './routers/comment.router';
 import usertagRouter from './routers/usertag.router';
 import tagRouter from './routers/tag.router';
-
-env.config();
+import likeRouter from './routers/like.router';
 
 const PORT = process.env.PORT || 5004;
 const app = express();
@@ -94,15 +96,16 @@ const dbTest = async () => {
   console.log(tags);
 };
 
-db.sync({ force: true })
-  .then(async () => {
-    app.use(cors());
-    app.use(express.json());
-    app.use(jwtValidation);
-    app.use('/posts', postRouter);
-    app.use('/commets', commentRouter);
-    app.use('/usertags', usertagRouter);
-    app.use('/tags', tagRouter);
+db.sync()
+    .then(async () => {
+        app.use(cors());
+        app.use(express.json());
+        app.use(jwtValidation);
+        app.use('/posts', postRouter);
+        app.use('/comments', commentRouter);
+        app.use('/usertags', usertagRouter);
+        app.use('/tags', tagRouter);
+        app.use('/likes', likeRouter);
 
     app.listen(PORT, () => {
       console.log(`Listening on port: ${PORT}...`);

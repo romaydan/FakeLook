@@ -42,7 +42,12 @@ const Register = props => {
 
             return yup.string().required().oneOf([yup.ref('password'), null], 'passwords do not match');
         }),
-        name: yup.string().required(),
+        name: yup.lazy(() => {
+            if (isOAuth.state)
+                return yup.string().notRequired();
+
+            return yup.string().required()
+        }),
         birthDate: yup.date().required('birth date is required'),
         street: yup.string().required(),
         city: yup.string().required(),
@@ -52,6 +57,7 @@ const Register = props => {
     }), [isOAuth]);
 
     const registerWithFakelook = (email, password, confirmPassword, user, address) => {
+        console.log('fakelook')
         fakelookRegister(email, password, confirmPassword, user, address)
             .then(res => {
                 console.log(res);
@@ -63,26 +69,28 @@ const Register = props => {
     const registerWithFacebook = (response, user, address) => {
         const { id: facebookId, accessToken } = response;
         facebookRegister(accessToken, facebookId, user, address)
-        .then(res => {
-            console.log(res);
-            history.push('/login');
-        })
-        .catch(console.error);
+            .then(res => {
+                console.log(res);
+                history.push('/login');
+            })
+            .catch(console.error);
     }
 
     const registerWithGoogle = (response, user, address) => {
         const { tokenId } = response;
         googleRegister(tokenId, user, address)
-        .then(res => {
-            console.log(res);
-            history.push('/login');
-        })
-        .catch(console.error);
+            .then(res => {
+                console.log(res);
+                history.push('/login');
+            })
+            .catch(console.error);
     }
 
     const onFormSubmit = ({ email, password, confirmPassword, name, birthDate, street, city, country, houseNo, aptNo, response }) => {
         const user = { name, birthDate };
         const address = { street, city, country, houseNo, aptNo };
+
+        console.log(user);
 
         if (!isOAuth.state)
             return registerWithFakelook(email, password, confirmPassword, user, address);
@@ -112,7 +120,7 @@ const Register = props => {
 
                                 <EmailAndPassword errors={errors} isOAuth={isOAuth} dirty={dirty} />
 
-                                <UserDetails errors={errors} dirty={dirty} />
+                                <UserDetails errors={errors} dirty={dirty} isOAuth={isOAuth} />
 
                                 <SubmitButtons validateForm={validateForm} submitForm={submitForm}
                                     setIsOpen={setIsOpen} setFieldValue={setFieldValue}
@@ -189,15 +197,15 @@ const ServiceSelection = props => {
 }
 
 const UserDetails = props => {
-    const { errors, dirty } = props;
+    const { errors, dirty, isOAuth } = props;
 
     return (
         <div className='grid grid-cols-2 gap-1'>
-            <label className={'flex flex-row mb-7 w-full border-2 p-1.5 border-gray-300 ' + (errors.name && dirty ? 'border-red-500' : null)}>
+            <label className={'flex flex-row mb-7 w-full border-2 p-1.5 border-gray-300 ' + (isOAuth.state ? ' opacity-50 ' : ' ') + (errors.name && dirty ? 'border-red-500' : null)}>
                 <span className='w-36'>
                     Name
             </span>
-                <Field name='name' className={'w-full outline-none '} />
+                <Field name='name' className={'w-full outline-none '} disabled={isOAuth.state} />
             </label>
 
             <label className={'flex flex-row mb-7 w-full border-2 p-1.5 border-gray-300 ' + (errors.birthDate && dirty ? 'border-red-500' : null)}>
@@ -248,6 +256,28 @@ const UserDetails = props => {
 const SubmitButtons = props => {
     const { validateForm, setIsOpen, submitForm, setFieldValue, isOAuth, errors, values } = props;
 
+    const onGoogleSuccessResponse = (response) => {
+        const { profileObj: { name } } = response;
+        setFieldValue('response', response);
+        setFieldValue('name', name);
+
+        validateForm(values)
+            .then(err => {
+                Object.keys(err).length > 0 ? setIsOpen(true) : submitForm()
+            })
+    }
+
+    const onFacebookSuccessResponse = (response) => {
+        const { name } = response;
+        setFieldValue('response', response)
+        setFieldValue('name', name);
+
+        validateForm(values)
+            .then(err => {
+                Object.keys(err).length > 0 ? setIsOpen(true) : submitForm()
+            })
+    }
+
     return (
         <div className='self-center'>
             <button className={BUTTON_STYLE + (isOAuth.state ? 'hidden' : '')} type='submit'
@@ -263,13 +293,7 @@ const SubmitButtons = props => {
                     disabled={Object.keys(errors).some(err => errors[err] && err != 'response')}
                     clientId={'332337525586-rpk6kqpc36ja5st3dsc40g8593e5kjkj.apps.googleusercontent.com'}
                     buttonText={'Regiter with Google'}
-                    onSuccess={(response) => {
-                        setFieldValue('response', response)
-                        validateForm(values)
-                            .then(err => {
-                                Object.keys(err).length > 0 ? setIsOpen(true) : submitForm()
-                            })
-                    }} />
+                    onSuccess={onGoogleSuccessResponse} />
             </span>
             <span className={(isOAuth.state && isOAuth.type === OAuthType.FACEBOOK) ? '' : 'hidden'}>
                 <FacebookLogin
@@ -279,13 +303,7 @@ const SubmitButtons = props => {
                     textButton={'Register with Facebook'}
                     autoLoad={false}
                     fields={'name,email,picture'}
-                    callback={(response) => {
-                        setFieldValue('response', response)
-                        validateForm(values)
-                            .then(err => {
-                                Object.keys(err).length > 0 ? setIsOpen(true) : submitForm()
-                            })
-                    }} />
+                    callback={onFacebookSuccessResponse} />
             </span>
         </div>
     )

@@ -7,7 +7,7 @@ const controller = container.get<FacebookAuthController>(TYPES.FacebookAuthContr
 const router = express.Router();
 
 router.get('/signin', controller.signIn);
-router.get('/signup', controller.signUp);
+router.post('/signup', controller.signUp);
 
 
 export default router;

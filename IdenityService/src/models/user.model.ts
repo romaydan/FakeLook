@@ -30,6 +30,7 @@ export default class User extends Model implements IUser {
 
   @AllowNull(true)
   @NotEmpty
+  @Unique
   @Column(DataType.STRING)
   public authId: string;
 

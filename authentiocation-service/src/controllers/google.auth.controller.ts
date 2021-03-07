@@ -19,9 +19,9 @@ export class GoogleAuthController {
             const userId = await this.service.signIn(token_id as string);
 
             //generates an access token with the user id.
-            const accessToken = this.jwt.signToken({ id: userId }, settings.jwtSettings.accessToken.expiration);
+            const accessToken = this.jwt.signToken({ userId }, settings.jwtSettings.accessToken.expiration);
             //generates a refresh token with the user id.
-            const refreshToken = this.jwt.signToken({ id: userId }, settings.jwtSettings.refreshToken.expiration);
+            const refreshToken = this.jwt.signToken({ userId }, settings.jwtSettings.refreshToken.expiration);
 
             res.cookie('refresh_token', refreshToken);
             res.json({ status: 200, message: 'Sign in successfull!', accessToken: accessToken });
@@ -37,7 +37,7 @@ export class GoogleAuthController {
 
     async signUp(req: Request, res: Response, next: NextFunction) {
         try {
-            const { token_id } = req.headers;
+            const { token_id } = req.body;
             const userId = await this.service.signUp(token_id as string);
 
             if (userId) {

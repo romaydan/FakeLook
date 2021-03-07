@@ -1,7 +1,7 @@
 export default {
     jwtSettings: {
         accessToken: {
-            expiration: '15m',
+            expiration: '2h',
         },
         refreshToken: {
             expiration: '1M',

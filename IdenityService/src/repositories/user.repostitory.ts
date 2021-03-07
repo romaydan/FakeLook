@@ -12,7 +12,7 @@ import User from '../models/user.model';
 export default class UserRepository implements IUserRepository {
   constructor() {}
   getUsersById(userIds: string[]): Promise<IUser[]> {
-    return User.findAll({ where: { Id: userIds }, include: [Address] });
+    return User.findAll({ where: { authId: { [Op.in]: userIds } }, include: [Address] });
   }
 
   async addUser(user: IUser, address: IAddress): Promise<IUser> {

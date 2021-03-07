@@ -25,9 +25,9 @@ const imageCors = cors({
     methods: ['GET', 'POST', 'PUT', 'DELETE']
 });
 
-app.use(validateJwt);
 
 app.use('/images', express.static(imagesDir));
+app.use(validateJwt);
 app.use('/image', router);
 
 

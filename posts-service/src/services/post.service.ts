@@ -9,7 +9,7 @@ import * as uuid from 'uuid';
 export interface IPostService {
     addPost(post: IPost, uploadFile: object, accessToken: string): Promise<IPost>;
     removePostById(postId: string, accessToken: string): Promise<boolean>;
-    getFilteredPosts(userFilter: string[], tagFilter: string[], publishers: string[], distance: number, from: Date, to: Date): Promise<IPost[]>;
+    getFilteredPosts(userFilter: string[], tagFilter: string[], publishers: string[], location: number[], distance: number, from: Date, to: Date): Promise<IPost[]>;
     getPostDataById(postId: string): Promise<IPost>;
     getAllPostsByUserId(userId: string): Promise<IPost[]>;
     updatePost(post: IPost): Promise<boolean>;
@@ -32,11 +32,11 @@ export class PostService implements IPostService {
             throw new ReferenceError('No post proivded!');
         }
 
-        if(!uploadFile) {
+        if (!uploadFile) {
             throw new ReferenceError('No image provided!');
         }
 
-        if(!accessToken) {
+        if (!accessToken) {
             throw new ReferenceError('No access token provided!');
         }
 
@@ -45,7 +45,9 @@ export class PostService implements IPostService {
         post.imageUrl = await this.uploader.uploadImage(post.publisherId, post.id, uploadFile, accessToken);
 
         //adds the new post to the database. 
-        return this.repository.addPost(post);
+        const newPost = await this.repository.addPost(post);
+
+        return newPost;
     }
 
     async removePostById(postId: string, accessToken: string): Promise<boolean> {
@@ -61,8 +63,8 @@ export class PostService implements IPostService {
         return post != undefined;
     }
 
-    getFilteredPosts(userFilter: string[], tagFilter: string[], publishers: string[], distance: number, from: Date, to: Date): Promise<IPost[]> {
-        return this.repository.getFilteredPost(userFilter, tagFilter, publishers, distance, from, to);
+    getFilteredPosts(userFilter: string[], tagFilter: string[], publishers: string[], location: number[], distance: number, from: Date, to: Date): Promise<IPost[]> {
+        return this.repository.getFilteredPost(userFilter, tagFilter, publishers, location, distance, from, to);
     }
 
     getPostDataById(postId: string): Promise<IPost> {

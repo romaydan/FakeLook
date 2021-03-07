@@ -1,4 +1,8 @@
 import { inject, injectable } from 'inversify';
+import IFriendRequest from '../interfaces/models/friend-request.interface';
+import IFriendRequestRepository from '../interfaces/repositories/friend-request-repository.interface';
+import IFriendsRepository from '../interfaces/repositories/friends-repository.interaface';
+import IFriendRequestService from '../interfaces/services/friend-request-service.interface';
 import { TYPES } from '../ioc-container/types';
 
 import IBlockUserService from '../interfaces/services/user-block-service.interface';

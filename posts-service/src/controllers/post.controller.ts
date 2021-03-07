@@ -2,10 +2,12 @@ import { NextFunction, Request, Response } from "express";
 import { inject, injectable } from "inversify";
 import TYPES from "../ioc-container/types";
 import { IPostService } from "../services/post.service";
+import { ITagService } from "../services/tag.service";
 
 @injectable()
 export default class PostController {
-    constructor(@inject(TYPES.IPostService) private service: IPostService) {
+    constructor(@inject(TYPES.IPostService) private service: IPostService,
+    @inject(TYPES.ITagService) private tagService: ITagService) {
         this.getFilteredPosts = this.getFilteredPosts.bind(this);
         this.addPost = this.addPost.bind(this);
         this.removePost = this.removePost.bind(this);
@@ -16,13 +18,14 @@ export default class PostController {
 
     async getFilteredPosts(req: Request, res: Response, next: NextFunction) {
         try {
-            const { users, tags, publishers, location, distance, fromDate, toDate } = req.body;
+            const { userTags, tags, publishers, location, distance, fromDate, toDate } = req.query;
 
-            const to = toDate ?? new Date();
-            const from = fromDate ?? new Date(new Date().setMonth(to.getMonth() - 2));
-            const posts = await this.service.getFilteredPosts(users, tags, publishers, distance, from, to);
+            const to = new Date(<string>toDate) ?? new Date(), from = new Date(<string>fromDate) ?? new Date(new Date().setMonth(to.getMonth() - 2));
+            const dis = parseFloat(<string>distance), loc = (<string[]>location).map(i => parseFloat(i));
+            
+            const posts = await this.service.getFilteredPosts(<string[]>userTags, <string[]>tags, <string[]>publishers, loc, dis, from, to);
 
-            res.json({ posts: posts });
+            res.json(posts);
         } catch (error) {
             this.sendErrorResponse(error, res);
         }
@@ -30,7 +33,7 @@ export default class PostController {
 
     async getPostById(req: Request, res: Response, next: NextFunction) {
         try {
-            const { postId } = req.params
+            const { postId } = req.params;
             const post = await this.service.getPostDataById(postId as string);
 
             res.json(post);
@@ -41,10 +44,11 @@ export default class PostController {
 
     async addPost(req: Request, res: Response, next: NextFunction) {
         try {
-            const { publisherId, coordinates, textContent, showTo, photo: file } = req.body;
+            const { coordinates, textContent, tags, userTags, showTo, photo: file } = req.body;
+            const publisherId = req['userId'];
             const { authorization: token } = req.headers
 
-            const [lat, long] = coordinates.split(',').map(val => parseFloat(val));
+            const [long, lat] = coordinates.split(',').map(val => parseFloat(val));
 
             const post = await this.service.addPost({
                 publisherId,
@@ -54,8 +58,11 @@ export default class PostController {
                 },
                 textContent,
                 showTo,
-                imageUrl: ''
+                imageUrl: '',
+                userTags: JSON.parse(userTags)
             }, file, token);
+
+            await this.tagService.addTagsToPost(JSON.parse(tags), post.id);
 
             res.json(post);
 

@@ -63,6 +63,7 @@ export class FakeLookAuthenticationService implements IFakeLookAuthenticationSer
         if (verify(password, user.password))
             return user.id;
 
+        throw new UserError('Passwords do not match!');
     }
 
     async signUp(email: string, password: string, confirmPassword: string): Promise<string> {

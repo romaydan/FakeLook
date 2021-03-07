@@ -40,7 +40,7 @@ export class JwtValidtaionController {
                 return;
             }
 
-            res.json(payload);
+            res.json({ userId: payload.userId, exp: payload.exp, iat: payload.iat });
 
         } catch (error) {
             switch (true) {
