@@ -2,7 +2,9 @@ import { io } from 'socket.io-client';
 
 class NotificationService {
     constructor() {
-        this.socket = io('http://localhost:5003');
+        this.socket = io('http://localhost:5003', {
+            reconnectionAttempts: 5
+        });
         this.close = this.disconnect.bind(this);
         this.connect = this.connect.bind(this);
         this.subscribe = this.subscribe.bind(this);

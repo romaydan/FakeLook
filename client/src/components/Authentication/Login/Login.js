@@ -21,7 +21,7 @@ const Login = props => {
         const { id: facebookId, accessToken } = response;
         facebookLogin(accessToken, facebookId)
             .then(({ data: { user, accessToken } }) => {
-                localStorage.setItem('access_token', accessToken)
+                sessionStorage.setItem('access_token', accessToken)
                 console.log(user);
                 setUser(user);
                 history.push('/map');
@@ -33,18 +33,18 @@ const Login = props => {
         const { tokenId } = response;
         googleLogin(tokenId)
             .then(({ data: { user, accessToken } }) => {
-                localStorage.setItem('access_token', accessToken)
+                sessionStorage.setItem('access_token', accessToken)
                 console.log(user);
                 setUser(user);
-                history.push('/map');
+                history.push('/feed');
             })
             .catch(console.error);
     }
 
     const login = (email, password) => {
         fakelookLogin(email, password)
-            .then(({ data: { user, accessToken } }) => {
-                localStorage.setItem('access_token', accessToken)
+            .then(({ user, accessToken }) => {
+                sessionStorage.setItem('access_token', accessToken)
                 console.log(user);
                 setUser(user);
                 history.push('/map');

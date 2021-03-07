@@ -85,9 +85,9 @@ const PostForm = props => {
                                         ({ push, remove }) => {
 
                                             const inputRef = createRef();
-                                            const addTag = (tag) => {
-                                                if (!values.tags?.includes(tag) && inputRef.current.value) {
-                                                    push(tag);
+                                            const addTag = (content) => {
+                                                if (!values.tags?.includes(content) && inputRef.current.value) {
+                                                    push({ content });
                                                     inputRef.current.value = '';
                                                 }
                                             }
@@ -106,7 +106,7 @@ const PostForm = props => {
                                                                 {
                                                                     items.map((item, i) => <span className='mb-1 mr-2 cursor-pointer hover:bg-gray-100 
                                                                         hover:scale-105 transform transition-transform rounded-md'
-                                                                        onClick={() => removeTag(i)}>{'#' + item}</span>)
+                                                                        onClick={() => removeTag(i)}>{'#' + item.content}</span>)
                                                                 }
                                                             </div>
                                                             <span className='flex flex-row items-center mr-2'>

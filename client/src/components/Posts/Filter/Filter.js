@@ -11,15 +11,6 @@ const Filter = props => {
     const { onFilterSubmit, initialFilterValues, friends } = props;
     const [key, setKey] = useState(Math.random());
 
-    const tags = [
-        { content: 'test' },
-        { content: 'test' },
-        { content: 'test' },
-        { content: 'test' }
-    ]
-
-    console.log(friends)
-
     return (
         <div className='w-full h-full pr-3 ml-5'>
             <Formik
@@ -28,7 +19,7 @@ const Filter = props => {
                 onSubmit={(values) => onFilterSubmit(values)}
                 enableReinitialize>
                 {
-                    ({ values, errors, touched, handleReset, resetForm }) => (
+                    ({ values, errors, touched, handleReset, resetForm, submitForm }) => (
                         <div key={key + 1}>
                             <label className='flex flex-row w-full items-end my-10' onClick={e => e.preventDefault()}>
                                 <FaUserAlt className='h-50px w-50px mr-5 shadow-sm' fill={'white'} />
@@ -36,12 +27,14 @@ const Filter = props => {
                                     {
                                         ({ push, remove }) => (
                                             <SelectionDropdown
-                                                items={[...friends]}
+                                                items={friends ? [...friends] : []}
                                                 placeholder={'Select Freind(s)'}
                                                 propertykey={'name'}
-                                                onSelected={(item) => push(item)}
+                                                onSelected={(item) => {
+                                                    push(item.authId)
+                                                }}
                                                 onDeselected={(item) => {
-                                                    const index = values.publishers.indexOf(p => p.id === item.id);
+                                                    const index = values.publishers.indexOf(id => id === item.authId);
                                                     remove(index);
                                                 }}
                                                 direction={'left'} />
@@ -128,12 +121,12 @@ const Filter = props => {
                                     {
                                         ({ push, remove }) => (
                                             <SelectionDropdown
-                                                items={[...friends]}
+                                                items={friends ? [...friends] : []}
                                                 propertykey={'name'}
                                                 placeholder={'Select Usertag(s)'}
-                                                onSelected={(item) => push(item)}
+                                                onSelected={(item) => push(item.authId)}
                                                 onDeselected={(item) => {
-                                                    const index = values.userTags.indexOf(p => p.id === item.id);
+                                                    const index = values.userTags.indexOf(id => id === item.authId);
                                                     remove(index);
                                                 }}
                                                 direction={'left'} />
@@ -145,7 +138,7 @@ const Filter = props => {
                             <div className='flex flex-row w-full justify-around -ml-5'>
                                 <button className='border-2 border-blue-600 w-1/3 bg-blue-600 h-12 rounded-md text-white font-semibold hover:scale-110 transform transition'
                                     onClick={() => {
-
+                                        submitForm();
                                     }}>
                                     Apply Filter
                                 </button>

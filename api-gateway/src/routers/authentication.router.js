@@ -24,12 +24,12 @@ router.post('/fakelook/signin', async (req, res) => {
     try {
         const { password, email } = req.body;
 
-        const authReponse = authPostRequest(req.path, { password, email });
+        const authReponse = await authPostRequest(req.path, { password, email });
 
         const { accessToken } = authReponse.data;
         const { refresh_token } = cookie.parse(authReponse.headers['set-cookie'][0]);
 
-        const identityRes = identityGetRequest('/users', { authorization: accessToken }
+        const identityRes = await identityGetRequest('/users', { authorization: accessToken }
         );
 
         res.cookie('refresh_token', refresh_token);

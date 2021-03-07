@@ -48,9 +48,12 @@ const Notifications = props => {
             <div className='overflow-x-hidden overflow-y-hidden min-w-full max-w-lg'>
                 <motion.div onHoverStart={animate} animate={animation}>
                     <IoIosNotifications className='w-50px h-50px fill-like-blue outline-none cursor-pointer'
-                        onClick={() => setVisibility(!visibility)} />
+                        onClick={() => setVisibility(!visibility)} 
+                        onBlur={() => {
+                            console.log('blur')
+                        }}/>
                 </motion.div>
-                <div className={`absolute z-10 shadow-lg border-4 border-gray-200 
+                <div  className={`absolute z-10 shadow-lg border-4 border-gray-200 
                 rounded-md mt-1 w-600px max-h-72 min-h-50px left-1/2 -translate-x-1/2 transform 
                 overflow-y-auto overflow-x-hidden scrollbar-a bg-gray-100 ` + (visibility ? '' : 'hidden')}>
                     {

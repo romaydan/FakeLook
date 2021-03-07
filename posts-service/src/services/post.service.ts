@@ -32,11 +32,11 @@ export class PostService implements IPostService {
             throw new ReferenceError('No post proivded!');
         }
 
-        if(!uploadFile) {
+        if (!uploadFile) {
             throw new ReferenceError('No image provided!');
         }
 
-        if(!accessToken) {
+        if (!accessToken) {
             throw new ReferenceError('No access token provided!');
         }
 
@@ -45,7 +45,9 @@ export class PostService implements IPostService {
         post.imageUrl = await this.uploader.uploadImage(post.publisherId, post.id, uploadFile, accessToken);
 
         //adds the new post to the database. 
-        return this.repository.addPost(post);
+        const newPost = await this.repository.addPost(post);
+
+        return newPost;
     }
 
     async removePostById(postId: string, accessToken: string): Promise<boolean> {

@@ -2,10 +2,10 @@ import { injectable } from "inversify";
 import { Op } from "sequelize";
 import { IPost, Post } from "../models/post.model";
 import uuid from 'uuid';
-import { UserTag } from "../models/usertag.model";
+import { IUserTag, UserTag } from "../models/usertag.model";
 import { Like } from "../models/like.model";
 import { Comment } from "../models/comment.model";
-import { PostTag, Tag } from "../models/tag.model";
+import { ITag, PostTag, Tag } from "../models/tag.model";
 import sequelize from "sequelize";
 
 export interface IPostRepository {
@@ -55,21 +55,31 @@ export class PostRepository implements IPostRepository {
         })
     }
 
-    getFilteredPost(userFilter: string[], tagFilter: string[], publishers: string[], location: number[], distance: number, from: Date, to: Date): Promise<IPost[]> {
+    getFilteredPost(userFilter: string[] = [], tagFilter: string[] = [], publishers: string[], location: number[], distance: number, from: Date, to: Date): Promise<IPost[]> {
         return Post.findAll({
             include: [
-                // {
-                //     model: Tag,
-                //     attributes: [],
-                //     through: {
-                //         attributes: [], where: tagFilter?.length > 0 ? { tagId: { [Op.in]: tagFilter } } : null,
-                //     }
-                // },
-                // {
-                //     model: UserTag,
-                //     attributes: [],
-                //     where: userFilter?.length > 0 ? { userId: { [Op.in]: userFilter } } : null
-                // }, 
+                tagFilter.length > 0 ?
+                    {
+                        model: Tag,
+                        through: { attributes: [] },
+                        where: { content: { [Op.in]: tagFilter } }
+                    }
+                    :
+                    {
+                        model: Tag,
+                        through: {
+                            attributes: []
+                        }
+                    },
+                userFilter.length > 0 ?
+                    {
+                        model: UserTag,
+                        where: { userId: { [Op.in]: userFilter } }
+                    }
+                    :
+                    {
+                        model: UserTag
+                    },
                 Like, Comment],
             where: {
                 [Op.and]: [
@@ -84,7 +94,8 @@ export class PostRepository implements IPostRepository {
                         publisherId: publishers?.length > 0 ? { [Op.in]: publishers } : { [Op.not]: null }
                     }
                 ]
-            }
+            },
+            order: [['createdAt', 'DESC']]
         });
     }
 
@@ -102,6 +113,14 @@ export class PostRepository implements IPostRepository {
         }
 
         const post = await Post.findOne({
+            include: [
+                {
+                    model: Tag,
+                    through: {
+                        attributes: []
+                    }
+                },
+                UserTag, Comment, Like],
             where: {
                 id: postId
             }

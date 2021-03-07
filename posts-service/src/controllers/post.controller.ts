@@ -2,10 +2,12 @@ import { NextFunction, Request, Response } from "express";
 import { inject, injectable } from "inversify";
 import TYPES from "../ioc-container/types";
 import { IPostService } from "../services/post.service";
+import { ITagService } from "../services/tag.service";
 
 @injectable()
 export default class PostController {
-    constructor(@inject(TYPES.IPostService) private service: IPostService) {
+    constructor(@inject(TYPES.IPostService) private service: IPostService,
+    @inject(TYPES.ITagService) private tagService: ITagService) {
         this.getFilteredPosts = this.getFilteredPosts.bind(this);
         this.addPost = this.addPost.bind(this);
         this.removePost = this.removePost.bind(this);
@@ -18,11 +20,10 @@ export default class PostController {
         try {
             const { userTags, tags, publishers, location, distance, fromDate, toDate } = req.query;
 
-            const to = new Date(toDate as string) ?? new Date();
-            const from = new Date(fromDate as string) ?? new Date(new Date().setMonth(to.getMonth() - 2));
-            const dis = parseFloat(distance as string);
-            const loc = (location as string[]).map(i => parseFloat(i));
-            const posts = await this.service.getFilteredPosts(userTags as string[], tags  as string[], publishers  as string[], loc, dis, from, to);
+            const to = new Date(<string>toDate) ?? new Date(), from = new Date(<string>fromDate) ?? new Date(new Date().setMonth(to.getMonth() - 2));
+            const dis = parseFloat(<string>distance), loc = (<string[]>location).map(i => parseFloat(i));
+            
+            const posts = await this.service.getFilteredPosts(<string[]>userTags, <string[]>tags, <string[]>publishers, loc, dis, from, to);
 
             res.json(posts);
         } catch (error) {
@@ -43,7 +44,7 @@ export default class PostController {
 
     async addPost(req: Request, res: Response, next: NextFunction) {
         try {
-            const { coordinates, textContent, showTo, photo: file } = req.body;
+            const { coordinates, textContent, tags, userTags, showTo, photo: file } = req.body;
             const publisherId = req['userId'];
             const { authorization: token } = req.headers
 
@@ -57,8 +58,11 @@ export default class PostController {
                 },
                 textContent,
                 showTo,
-                imageUrl: ''
+                imageUrl: '',
+                userTags: JSON.parse(userTags)
             }, file, token);
+
+            await this.tagService.addTagsToPost(JSON.parse(tags), post.id);
 
             res.json(post);
 

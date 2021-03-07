@@ -6,6 +6,7 @@ export interface IComment {
     content: string;
     userId: string;
     postId: string;
+    name: string;
 }
 
 @Table
@@ -22,6 +23,10 @@ export class Comment extends Model implements IComment {
     @AllowNull(false)
     @Column(DataType.STRING)
     userId: string;
+
+    @AllowNull
+    @Column(DataType.STRING)
+    name: string;
 
     @AllowNull(false)
     @ForeignKey(() => Post)

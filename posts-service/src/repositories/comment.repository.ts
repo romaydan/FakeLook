@@ -1,6 +1,6 @@
 import { injectable } from "inversify";
 import { Comment, IComment } from "../models/comment.model";
-import uuid from 'uuid';
+import * as uuid from 'uuid';
 import { Op } from "sequelize";
 
 export interface ICommentRepository {

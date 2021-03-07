@@ -14,16 +14,17 @@ export const fakelookLogin = async (email, password) => {
 export const fakelookRegister = async (email, password, confirmPassword, user, address) => {
     // const { data: { statusCode, userId } } = await axios.post(`${BASE_AUTH_URL}/fakelook/signup`, { email, password, confirmPassword });
     const response = await axios.post(`${API_GATEWAY_URL}/auth/fakelook/signup`, { email, password, confirmPassword, user, address });
-    return response;
+    return response.data;
 }
 
-export const facebookLogin = (facebookToken, facebookId) => {
-    return axios.get(`${API_GATEWAY_URL}/auth/facebook/signin`, {
+export const facebookLogin = async (facebookToken, facebookId) => {
+    const response = await axios.get(`${API_GATEWAY_URL}/auth/facebook/signin`, {
         headers: {
             facebook_id: facebookId, facebook_token: facebookToken
         }
     })
 
+    return response.data;
 }
 
 export const facebookRegister = async (facebookToken, facebookId, user, address) => {

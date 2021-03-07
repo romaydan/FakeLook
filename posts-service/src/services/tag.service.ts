@@ -4,6 +4,7 @@ import { ITag } from "../models/tag.model";
 import { ITagRepository } from "../repositories/tag.repository";
 
 export interface ITagService {
+    addTagsToPost(tags: ITag[], postId: string): Promise<ITag[]>;
     addTagToPost(tag: ITag, postId: string): Promise<ITag>;
     removeTagFromPost(tagId: string, postId: string): Promise<boolean>;
     getAllPostTagsById(postId: string): Promise<ITag[]>;
@@ -15,6 +16,10 @@ export class TagService implements ITagService {
         this.addTagToPost = this.addTagToPost.bind(this);
         this.removeTagFromPost = this.removeTagFromPost.bind(this);
         this.getAllPostTagsById = this.getAllPostTagsById.bind(this);
+    }
+
+    addTagsToPost(tags: ITag[], postId: string) {
+        return this.repository.addTagsToPost(tags, postId);
     }
 
     addTagToPost(tag: ITag, postId: string): Promise<ITag> {

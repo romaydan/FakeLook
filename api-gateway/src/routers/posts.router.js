@@ -6,7 +6,7 @@ const formidable = require('express-formidable');
 
 const router = Router();
 
-const POSTS_SERVICE_URL = 'http://localhost:5001/posts';
+const POSTS_SERVICE_URL = 'http://localhost:5001';
 const IDENTITY_SERVICE_URL = 'http://localhost:5004/api/users';
 
 const formidableMiddleWare = formidable({
@@ -38,7 +38,7 @@ router.post('/add', formidableMiddleWare, (req, res) => {
             form.append('textContent', textContent);
             form.append('userTags', userTags);
 
-            const response = await axios.post(`${POSTS_SERVICE_URL}${req.path}`, form, {
+            const response = await axios.post(`${POSTS_SERVICE_URL}/posts${req.path}`, form, {
                 headers: {
                     authorization: accessToken,
                     'Content-Type': `multipart/form-data;boundary=${form.getBoundary()}`
@@ -48,37 +48,108 @@ router.post('/add', formidableMiddleWare, (req, res) => {
         });
 
     } catch (error) {
-        res.status(error.status).json(error.response);
+        res.status(error.response.status).json(error.response);
     }
 })
 
-router.get('/get', async (req, res) => {
-    const { authorization } = req.headers;
-    const { userTags, tags, publishers, distance, location, from: fromDate, to: toDate } = req.query;
+router.get('/', async (req, res) => {
+    try {
+        const { authorization } = req.headers;
+        const { userTags, tags, publishers, distance, location, from: fromDate, to: toDate } = req.query;
 
-    const { data: posts } = await axios.get(`${POSTS_SERVICE_URL}`, {
-        headers: {
-            authorization,
-        },
-        params: { userTags, tags, publishers, distance, location, fromDate, toDate }
-    })
+        const { data: posts } = await axios.get(`${POSTS_SERVICE_URL}/posts`, {
+            headers: {
+                authorization,
+            },
+            params: { userTags, tags, publishers, distance, location, fromDate, toDate }
+        })
 
-    if(posts.length > 0) {
-        console.log(posts);
-        const { data: users } = await axios.get(`${IDENTITY_SERVICE_URL}/all`, {
+        if (posts.length > 0) {
+            const { data: users } = await axios.get(`${IDENTITY_SERVICE_URL}/all`, {
+                headers: {
+                    authorization
+                },
+                params: { userIds: publishers }
+            });
+
+            for (const post of posts) {
+                const user = users.find(u => u.authId === post.publisherId);
+                post.publisher = user.name;
+            }
+
+        }
+        res.json(posts);
+
+    } catch (error) {
+        res.status(error.response.status).json(error.response)
+    }
+
+})
+
+router.get('/:postId', async (req, res) => {
+    try {
+        const { postId } = req.params;
+        const { authorization } = req.headers;
+
+        const response = await axios.get(`${POSTS_SERVICE_URL}/posts/${postId}`, {
             headers: {
                 authorization
-            },
-            params: { userIds: publishers }
+            }
+        })
+
+        res.json(response.data);
+    } catch (error) {
+        res.status(error.response.status).json(error.response);
+    }
+})
+
+router.post('/comment', async (req, res) => {
+    try {
+        const { comment, postId } = req.body;
+        const { authorization } = req.headers;
+
+        const { data: newComment } = await axios.post(`${POSTS_SERVICE_URL}/comments/add`, { comment: comment, postId: postId }, {
+            headers: { authorization }
         });
 
-        for(const post of posts) {
-            const user = users.find(u => u.authId === post.publisherId);
-            post.publisher = user.name;
-        }
-    }
+        res.json(newComment);
 
-    res.json(posts);
+    } catch (error) {
+        res.status(error.response.status).json(error.response)
+    }
 })
+
+router.post('/like', async (req, res) => {
+    try {
+        const { postId, userId } = req.body;
+        const { authorization } = req.headers;
+
+        const { data: like } = await axios.post(`${POSTS_SERVICE_URL}/likes/add`, { postId, userId }, {
+            headers: { authorization }
+        });
+
+        res.json(like);
+
+    } catch (error) {
+        res.status(error.response.status).json(error.response);
+    }
+});
+
+router.delete('/like', async (req, res) => {
+    try {
+        const { postId, userId } = req.query;
+        const { authorization } = req.headers;
+
+        const { data, statusCode } = await axios.delete(`${POSTS_SERVICE_URL}/likes/remove`, {
+            headers: { authorization },
+            params: { postId, userId }
+        });
+
+        res.json(data);
+
+    } catch (error) {
+        res.status(error.response.status).json(error.response);
+    }
+});
 
 module.exports = router;

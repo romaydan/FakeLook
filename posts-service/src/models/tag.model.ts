@@ -23,13 +23,15 @@ export class Tag extends Model implements ITag {
 
 @Table
 export class PostTag extends Model {
-    @ForeignKey(() => Post)
     @PrimaryKey
+    @Column
+    id: string;
+
+    @ForeignKey(() => Post)
     @Column
     postId: string;
 
     @ForeignKey(() => Tag)
-    @PrimaryKey
     @Column
     tagId: string;
 }

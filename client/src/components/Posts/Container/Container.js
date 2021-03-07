@@ -6,7 +6,6 @@ import { setPosts } from '../../../actions/posts.actions';
 import { setLocation } from '../../../actions/location.actions';
 import { connect } from 'react-redux';
 import { getPosts } from '../../../services/Posts/posts.service';
-import { createFakeFriends } from '../../../fake-data/fake.data';
 import { addNewPost } from '../../../services/Posts/posts.service';
 import Filter from '../Filter/Filter';
 import PostForm from '../PostForm/PostForm';
@@ -16,22 +15,24 @@ import Notifications from '../../Notifications/Notifications';
 import { setFriends } from '../../../actions/friends.actions';
 import { getFriends } from '../../../services/Friends/friends.service';
 import '../../../css/scrollbar.css';
+import { useHistory } from 'react-router';
 
 const Container = props => {
     const { children, setPosts, post,
         onModalPostViewClosed, user,
         setUserLocation, location,
-        friends, setFriends } = props;
+        friends, setFriends, updatePost } = props;
 
-    const [filterVisibility, setFilterVisibility] = useState(false);
+    const history = useHistory();
 
-    const now = new Date()
+    const now = new Date();
     const initialFilterValues = useMemo(() => ({
-        publishers: [user?.authId],
+        publishers: [],
         from: new Date(new Date().setMonth(now.getMonth() - 1)),
         to: now, distance: 10, tags: [], userTags: [],
-    }), []);
+    }), [friends]);
 
+    const [filterVisibility, setFilterVisibility] = useState(false);
     const [postViewModalIsOpen, setPostViewIsOpen] = useState(false);
     const [postFormModalIsOpen, setPostFormIsOpen] = useState(false);
 
@@ -42,7 +43,6 @@ const Container = props => {
 
     useEffect(() => {
         navigator.geolocation.getCurrentPosition(({ coords }) => setUserLocation([coords.longitude, coords.latitude]))
-        fetchPosts(initialFilterValues);
 
         if (!friends) {
             getFriends(user.authId)
@@ -54,6 +54,12 @@ const Container = props => {
         }
     }, []);
 
+    useEffect(() => {
+        if (friends) {
+            fetchPosts({ ...initialFilterValues, publishers: friends.map(f => f.authId) });
+        }
+    }, [friends])
+
     const closePostViewModal = () => {
         setPostViewIsOpen(false);
         onModalPostViewClosed();
@@ -61,7 +67,7 @@ const Container = props => {
 
     const openPostFormModal = () => setPostFormIsOpen(true);
 
-    const closePosFormModal = () => setPostFormIsOpen(false);
+    const closePostFormModal = () => setPostFormIsOpen(false);
 
     const filterWidthAnimation = useAnimation();
     const filterVisibilityAnimation = useAnimation();
@@ -98,19 +104,27 @@ const Container = props => {
     }
 
     const fetchPosts = (values) => {
-        getPosts({ ...values, location: location })
+        if (values.publishers.length === 0) {
+            values.publishers = friends.map(f => f.authId);
+        }
+
+        getPosts({ ...values, location: location, distance: values.distance * 1000 })
             .then(posts => {
                 setPosts(posts);
             })
             .catch(console.error);
     }
 
+    const updatePostLikes = (likes) => {
+        post.likes = likes;
+        updatePost(post);
+    }
+
     const addPost = (post) => {
-        console.log(post);
         const form = new FormData();
         form.append('photo', post.image)
-        form.append('userTags', post.userTags)
-        form.append('tags', post.tags)
+        form.append('userTags', JSON.stringify(post.userTags))
+        form.append('tags', JSON.stringify(post.tags))
         form.append('textContent', post.textContent);
         form.append('coordinates', post.location);
         form.append('showTo', 1);
@@ -120,10 +134,6 @@ const Container = props => {
 
     return (
         <div className='w-full h-full m-0 flex flex-col' onClick={(e) => e.preventDefault()}>
-            <div className='w-full flex flex-row  h-50px bg-gray-300 z-10 border-b-2 border-gray-300 shadow-md justify-end'>
-                <Notifications Notifications={[]} className='mr-72' />
-            </div>
-
             <motion.div
                 className={'absolute h-full z-10 flex flex-col m-0 bg-gradient-to-t from-blue-500 to-blue-400'}
                 animate={filterWidthAnimation}
@@ -142,11 +152,11 @@ const Container = props => {
                 max-h-full bg-gray-50 shadow-md overflow-y-scroll scrollbar-a 
                 w-1/2 top-5 bottom-5 outline-none border-2 border-gray-100'>
                     <div className='w-full h-full flex flex-col items-center pt-5 pb-5'>
-                        {post ? <PostView post={post} /> : null}
+                        {post ? <PostView postId={post.id} user={user} updatePostLikes={updatePostLikes} /> : null}
                     </div>
                 </Modal>
                 <Modal isOpen={postFormModalIsOpen}
-                    onRequestClose={closePosFormModal}
+                    onRequestClose={closePostFormModal}
                     className='fixed mr-auto ml-auto right-0 left-0 
                 max-h-full bg-gray-50 shadow-md overflow-y-auto scrollbar-a 
                 w-1/2 top-5 bottom-5 outline-none border-2 border-gray-100'>

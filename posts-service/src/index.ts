@@ -19,6 +19,7 @@ import postRouter from './routers/post.router';
 import commentRouter from './routers/comment.router';
 import usertagRouter from './routers/usertag.router';
 import tagRouter from './routers/tag.router';
+import likeRouter from './routers/like.router';
 
 const PORT = process.env.PORT || 5001;
 const app = express();
@@ -84,9 +85,10 @@ db.sync()
         app.use(express.json());
         app.use(jwtValidation);
         app.use('/posts', postRouter);
-        app.use('/commets', commentRouter);
+        app.use('/comments', commentRouter);
         app.use('/usertags', usertagRouter);
         app.use('/tags', tagRouter);
+        app.use('/likes', likeRouter);
 
         app.listen(PORT, () => {
             console.log(`Listening on port: ${PORT}...`);

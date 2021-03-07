@@ -38,6 +38,7 @@ io.on('connection', (socket: Socket) => {
 
 //Redis pub/sub
 redisClient.on('message', (channel: string, message: string) => {
+
     if (channel === 'notification') {
         const { userIds, notification } = JSON.parse(message);
         userIds.forEach(userId => {

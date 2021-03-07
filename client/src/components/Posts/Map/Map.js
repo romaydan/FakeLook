@@ -4,11 +4,13 @@ import { connect } from 'react-redux';
 import ReactMapboxGl, { Marker } from 'react-mapbox-gl';
 import Container from '../Container/Container';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import { setPosts } from '../../../actions/posts.actions';
 
 const Map = props => {
-    const { posts, location } = props;
+    const { posts, location, setPosts } = props;
 
     const [scaleFactor, setScaleFactor] = useState(14 * 0.1);
+    const [selectedPost, setSelectedPost] = useState(null);
     const mapRef = useRef();
 
     const onZoomChanged = (zoom) => {
@@ -33,8 +35,16 @@ const Map = props => {
         map.flyTo({ center: coordinates, zoom })
     }
 
+    const updatePost = (post) => {
+        const index = posts.findIndex(p => p.id === post.id);
+        if(index > 0) {
+            posts[index] = post;
+            setPosts([...posts])
+        }
+    }
+
     return (
-        <Container>
+        <Container post={selectedPost} posts={posts} onModalPostViewClosed={() => setSelectedPost(null)} updatePost={updatePost}>
             <Map
                 center={location}
                 zoom={defualtSettings.zoom}
@@ -50,6 +60,7 @@ const Map = props => {
                         return <Marker
                             onClick={() => {
                                 console.log(post);
+                                setSelectedPost(post)
                             }}
                             className='cursor-pointer'
                             anchor='center'
@@ -98,4 +109,8 @@ const mapStateToProps = state => ({
     location: state.location,
 })
 
-export default connect(mapStateToProps, null)(Map);
+const mapDispatchToProps = dispatch => ({
+    setPosts: posts => dispatch(setPosts(posts))
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(Map);
