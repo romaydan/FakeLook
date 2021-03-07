@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 const colors = require('tailwindcss/colors')
 
 module.exports = {
@@ -152,7 +151,7 @@ module.exports = {
     divideColor: (theme) => theme('borderColor'),
     divideOpacity: (theme) => theme('borderOpacity'),
     divideWidth: (theme) => theme('borderWidth'),
-    fill: { 
+    fill: {
       current: 'currentColor',
       facebook: '#4c69ba',
       'like-blue': '#3b82f6',
@@ -897,7 +896,6 @@ module.exports = {
   },
   plugins: []
 }
-=======
 module.exports = {
   purge: ['./src/**/*.{js,jsx,ts,tsx}', './public/index.html'],
   darkMode: false, // or 'media' or 'class'
@@ -909,4 +907,3 @@ module.exports = {
   },
   plugins: [],
 }
->>>>>>> 539b583f1cf88e1f7f134fe07b32bd4318abb582

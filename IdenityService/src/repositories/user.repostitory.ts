@@ -11,18 +11,15 @@ import User from '../models/user.model';
 @injectable()
 export default class UserRepository implements IUserRepository {
   constructor() {}
+  getUsersByName(name: string): Promise<IUser[]> {
+    return User.findAll({ where: { name: { [Op.like]: `%${name}%` } } });
+  }
   getUsersById(userIds: string[]): Promise<IUser[]> {
     return User.findAll({ where: { authId: { [Op.in]: userIds } }, include: [Address] });
   }
 
   async addUser(user: IUser, address: IAddress): Promise<IUser> {
-    let newUser;
-    try {
-      newUser = await User.create({ id: uuid.v4(), ...user, address: { id: uuid.v4(), ...address } }, { include: Address });
-    } catch (error) {
-      console.log('error', error);
-    }
-    return newUser;
+    return User.create({ id: uuid.v4(), ...user, address: { id: uuid.v4(), ...address } }, { include: Address });
   }
   async getUserByAuthId(id: string): Promise<IUser> {
     const userFromDb = await User.findOne({

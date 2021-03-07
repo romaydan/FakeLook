@@ -19,8 +19,6 @@ class App {
 
   private routes(routers: { forEach: (arg0: (controller: any) => void) => void }) {
     routers.forEach((router) => {
-      console.log('router', router);
-
       this.app.use(router.path, router.router);
     });
   }

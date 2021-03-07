@@ -13,7 +13,7 @@ export default class FriendRequestRepositorySequelize implements IFriendRequestR
   async addFriendRequest(senderId: string, recieverId: string): Promise<IFriendRequest> {
     return FriendRequest.create({
       id: uuid.v4(),
-      fromId: senderId,
+      senderId: senderId,
       recipientId: recieverId,
     });
   }

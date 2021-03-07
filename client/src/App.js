@@ -1,13 +1,12 @@
-import Login from './components/Authentication/Login/Login';
-import Register from './components/Authentication/Register/Register';
-import Map from './components/Posts/Map/Map';
-import './App.css';
+import { DndProvider } from 'react-dnd';
 import Modal from 'react-modal';
 import { BrowserRouter } from 'react-router-dom';
 import AuthenticationRouter from './components/Routers/AuthenticationRouter';
 import PostRouter from './components/Routers/PostRouter';
 import Notifications from './components/Notifications/Notifications';
 import Container from './components/Container/Container';
+import SocialRouter from './components/Routers/SocialRouter';
+import { HTML5Backend } from 'react-dnd-html5-backend'
 
 Modal.setAppElement('#root');
 
@@ -20,6 +19,7 @@ function App() {
         <AuthenticationRouter />
         <Container>
           <PostRouter />
+          <SocialRouter />
         </Container>
         {/* <div className='flex w-full items-center justify-center'>
           <Notifications notifications={notifications} />

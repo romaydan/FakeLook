@@ -10,7 +10,10 @@ import Group from '../models/group.model';
 @injectable()
 export default class GroupsRepositorySequelize implements IGroupsRepository {
   async checkIfUserIsCreator(groupId: string, userId: string): Promise<boolean> {
-    const groupDb = await Group.findOne({ where: { id: groupId } });
+    console.log('groupId', groupId);
+    const groupDb = await Group.findOne({ where: { id: groupId }, include: GroupFriends });
+    console.log('groupDb', groupDb);
+
     return groupDb.creatorId === userId;
   }
   async checkIfNameValid(name: string): Promise<boolean> {
@@ -18,7 +21,7 @@ export default class GroupsRepositorySequelize implements IGroupsRepository {
     return res.length === 0;
   }
   addGroup(group: IGroup): Promise<IGroup> {
-    return Group.create({ id: uuid.v4(), ...group });
+    return Group.create({ id: uuid.v4(), ...group }, { include: GroupFriends });
   }
 
   removeGroup(groupId: string): Promise<number> {
@@ -30,7 +33,7 @@ export default class GroupsRepositorySequelize implements IGroupsRepository {
       throw new ReferenceError('No group id given!');
     }
 
-    return Group.findOne({ where: { id: groupId } });
+    return Group.findOne({ where: { id: groupId }, include: GroupFriends });
   }
 
   async getUsersGroups(userId: string): Promise<IGroup[]> {
@@ -39,7 +42,7 @@ export default class GroupsRepositorySequelize implements IGroupsRepository {
       throw new Error('the user has no groups');
     } else {
       const groupFriendsIds = groupFriends.map((gf) => gf.groupId);
-      return Group.findAll({ where: { id: { [Op.in]: groupFriendsIds } } });
+      return Group.findAll({ where: { id: { [Op.in]: groupFriendsIds } }, include: GroupFriends });
     }
   }
 
@@ -48,6 +51,7 @@ export default class GroupsRepositorySequelize implements IGroupsRepository {
   }
 
   async removeFriendFromGroup(groupId: string, friendId: string): Promise<boolean> {
+    console.log('friendId in repo', friendId);
     return (await GroupFriends.destroy({ where: { groupId, friendId } })) > 0;
   }
   async updateGroup(groupId: string, group: IGroup): Promise<IGroup> {

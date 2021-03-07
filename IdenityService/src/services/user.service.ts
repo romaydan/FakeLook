@@ -12,6 +12,9 @@ export default class UserService implements IUserService {
     @inject(TYPES.IUserRepository)
     private usersRepo: IUserRepository
   ) {}
+  getUsersByName(name: string): Promise<IUser[]> {
+    return this.usersRepo.getUsersByName(name);
+  }
   getUsersById(ids: string[]): Promise<IUser[]> {
     return this.usersRepo.getUsersById(ids);
   }

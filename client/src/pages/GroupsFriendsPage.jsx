@@ -1,64 +1,169 @@
 import React, { useState, useEffect } from 'react';
-import Section from '../components/Section';
-import Button from '../shared/components/Button';
-import Modal from '../shared/components/Modal';
-import { getUsersGroup, removeGroup } from '../shared/utils/services/groupsService';
+import Modal from 'react-modal';
 
+import NewGroup from '../components/Social/NewGroup';
+import AddFriend from '../components/Social/AddFriend';
+import { getUsersFriends, blockFriend, removeFriend, getUsersBlocks, unblockFriend } from '../services/Social/friendsService';
+import { deleteGroup, getUsersGroup } from '../services/Social/groupsService';
+import Card from '../shared/components/Card';
+import Button from '../shared/components/Button';
+import FriendRequests from '../components/Social/FriendRequests';
+import { getUsersByids } from '../services/Idenity';
+
+const getUsersData = async (userId) => {
+  const { data: blocks } = await getUsersBlocks(userId);
+  const { data: friendsRes } = await getUsersFriends(userId);
+  const friends = friendsRes.map((f) => (blocks.includes(f.id) ? { ...f, blocked: true } : f));
+  const { data: userRes } = await getUsersByids([userId]);
+  const user = userRes[0];
+  let groups = [];
+  try {
+    let { data: groupsRes } = await getUsersGroup(userId);
+    groups = groupsRes;
+  } catch (error) {}
+  return { groups, friends, user };
+};
 const GroupsFriendsPage = (props) => {
-  // const { userId } = props;
-  const userId = '87d5efa2-46ea-4604-86a6-b390f459ba74';
+  const { userId } = props;
   const [friends, setFriends] = useState([]);
   const [groups, setGroups] = useState([]);
+  const [user, setUser] = useState({ name: 'name' });
+  const [modalPage, setModalPage] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  useEffect(() => {}, [friends]);
   useEffect(() => {
-    setFriends(mockFriends);
-    setGroups(getUsersGroup(userId));
-  }, []);
-
-  const blockFriend = async (friendId) => {};
-  const removeGroupHandler = async (groupId) => {
-    const res = await removeGroup(groupId, props.userId);
-    setGroups(res);
+    (async () => {
+      try {
+        let { friends, groups, user: userRes } = await getUsersData(userId);
+        setFriends(friends);
+        setGroups(groups);
+        setUser(userRes);
+      } catch (error) {
+        console.log('error.message :>> ', error);
+      }
+    })();
+  }, [userId]);
+  useEffect(() => {}, [groups]);
+  const blockFriendHandler = async (friend) => {
+    try {
+      if (friend.blocked) {
+        await unblockFriend(userId, friend.id);
+      } else {
+        await blockFriend(userId, friend.id);
+      }
+      const { friends } = await getUsersData(userId);
+      setFriends(friends);
+    } catch (error) {
+      console.log('error.message :>> ', error.message);
+    }
   };
 
-  const groupsModalHandler = () => {
+  const removeGroupHandler = async (groupId) => {
+    try {
+      await deleteGroup(groupId, props.userId);
+      setGroups((prev) => prev.filter((g) => g.id !== groupId));
+    } catch (error) {
+      console.log('error :>> ', error.message);
+    }
+  };
+  const removeFriendHandler = async (friendId) => {
+    const res = await removeFriend(userId, friendId);
+    console.log(res);
+  };
+
+  const editGroupHandler = async (group) => {
+    setModalPage(<NewGroup group={group} userId={userId} friends={friends}></NewGroup>);
     setShowModal(true);
   };
 
-  const closeModalHandler = () => {
-    setShowModal(false);
+  const groupsModalHandler = () => {
+    setModalPage(<NewGroup userId={userId} friends={friends}></NewGroup>);
+    setShowModal(true);
   };
+
+  const friendsModalHandler = () => {
+    setModalPage(<AddFriend userId={userId}></AddFriend>);
+    setShowModal(true);
+  };
+
+  const showFriendRequests = () => {
+    setModalPage(<FriendRequests userId={userId}></FriendRequests>);
+    setShowModal(true);
+  };
+  const closeModalHandler = async () => {
+    setShowModal(false);
+    let { friends, groups } = await getUsersData(userId);
+    setFriends(friends);
+    setGroups(groups);
+  };
+
   return (
     <div className=' grid grid-cols-2'>
       <div>
-        <Section title='groups' list={groups} itemBtnClick={removeGroupHandler} createBtnClick={groupsModalHandler}></Section>
+        <h2 className='text-center'>{user.name}</h2>
+        <div className='p-3'>
+          <div className='flex justify-evenly'>
+            <h1 className='text-center text-4xl capitalize p-2 font-bold'>Groups</h1>
+            <Button className='capitalize ' click={groupsModalHandler}>
+              Add groups
+            </Button>
+          </div>
+          {groups.length > 0
+            ? groups.map((group) => (
+                <Card title={group.name} key={group.id}>
+                  <h2 className='text-gray-800 capitalize text-xl font-bold '>{group.name}</h2>
+
+                  <div>
+                    <Button color='blue-400' click={() => editGroupHandler(group)}>
+                      Edit
+                    </Button>
+                    <Button color='red-300' click={() => removeGroupHandler(group.id)}>
+                      Remove
+                    </Button>
+                  </div>
+                </Card>
+              ))
+            : null}
+        </div>
       </div>
+
       <div>
-        <Section title='friends' list={friends} itemBtnClick={blockFriend}></Section>
+        <div className='p-3'>
+          <div className='flex justify-evenly'>
+            <h1 className='text-center text-4xl capitalize p-2 font-bold'>Friends</h1>
+            <div>
+              <Button className='capitalize ' click={friendsModalHandler}>
+                Add Friends
+              </Button>
+              <Button className='capitalize ' click={showFriendRequests}>
+                FriendRequests
+              </Button>
+            </div>
+          </div>
+          {friends.length > 0
+            ? friends.map((friend) => (
+                <Card title={friend.name} key={friend.id}>
+                  <h2 className='text-gray-800 capitalize text-xl font-bold '>{friend.name}</h2>
+                  <div>
+                    <Button color='blue-400' click={() => blockFriendHandler(friend)}>
+                      {friend.blocked ? 'Unblock' : ' Block'}
+                    </Button>
+                    <Button color='red-300' click={() => removeFriendHandler(friend.id)}>
+                      Remove
+                    </Button>
+                  </div>
+                </Card>
+              ))
+            : null}
+        </div>
       </div>
       {showModal ? (
-        <Modal
-          closeModal={closeModalHandler}
-          footer={
-            <>
-              {' '}
-              <Button type='button' style={{ transition: 'all .15s ease' }} onClick={closeModalHandler}>
-                Close
-              </Button>
-              <Button color='green-500'>Save Changes</Button>
-            </>
-          }
-        ></Modal>
+        <Modal isOpen={showModal} onRequestClose={closeModalHandler}>
+          {modalPage}
+        </Modal>
       ) : null}
     </div>
   );
 };
 
 export default GroupsFriendsPage;
-
-const mockFriends = [
-  { name: 'yosi', id: '87d5efa2-46ea-4604-86a6-b390f459ba74' },
-  { name: 'rami', id: '665b9601-665c-4151-a1b3-9065ca4f13d0' },
-  { name: 'bookie', id: '296c06b4-6101-420f-8f00-03566f867f5e' },
-  { name: 'nookie', id: '6e236027-bc8d-453f-88b9-6f6651739abc' },
-];

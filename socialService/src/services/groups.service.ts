@@ -18,8 +18,8 @@ export default class GroupsService implements IGroupsService {
   }
 
   async removeGroup(groupId: string, userId: string): Promise<boolean> {
-    this.validateCreator(groupId, userId);
-    if (this.groupsRepo.checkIfUserIsCreator(groupId, userId)) return (await this.groupsRepo.removeGroup(groupId)) > 0;
+    await this.validateCreator(groupId, userId);
+    return (await this.groupsRepo.removeGroup(groupId)) > 0;
   }
   async getGroup(groupId: string, userId: string): Promise<IGroup> {
     this.validateCreator(groupId, userId);
@@ -28,13 +28,13 @@ export default class GroupsService implements IGroupsService {
   getUsersGroups(userId: string): Promise<IGroup[]> {
     return this.groupsRepo.getUsersGroups(userId);
   }
-  addUserToGroup(groupId: string, userId: string, friendId: string): Promise<boolean> {
-    this.validateCreator(groupId, userId);
+  async addUserToGroup(groupId: string, userId: string, friendId: string): Promise<boolean> {
+    await this.validateCreator(groupId, userId);
     return this.groupsRepo.addFriendToGroup(groupId, friendId);
   }
-  removeUserFromGroup(groupId: string, userId: string, friendId: string): Promise<boolean> {
-    this.validateCreator(groupId, userId);
-    return this.groupsRepo.removeFriendFromGroup(groupId, userId);
+  async removeUserFromGroup(groupId: string, userId: string, friendId: string): Promise<boolean> {
+    await this.validateCreator(groupId, userId);
+    return this.groupsRepo.removeFriendFromGroup(groupId, friendId);
   }
   async updateGroupName(groupId: string, name: string, userId: string): Promise<IGroup> {
     this.validateCreator(groupId, userId);

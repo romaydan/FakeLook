@@ -7,4 +7,5 @@ export default interface IUserService {
   removeUserById(id: string): Promise<boolean>;
   addUser(user: IUser, address: IAddress): Promise<IUser>;
   updateUser(id: string, user: IUser, address: IAddress): Promise<boolean>;
+  getUsersByName(name: string): Promise<IUser[]>;
 }

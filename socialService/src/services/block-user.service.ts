@@ -15,7 +15,7 @@ export default class BlockUserService implements IBlockUserService {
     private blockRepo: IBlockUserRepository
   ) {}
   blockUser(userId: string, blockId: string): Promise<IBlockedUser> {
-    return this.blockUser(userId, blockId);
+    return this.blockRepo.addBlockedUser(userId, blockId);
   }
   async unblockUser(userId: string, blockId: string): Promise<boolean> {
     return (await this.blockRepo.removeBlockedUser(userId, blockId)) == 2;
