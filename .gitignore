@@ -107,4 +107,8 @@ dist
 
 test.jpeg
 
+db/data/*
+
+*.db
+
 images-server/public/**

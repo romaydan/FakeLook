@@ -5,6 +5,11 @@ module.exports = {
   presets: [],
   darkMode: false, // or 'media' or 'class'
   theme: {
+    extend: {
+      backgroundColor: {
+        
+      }
+    },
     screens: {
       sm: '640px',
       md: '768px',
@@ -73,7 +78,7 @@ module.exports = {
     },
     backgroundColor: (theme) => ({
       ...theme('colors'),
-      'facebook': '#4c69ba'
+      'facebook': '#4267B2',
     }),
     backgroundImage: {
       none: 'none',
@@ -895,15 +900,4 @@ module.exports = {
     zIndex: ['responsive', 'focus-within', 'focus'],
   },
   plugins: []
-}
-module.exports = {
-  purge: ['./src/**/*.{js,jsx,ts,tsx}', './public/index.html'],
-  darkMode: false, // or 'media' or 'class'
-  theme: {
-    extend: {},
-  },
-  variants: {
-    extend: {},
-  },
-  plugins: [],
 }

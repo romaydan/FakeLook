@@ -63,8 +63,7 @@ export class FakeLookAuthController {
             //generates a refresh token with the user id.
             const refreshToken = this.jwtService.signToken({ userId: userId }, settings.jwtSettings.refreshToken.expiration);
 
-            res.cookie('refresh_token', refreshToken);
-            res.json({ statusCode: 200, message: 'Signup successfull!', accessToken: accessToken });
+            res.json({ status: 200, message: 'Sign in successfull!', accessToken, refreshToken });
 
         } catch (error) {
             switch (true) {

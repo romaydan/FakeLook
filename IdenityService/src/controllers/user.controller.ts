@@ -25,7 +25,7 @@ class UsersController {
 
   addUser = async (req: Request, res: Response) => {
     try {
-      const { user, address } = req.body.data;
+      const { user, address } = req.body;
       const newUser = await this.userServ.addUser(user, address);
       res.json(newUser);
     } catch (error) {

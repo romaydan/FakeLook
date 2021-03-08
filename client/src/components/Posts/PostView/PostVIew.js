@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { AiFillLike } from 'react-icons/ai/index';
 import { BsPlusCircleFill, BsFillTagFill } from 'react-icons/bs';
 import { FaUserTag } from 'react-icons/fa';
+import { useHistory } from 'react-router';
+import useRefreshToken from '../../../hooks/refresh.hook';
 import { addComment, addLike, getPostById, removeLike } from '../../../services/Posts/posts.service';
 
 const PostView = props => {
@@ -9,38 +11,66 @@ const PostView = props => {
 
     const [post, setPost] = useState(null);
     const commentRef = useRef();
+    const history = useHistory();
+    const refresh = useRefreshToken();
+
+    const onRefreshFailed = () => {
+        history.push('/logout');
+    }
+
+    const getPostData = () => {
+        getPostById(postId)
+            .then(post => setPost(post))
+            .catch(err => {
+                if (err.response?.status === 401) {
+                    refresh(getPostData, onRefreshFailed);
+                }
+            });
+    }
 
     useEffect(() => {
-        getPostById(postId)
-            .then(post => setPost(post));
+        getPostData();
     }, [])
 
-    const comment = async (text) => {
+    const comment = (text) => {
         if (text.length > 0) {
             const comment = { content: text, postId, userId: user.authId, name: user.name };
-            const newComment = await addComment(comment, postId);
-            setPost({ ...post, comments: [...post.comments, newComment] });
+
+            const addNewComment = () => addComment(comment, postId)
+                .then((newComment) => {
+                    console.log('new comment', newComment);
+                    setPost({ ...post, comments: [...post.comments, newComment] })
+                })
+                .catch(err => {
+                    if (err.response?.status === 401) {
+                        refresh(addNewComment, onRefreshFailed);
+                    }
+                });
+
+            addNewComment();
         }
     }
 
-    const onLikeClicked = () => {
-        if (post.likes.find(l => l.userId === user.authId)) {
-            removeLike(post.id, user.authId)
-                .then(res => {
-                    const likes = post.likes.filter(like => like.userId !== user.authId);
-                    setPost({ ...post, likes: likes })
-                    updatePostLikes(likes);
-                })
+    const onLikeClicked = async () => {
+        try {
+            if (post.likes.find(l => l.userId === user.authId)) {
+                const res = await removeLike(post.id, user.authId);
 
-            return;
-        }
-
-        addLike(post.id, user.authId)
-            .then(like => {
-                const likes = [...post.likes, like];
+                const likes = post.likes.filter(like => like.userId !== user.authId);
                 setPost({ ...post, likes: likes })
                 updatePostLikes(likes);
-            })
+                return;
+            }
+
+            const like = await addLike(post.id, user.authId)
+            const likes = [...post.likes, like];
+            setPost({ ...post, likes: likes })
+            updatePostLikes(likes);
+        } catch (error) {
+            if (error.response.status === 401) {
+                refresh(onLikeClicked, onRefreshFailed);
+            }
+        }
     }
 
     if (post)
@@ -90,8 +120,8 @@ const PostView = props => {
 
                 <span className='col-span-3 mt-10 max-h-max'>
                     {
-                        post.comments?.map(comment => (
-                            <div className='flex flex-col bg-gray-100 rounded-3xl m-1 p-3'>
+                        post.comments?.map((comment, i) => (
+                            <div key={i} className='flex flex-col bg-gray-100 rounded-3xl m-1 p-3'>
                                 <span className='font-bold'>{comment.name}</span>
                                 <span className='font-semibold'>{comment.content}</span>
                             </div>
@@ -101,7 +131,7 @@ const PostView = props => {
             </div>
         )
 
-    return (<div>Loding...</div>)
+    return (<div className='h-full w-full text-center'>Loding Post...</div>)
 }
 
 export default PostView;

@@ -7,8 +7,10 @@ import UserController from '../controllers/user.controller';
 const controller = container.get<UserController>(TYPES.UserController);
 const router = Router();
 
-router.put('/', controller.getUsersByIds);
 router.post('/', controller.addUser);
+
+router.use(validateToken);
+router.get('/all', controller.getUsersByIds);
 router.get('/', controller.getUser);
 router.delete('/:id', controller.deleteUser);
 router.put('/:id', controller.updateUser);

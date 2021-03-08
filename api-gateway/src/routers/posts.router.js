@@ -6,7 +6,7 @@ const formidable = require('express-formidable');
 
 const router = Router();
 
-const POSTS_SERVICE_URL = 'http://localhost:5001';
+const POSTS_SERVICE_URL = 'http://localhost:5005';
 const IDENTITY_SERVICE_URL = 'http://localhost:5004/api/users';
 
 const formidableMiddleWare = formidable({
@@ -81,7 +81,7 @@ router.get('/', async (req, res) => {
         res.json(posts);
 
     } catch (error) {
-        res.status(error.response.status).json(error.response)
+        res.status(error.response.status).json(error.response.data)
     }
 
 })
@@ -99,7 +99,7 @@ router.get('/:postId', async (req, res) => {
 
         res.json(response.data);
     } catch (error) {
-        res.status(error.response.status).json(error.response);
+        res.status(error.response.status).json(error.response.data);
     }
 })
 
@@ -115,7 +115,7 @@ router.post('/comment', async (req, res) => {
         res.json(newComment);
 
     } catch (error) {
-        res.status(error.response.status).json(error.response)
+        res.status(error.response.status).json(error.response.data)
     }
 })
 
@@ -131,7 +131,7 @@ router.post('/like', async (req, res) => {
         res.json(like);
 
     } catch (error) {
-        res.status(error.response.status).json(error.response);
+        res.status(error.response.status).json(error.response.data);
     }
 });
 
@@ -148,7 +148,7 @@ router.delete('/like', async (req, res) => {
         res.json(data);
 
     } catch (error) {
-        res.status(error.response.status).json(error.response);
+        res.status(error.response.status).json(error.response.data);
     }
 });
 

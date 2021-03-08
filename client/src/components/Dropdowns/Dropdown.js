@@ -8,8 +8,7 @@ const Dropdown = props => {
     const changeVisibility = () => setVisibility(!visibility);
 
     return (
-        <div class="relative inline-block text-left"
-        onBlur={() => setVisibility(true)}>
+        <div class="relative inline-block text-left">
             <div className='overflow-x-hidden overflow-y-hidden min-w-full max-w-lg'>
                 <button type="button" class="inline-flex justify-center rounded-md border 
                 border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 

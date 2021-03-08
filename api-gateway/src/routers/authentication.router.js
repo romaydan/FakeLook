@@ -4,19 +4,19 @@ const cookie = require('cookie');
 
 const router = Router();
 
-const authServiceBaseUrl = 'http://localhost:5000/auth';
-const identityServiceBaseUrl = 'http://localhost:5004/api';
+const AUTH_URL = 'http://localhost:5003/auth';
+const IDENTITY_URL = 'http://localhost:5004/api';
 
 router.post('/fakelook/signup', async (req, res) => {
     try {
         const { email, password, confirmPassword, user, address } = req.body;
 
         const { data: { userId } } = await authPostRequest(req.path, { email, password, confirmPassword });
-        const identityResponse = identityPostRequest('/users', { user: { authId: userId, ...user }, address });
+        const identityResponse = await identityPostRequest('/users', { user: { authId: userId, ...user }, address });
 
         res.json(identityResponse.data);
     } catch (error) {
-        res.status(error.response.status).json(error.message);
+        sendAxoisError(res, error);
     }
 });
 
@@ -26,16 +26,14 @@ router.post('/fakelook/signin', async (req, res) => {
 
         const authReponse = await authPostRequest(req.path, { password, email });
 
-        const { accessToken } = authReponse.data;
-        const { refresh_token } = cookie.parse(authReponse.headers['set-cookie'][0]);
+        const { accessToken, refreshToken } = authReponse.data;
 
         const identityRes = await identityGetRequest('/users', { authorization: accessToken }
         );
 
-        res.cookie('refresh_token', refresh_token);
-        res.json({ accessToken: accessToken, user: identityRes.data });
+        res.json({ accessToken: accessToken, user: identityRes.data, refreshToken });
     } catch (error) {
-        res.status(error.status).json(error.message);
+        sendAxoisError(res, error);
     }
 });
 
@@ -48,7 +46,7 @@ router.post('/facebook/signup', async (req, res) => {
 
         res.json(data);
     } catch (error) {
-        res.status(error.response.status).json(error.response.message);
+        sendAxoisError(res, error);
     }
 })
 
@@ -58,16 +56,14 @@ router.get('/facebook/signin', async (req, res) => {
 
         const authResponse = await authGetRequest(req.path, { facebook_id, facebook_token });
 
-        const { accessToken } = authResponse.data;
-        const { refresh_token } = cookie.parse(authResponse.headers['set-cookie'][0]);
+        const { accessToken, refreshToken } = authResponse.data;
 
         const { data } = await identityGetRequest('/users', { authorization: accessToken });
 
-        res.cookie('refresh_token', refresh_token);
-        res.json({ accessToken: accessToken, user: data });
+        res.json({ accessToken: accessToken, user: data, refreshToken });
 
     } catch (error) {
-        res.status(error.response.status).json(error.response.message);
+        sendAxoisError(res, error);
     }
 })
 
@@ -80,7 +76,7 @@ router.post('/google/signup', async (req, res) => {
 
         res.json(data);
     } catch (error) {
-        res.status(error.response.status).json(error.response.message);
+        sendAxoisError(res, error);
     }
 })
 
@@ -90,38 +86,79 @@ router.get('/google/signin', async (req, res) => {
 
         const authResponse = await authGetRequest(req.path, { token_id });
 
-        const { accessToken } = authResponse.data;
-        const { refresh_token } = cookie.parse(authResponse.headers['set-cookie'][0]);
+        const { accessToken, refreshToken } = authResponse.data;
 
         const { data } = await identityGetRequest('/users', { authorization: accessToken });
 
-        res.cookie('refresh_token', refresh_token);
-        res.json({ accessToken: accessToken, user: data });
+        res.status(200).json({ accessToken: accessToken, user: data, refreshToken });
 
     } catch (error) {
-        res.status(error.response.status).json(error.response.message);
+        sendAxoisError(res, error);
+    }
+})
+
+router.get('/logout', async (req, res) => {
+    try {
+        const { refresh_token } = req.headers;
+
+        const response = await authGetRequest('/logout', { refresh_token });
+
+        res.json(response.data);
+
+    } catch (error) {
+        sendAxoisError(res, error);
+    }
+})
+
+router.get('/refresh', async (req, res) => {
+    try {
+        const { refresh_token } = req.headers;
+
+        const { data } = await authGetRequest('/refresh', { refresh_token });
+
+        res.json(data);
+    } catch (error) {
+        sendAxoisError(res, error);
+    }
+})
+
+router.get('/jwt/signin', async (req, res) => {
+    try {
+        const { refresh_token } = req.headers;
+
+        const { data: { accessToken } } = await authGetRequest('/refresh', { refresh_token });
+
+        const { data: user } = await identityGetRequest('/users', { authorization: accessToken });
+
+        res.json({ accessToken, user });
+
+    } catch (error) {
+        sendAxoisError(res, error);
     }
 })
 
 const authPostRequest = (path, body) => {
-    return axios.post(`${authServiceBaseUrl}${path}`, body);
+    return axios.post(`${AUTH_URL}${path}`, body);
 }
 
 const authGetRequest = (path, headers) => {
-    return axios.get(`${authServiceBaseUrl}${path}`, {
+    return axios.get(`${AUTH_URL}${path}`, {
         headers: headers
     });
 }
 
 const identityPostRequest = (path, body) => {
-    return axios.post(`${identityServiceBaseUrl}${path}`, body);
+    return axios.post(`${IDENTITY_URL}${path}`, body);
 }
 
 const identityGetRequest = (path, headers) => {
-    return axios.get(`${identityServiceBaseUrl}${path}`, {
+    return axios.get(`${IDENTITY_URL}${path}`, {
         headers: headers
     });
 }
 
+const sendAxoisError = (res, error) => {
+    res.status(error.response.status).json(error.response.data);
+}
 
 module.exports = router;

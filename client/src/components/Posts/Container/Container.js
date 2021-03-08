@@ -11,18 +11,17 @@ import Filter from '../Filter/Filter';
 import PostForm from '../PostForm/PostForm';
 import PostView from '../PostView/PostVIew';
 import Modal from 'react-modal';
-import Notifications from '../../Notifications/Notifications';
 import { setFriends } from '../../../actions/friends.actions';
 import { getFriends } from '../../../services/Friends/friends.service';
+import { authenticated } from '../../../actions/authentication.actions';
+import { useHistory } from 'react-router-dom';
+import useRefreshToken from '../../../hooks/refresh.hook';
 import '../../../css/scrollbar.css';
-import { useHistory } from 'react-router';
 
 const Container = props => {
-    const { children, setPosts, post,
-        onModalPostViewClosed, user,
-        setUserLocation, location,
-        friends, setFriends, updatePost } = props;
+    const { children, setPosts, post, onModalPostViewClosed, user, setUserLocation, location, friends, setFriends, updatePost, setAuthenticated } = props;
 
+    const refresh = useRefreshToken();
     const history = useHistory();
 
     const now = new Date();
@@ -36,6 +35,10 @@ const Container = props => {
     const [postViewModalIsOpen, setPostViewIsOpen] = useState(false);
     const [postFormModalIsOpen, setPostFormIsOpen] = useState(false);
 
+    const onRefreshFailed = () => {
+        history.push('/logout');
+    }
+
     useEffect(() => {
         if (post)
             setPostViewIsOpen(true);
@@ -44,14 +47,20 @@ const Container = props => {
     useEffect(() => {
         navigator.geolocation.getCurrentPosition(({ coords }) => setUserLocation([coords.longitude, coords.latitude]))
 
-        if (!friends) {
-            getFriends(user.authId)
-                .then(friends => {
-                    console.log('friends', friends);
-                    setFriends(friends);
-                })
-                .catch(console.error);
-        }
+        const getFriendsData = () => getFriends(user.authId)
+            .then(friends => {
+                console.log('friends', friends);
+                setFriends(friends);
+            })
+            .catch(err => {
+                if (err.response.status === 401) {
+                    refresh(getFriendsData, onRefreshFailed);
+                }
+            });
+
+        if (!friends)
+            getFriendsData();
+            
     }, []);
 
     useEffect(() => {
@@ -112,7 +121,11 @@ const Container = props => {
             .then(posts => {
                 setPosts(posts);
             })
-            .catch(console.error);
+            .catch(err => {
+                if (err.response?.status === 401) {
+                    refresh(() => fetchPosts(values), onRefreshFailed);
+                }
+            });
     }
 
     const updatePostLikes = (likes) => {
@@ -129,7 +142,12 @@ const Container = props => {
         form.append('coordinates', post.location);
         form.append('showTo', 1);
         addNewPost(form)
-            .then(res => setPostFormIsOpen(false));
+            .then(res => setPostFormIsOpen(false))
+            .catch(err => {
+                if (err.response.status === 401) {
+                    refresh(() => addPost(post), onRefreshFailed);
+                }
+            });
     }
 
     return (
@@ -149,7 +167,7 @@ const Container = props => {
                 <Modal isOpen={postViewModalIsOpen}
                     onRequestClose={closePostViewModal}
                     className='absolute mr-auto ml-auto right-0 left-0 
-                max-h-full bg-gray-50 shadow-md overflow-y-scroll scrollbar-a 
+                max-h-full bg-gray-50 shadow-md overflow-y-auto scrollbar-a 
                 w-1/2 top-5 bottom-5 outline-none border-2 border-gray-100'>
                     <div className='w-full h-full flex flex-col items-center pt-5 pb-5'>
                         {post ? <PostView postId={post.id} user={user} updatePostLikes={updatePostLikes} /> : null}
@@ -186,7 +204,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
     setPosts: (posts) => dispatch(setPosts(posts)),
     setUserLocation: location => dispatch(setLocation(location)),
-    setFriends: friends => dispatch(setFriends(friends))
+    setFriends: friends => dispatch(setFriends(friends)),
+    setAuthenticated: accessToken => dispatch(authenticated(accessToken))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Container);

@@ -25,7 +25,7 @@ const Map = props => {
     const defualtSettings = useMemo(() => ({
         center: location,
         zoom: [14]
-    }), []);
+    }), [location]);
     const Map = useMemo(() => ReactMapboxGl({
         accessToken: 'pk.eyJ1IjoiaWRvbnYiLCJhIjoiY2tscnpsb2R1MGF1ZzJ2cDM1ZWVsbHQwMyJ9.vd9YaH0VyDnsJnjJbF8DIA',
     }), []);

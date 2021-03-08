@@ -1,7 +1,7 @@
 const { Router } = require('express');
 const axios = require('axios');
 
-const SOCIAL_SERVICE_URL = 'http://localhost:5005';
+const SOCIAL_SERVICE_URL = 'http://localhost:5006';
 const IDENTITY_SERVICE_URL = 'http://localhost:5004';
 const router = Router();
 
@@ -16,7 +16,7 @@ router.get('/all', async (req, res) => {
                 authorization
             },
             params: {
-                userIds: friendsList.map(f => f.friendId)
+                userIds: friendsList
             }
         });
     

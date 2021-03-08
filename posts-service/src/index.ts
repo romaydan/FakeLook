@@ -21,7 +21,7 @@ import usertagRouter from './routers/usertag.router';
 import tagRouter from './routers/tag.router';
 import likeRouter from './routers/like.router';
 
-const PORT = process.env.PORT || 5004;
+const PORT = process.env.PORT || 5005;
 const app = express();
 
 const db = container.get<Sequelize>(TYPES.Sequelize);

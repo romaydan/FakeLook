@@ -9,18 +9,28 @@ import cors from 'cors';
 import container from './ioc-container';
 import cookieParser from 'cookie-parser';
 import { Sequelize } from 'sequelize-typescript';
+import accessControl from 'express-ip-access-control';
 import { TYPES } from './ioc-container/types';
 
 env.config();
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5003;
 const app = express();
 
 const db = container.get<Sequelize>(TYPES.Sequelize);
 
 db.sync()
     .then(() => {
-        app.use(cors());
+        app.use(accessControl({
+            allows: ['127.0.0.1'],
+            log: function (clientIp, access) {
+                console.log(clientIp + (access ? ' accessed.' : ' denied.'));
+
+            },
+            statusCode: 401,
+            redirectTo: '',
+            message: 'Unauthorized'
+        }))
         app.use(express.json())
         app.use(cookieParser())
         app.use(express.urlencoded({ extended: true }))

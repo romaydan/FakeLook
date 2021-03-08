@@ -2,7 +2,7 @@ import { Formik, Field } from 'formik';
 import { useMemo, useState } from 'react';
 import * as yup from 'yup';
 import Modal from 'react-modal';
-import { facebookRegister, fakelookRegister, googleRegister } from '../../../services/Authentication/login.service';
+import { facebookRegister, fakelookRegister, googleRegister } from '../../../services/Authentication/register.service';
 import { GoogleLogin } from 'react-google-login';
 import FacebookLogin from 'react-facebook-login';
 
@@ -298,7 +298,7 @@ const SubmitButtons = props => {
             <span className={(isOAuth.state && isOAuth.type === OAuthType.FACEBOOK) ? '' : 'hidden'}>
                 <FacebookLogin
                     isDisabled={Object.keys(errors).some(err => errors[err] && err != 'response')}
-                    cssClass={'w-44 p-1.5 bg-facebook text-white text-sm rounded-md self-center shadow-md h-10 self-center '}
+                    cssClass={'w-44 p-1.5 bg-blue-500 text-white text-sm rounded-md self-center shadow-md h-10 self-center '}
                     appId={'453933415731261'}
                     textButton={'Register with Facebook'}
                     autoLoad={false}

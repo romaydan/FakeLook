@@ -7,7 +7,7 @@ const SelectionDropdown = props => {
 
   const [selectedCount, setSelectedCount] = useState(0);
   const [visibility, setVisibility] = useState(true);
-  const [displayItems, setDisplayItems] = useState(items.map(item => ({ isSelected: false, ...item })));
+  const [displayItems, setDisplayItems] = useState(items?.map(item => ({ isSelected: false, ...item })));
 
   const changeVisibility = () => {
     setVisibility(!visibility);

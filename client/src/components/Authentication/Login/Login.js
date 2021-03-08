@@ -7,24 +7,33 @@ import { facebookLogin, fakelookLogin, googleLogin } from '../../../services/Aut
 import { NavLink } from 'react-router-dom';
 import { setUser } from '../../../actions/user.actions';
 import { connect } from 'react-redux';
+import { authenticated } from '../../../actions/authentication.actions';
+import { useCookies } from 'react-cookie';
 
 const Login = props => {
-    const { history, setUser } = props;
+    const { history, setUser, authenticate } = props;
+
+    const [cookies, setCookie, removeCookies] = useCookies(['refresh_token'])
 
     const validationSchema = useMemo(() => yup.object({
         email: yup.string().required().email(),
         password: yup.string().required().min(8).max(16)
     }), []);
 
+    const login = (user, accessToken, refreshToken) => {
+        sessionStorage.setItem('access_token', accessToken);
+        setCookie('refresh_token', refreshToken);
+
+        setUser(user);
+        authenticate(accessToken);
+        history.push('/map');
+    }
+
     const onFacebookResponse = async response => {
-        console.log(response);
         const { id: facebookId, accessToken } = response;
         facebookLogin(accessToken, facebookId)
-            .then(({ data: { user, accessToken } }) => {
-                sessionStorage.setItem('access_token', accessToken)
-                console.log(user);
-                setUser(user);
-                history.push('/map');
+            .then(({ user, accessToken, refreshToken }) => {
+                login(user, accessToken, refreshToken);
             })
             .catch(console.error);
     }
@@ -32,22 +41,16 @@ const Login = props => {
     const onGoogleResponse = response => {
         const { tokenId } = response;
         googleLogin(tokenId)
-            .then(({ data: { user, accessToken } }) => {
-                sessionStorage.setItem('access_token', accessToken)
-                console.log(user);
-                setUser(user);
-                history.push('/feed');
+            .then(({ user, accessToken, refreshToken }) => {
+                login(user, accessToken, refreshToken);
             })
             .catch(console.error);
     }
 
-    const login = (email, password) => {
+    const facelookLogin = (email, password) => {
         fakelookLogin(email, password)
-            .then(({ user, accessToken }) => {
-                sessionStorage.setItem('access_token', accessToken)
-                console.log(user);
-                setUser(user);
-                history.push('/map');
+            .then(({ user, accessToken, refreshToken }) => {
+                login(user, accessToken, refreshToken);
             })
             .catch(err => console.error('error', err))
     }
@@ -62,7 +65,7 @@ const Login = props => {
                     validationSchema={validationSchema}
                     initialValues={{ password: '', email: '' }}
                     onSubmit={(values) => {
-                        login(values.email, values.password)
+                        facelookLogin(values.email, values.password)
                     }}>
                     {
                         ({ values, errors, touched, dirty, submitForm }) => (
@@ -111,6 +114,7 @@ const Login = props => {
                         cssClass='w-44 p-1.5 bg-facebook text-white 
                     rounded-md self-center shadow-md h-10 self-center'
                         appId={'453933415731261'}
+                        textButton={'Login with Facebook'}
                         autoLoad={false}
                         fields={'name,email,picture'}
                         callback={onFacebookResponse} />
@@ -121,7 +125,8 @@ const Login = props => {
 }
 
 const mapDispatchToProps = dispatch => ({
-    setUser: user => dispatch(setUser(user))
+    setUser: user => dispatch(setUser(user)),
+    authenticate: accessToken => dispatch(authenticated(accessToken))
 })
 
 export default connect(null, mapDispatchToProps)(Login);
