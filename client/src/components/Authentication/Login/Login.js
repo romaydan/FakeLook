@@ -13,7 +13,7 @@ import { useCookies } from 'react-cookie';
 const Login = props => {
     const { history, setUser, authenticate } = props;
 
-    const [cookies, setCookie, removeCookies] = useCookies(['refresh_token'])
+    const [cookies, setCookie] = useCookies(['refresh_token'])
 
     const validationSchema = useMemo(() => yup.object({
         email: yup.string().required().email(),
@@ -58,7 +58,7 @@ const Login = props => {
     return (
         <div className='flex flex-row justify-center h-screen'>
             <div className='flex flex-col object-center border-2
-         border-gray-300 bg-center w-1/3 p-5 
+         border-gray-300 bg-center w-1/4 p-5 
          self-center rounded-md shadow-xl'>
                 <h1 className='self-center text-5xl font-extrabold mb-10 antialiased text-blue-400 text-'>Welcome to FakeLook</h1>
                 <Formik

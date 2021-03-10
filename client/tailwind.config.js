@@ -163,7 +163,8 @@ module.exports = {
       'red': '#DD4042',
       'check-green': 'lightgreen',
       'transparent': 'transparent',
-      'white': 'white'
+      'white': 'white',
+      'gray-100': 'lightgray'
     },
     flex: {
       1: '1 1 0%',
@@ -492,10 +493,11 @@ module.exports = {
       0: '0px',
       full: '100%',
       screen: '100vh',
+      max: 'max-content',
       '1/4': '25%',
       '1/2': '50%',
       '1/3': '33.333%',
-      '50px': '50px'
+      '50px': '50px',
     },
     minWidth: {
       0: '0px',

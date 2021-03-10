@@ -5,6 +5,7 @@ export interface IUserTag {
     id?: string;
     userId: string;
     postId: string;
+    name: string;
 }
 
 @Table
@@ -21,6 +22,10 @@ export class UserTag extends Model implements IUserTag {
     @ForeignKey(() => Post)
     @Column(DataType.STRING)
     postId: string;
+
+    @AllowNull(false)
+    @Column(DataType.STRING)
+    name: string;
 
     @BelongsTo(() => Post)
     post: Post;

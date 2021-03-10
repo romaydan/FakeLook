@@ -6,7 +6,7 @@ import { setPosts } from '../../../actions/posts.actions';
 import { setLocation } from '../../../actions/location.actions';
 import { connect } from 'react-redux';
 import { getPosts } from '../../../services/Posts/posts.service';
-import { addNewPost } from '../../../services/Posts/posts.service';
+import { addNewPostAsync } from '../../../services/Posts/posts.service';
 import Filter from '../Filter/Filter';
 import PostForm from '../PostForm/PostForm';
 import PostView from '../PostView/PostVIew';
@@ -19,7 +19,7 @@ import useRefreshToken from '../../../hooks/refresh.hook';
 import '../../../css/scrollbar.css';
 
 const Container = props => {
-    const { children, setPosts, post, onModalPostViewClosed, user, setUserLocation, location, friends, setFriends, updatePost, setAuthenticated } = props;
+    const { children, setPosts, post, onModalPostViewClosed, user, setUserLocation, location, friends, setFriends, updatePost, groups } = props;
 
     const refresh = useRefreshToken();
     const history = useHistory();
@@ -49,7 +49,6 @@ const Container = props => {
 
         const getFriendsData = () => getFriends(user.authId)
             .then(friends => {
-                console.log('friends', friends);
                 setFriends(friends);
             })
             .catch(err => {
@@ -60,7 +59,7 @@ const Container = props => {
 
         if (!friends)
             getFriendsData();
-            
+
     }, []);
 
     useEffect(() => {
@@ -117,6 +116,11 @@ const Container = props => {
             values.publishers = friends.map(f => f.authId);
         }
 
+        if (!values.publishers.includes(user.authId))
+            values.publishers.push(user.authId);
+
+        console.log('publishers', values.publishers);
+
         getPosts({ ...values, location: location, distance: values.distance * 1000 })
             .then(posts => {
                 setPosts(posts);
@@ -141,7 +145,7 @@ const Container = props => {
         form.append('textContent', post.textContent);
         form.append('coordinates', post.location);
         form.append('showTo', 1);
-        addNewPost(form)
+        addNewPostAsync(form)
             .then(res => setPostFormIsOpen(false))
             .catch(err => {
                 if (err.response.status === 401) {
@@ -151,7 +155,7 @@ const Container = props => {
     }
 
     return (
-        <div className='w-full h-full m-0 flex flex-col' onClick={(e) => e.preventDefault()}>
+        <div className='w-full m-0 flex flex-col' onClick={(e) => e.preventDefault()}>
             <motion.div
                 className={'absolute h-full z-10 flex flex-col m-0 bg-gradient-to-t from-blue-500 to-blue-400'}
                 animate={filterWidthAnimation}
@@ -159,7 +163,7 @@ const Container = props => {
                 <BiFilter size={40} fill='white' className='cursor-pointer transform transition-transform hover:scale-125' onClick={animateFilter} />
                 <motion.div animate={filterVisibilityAnimation}
                     initial={{ visibility: 'hidden' }}>
-                    <Filter friends={friends} initialFilterValues={initialFilterValues} onFilterSubmit={fetchPosts} />
+                    <Filter friends={friends} initialFilterValues={initialFilterValues} onFilterSubmit={fetchPosts} groups={groups} />
                 </motion.div>
             </motion.div>
 
@@ -170,7 +174,7 @@ const Container = props => {
                 max-h-full bg-gray-50 shadow-md overflow-y-auto scrollbar-a 
                 w-1/2 top-5 bottom-5 outline-none border-2 border-gray-100'>
                     <div className='w-full h-full flex flex-col items-center pt-5 pb-5'>
-                        {post ? <PostView postId={post.id} user={user} updatePostLikes={updatePostLikes} /> : null}
+                        {post ? <PostView postId={post.id} user={user} updatePostLikes={updatePostLikes} friends={friends} /> : null}
                     </div>
                 </Modal>
                 <Modal isOpen={postFormModalIsOpen}
@@ -198,14 +202,14 @@ const Container = props => {
 const mapStateToProps = state => ({
     user: state.user,
     location: state.location,
-    friends: state.friends
+    friends: state.friends,
+    groups: state.groups
 })
 
 const mapDispatchToProps = dispatch => ({
     setPosts: (posts) => dispatch(setPosts(posts)),
     setUserLocation: location => dispatch(setLocation(location)),
-    setFriends: friends => dispatch(setFriends(friends)),
-    setAuthenticated: accessToken => dispatch(authenticated(accessToken))
+    setFriends: friends => dispatch(setFriends(friends))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Container);

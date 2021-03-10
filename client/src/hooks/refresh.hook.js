@@ -3,13 +3,11 @@ import { useContext } from 'react';
 import { ReactReduxContext } from 'react-redux';
 import { useCookies } from 'react-cookie';
 import { authenticated } from '../actions/authentication.actions';
-import { useHistory } from 'react-router';
 
 const useRefreshToken = () => {
 
     const { store } = useContext(ReactReduxContext);
-    const [cookies, setCookies, removeCookies] = useCookies('refresh_token');
-    const history = useHistory();
+    const [cookies] = useCookies('refresh_token');
 
     const { _, dispatch } = store;
 

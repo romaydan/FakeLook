@@ -111,4 +111,6 @@ db/data/*
 
 *.db
 
+dev/
+
 images-server/public/**

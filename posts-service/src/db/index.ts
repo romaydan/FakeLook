@@ -8,7 +8,8 @@ import { UserTag } from '../models/usertag.model';
 const db = new Sequelize('posts', 'postgres', '123456', {
     dialect: 'postgres',
     host: '127.0.0.1',
-    port: 63847
+    port: 63847,
+    logging: (sql, timing) => {}
 });
 
 db.addModels([PostTag, Post, Like, Tag, Comment, UserTag]);

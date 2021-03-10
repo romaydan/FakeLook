@@ -3,6 +3,7 @@ import { createClient } from 'redis';
 import { createServer } from 'http';
 import { Server, Socket } from 'socket.io';
 import ClientManager from './services/client.manager.service';
+import TYPES from './notification.types';
 
 env.config();
 
@@ -27,8 +28,8 @@ io.on('connection', (socket: Socket) => {
 
     socket.on('disconnect', () => {
         const client = clientManager.getClientBySocketId(socket.id);
-        
-        if(client) {
+
+        if (client) {
             console.log(`User: ${client.userId}, Socket: ${client.socket.id} has disconnected!`);
             clientManager.removeClient(client.userId);
         }
@@ -37,19 +38,34 @@ io.on('connection', (socket: Socket) => {
 
 
 //Redis pub/sub
-redisClient.on('message', (channel: string, message: string) => {
+redisClient.on('message', (channel: string, data: string) => {
+    const notification = JSON.parse(data);
 
-    if (channel === 'notification') {
-        const { userIds, notification } = JSON.parse(message);
-        userIds.forEach(userId => {
-            notifyUser(userId, notification);
-        })
+    switch (notification.type) {
+        case TYPES.ADD_COMMENT:
+        case TYPES.REMOVE_COMMENT:
+        case TYPES.UPDATE_COMMENT:
+        case TYPES.ADD_LIKE:
+        case TYPES.REMOVE_LIKE:
+        case TYPES.ADD_TAG:
+        case TYPES.REMOVE_TAG:
+        case TYPES.ADD_USERTAG:
+        case TYPES.REMOVE_USERTAG:
+            notifyAll(notification.event, notification);
+            break;
+        default:
+            notifyUser(notification.event, notification);
+            break;
     }
 });
 
+const notifyAll = (event: string, notification: any) => {
+    io.emit(event, notification);
+}
+
 const notifyUser = (userId: string, notification: object) => {
     const client = clientManager.getClientByUserId(userId);
-    client.socket.emit('notification', notification);
+    client.socket.emit(userId, notification);
 }
 
 redisClient.subscribe('notification');

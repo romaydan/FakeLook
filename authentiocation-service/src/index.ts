@@ -27,9 +27,9 @@ db.sync()
                 console.log(clientIp + (access ? ' accessed.' : ' denied.'));
 
             },
-            statusCode: 401,
+            statusCode: 403,
             redirectTo: '',
-            message: 'Unauthorized'
+            message: 'Forbbiden'
         }))
         app.use(express.json())
         app.use(cookieParser())

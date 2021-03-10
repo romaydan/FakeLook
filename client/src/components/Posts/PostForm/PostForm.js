@@ -3,7 +3,7 @@ import { createRef, useMemo, useRef, useState } from "react";
 import * as yup from 'yup';
 import SelectionDropdown from "../../Dropdowns/SelectionDropdown";
 import Modal from 'react-modal';
-import Dropdown from '../../Dropdowns/Dropdown';
+import ItemsDropdown from '../../Dropdowns/ItemsDropdown';
 import { BsFillPlusCircleFill } from 'react-icons/bs';
 import ReactMapboxGl, { Marker } from 'react-mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -96,7 +96,7 @@ const PostForm = props => {
                                             }
 
                                             return (
-                                                <Dropdown
+                                                <ItemsDropdown
                                                     items={values.tags}
                                                     direction='right'
                                                     title={values.tags.length > 0 ? `${values.tags?.length} Tag(s)` : 'Add...'}

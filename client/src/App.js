@@ -1,5 +1,5 @@
 import Modal from 'react-modal';
-import { BrowserRouter, useHistory } from 'react-router-dom';
+import { useHistory, Route } from 'react-router-dom';
 import AuthenticationRouter from './components/Routers/AuthenticationRouter';
 import PostRouter from './components/Routers/PostRouter';
 import Container from './components/Container/Container';
@@ -8,12 +8,11 @@ import { connect } from 'react-redux';
 import { useEffect } from 'react';
 import { useCookies } from 'react-cookie';
 import { loginWihJwt } from './services/Authentication/login.service';
-import { accessToken } from 'mapbox-gl';
 import { authenticated } from './actions/authentication.actions';
 import { setUser } from './actions/user.actions';
+import NotFound from './components/Misc/NotFound';
 
 Modal.setAppElement('#root');
-
 
 function App({ authentication, setUser, authenticate }) {
 
@@ -23,7 +22,9 @@ function App({ authentication, setUser, authenticate }) {
   const logInWithJwt = () => {
     const token = cookies.refresh_token;
 
-    if (history.location.pathname === '/login') {
+    const path = history.location.pathname;
+
+    if (path === '/login' || path === '/register') {
       return;
     }
 
@@ -32,14 +33,15 @@ function App({ authentication, setUser, authenticate }) {
         .then(({ accessToken, user }) => {
           setUser(user);
           authenticate(accessToken);
-          history.push('/map');
+          history.push(path);
         })
         .catch(err => history.push('/login'))
 
       return;
     }
 
-    history.push('/login')
+    if(path === '/')
+      history.push('/login')
   }
 
   useEffect(() => {
@@ -48,6 +50,7 @@ function App({ authentication, setUser, authenticate }) {
 
   return (
     <div className='h-full'>
+
       <AuthenticationRouter />
       {
         authentication.isAuthenticated &&
@@ -56,6 +59,11 @@ function App({ authentication, setUser, authenticate }) {
           <SocialRouter />
         </Container>
       }
+
+      <Route path={/[^\s \n].+/} component={NotFound} />
+
+      {/* <Redirect path={'*'} exact to='/404' /> */}
+
       {/* <div className='flex w-full items-center justify-center'>
           <Notifications notifications={notifications} />
         </div> */}

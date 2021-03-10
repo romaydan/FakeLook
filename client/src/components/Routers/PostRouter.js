@@ -6,7 +6,7 @@ const PostRouter = props => {
 
     return (
         <Switch>
-            <Route path='/map' component={Map} />
+            <Route path='/map*' component={Map} />
             <Route path='/feed' component={Feed} />
         </Switch>
     )

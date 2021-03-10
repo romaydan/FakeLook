@@ -8,20 +8,18 @@ import { logout } from '../../../services/Authentication/logout.service';
 const Logout = props => {
 
     const { history, unauthenticate } = props;
-    const [cookies, setCookie, removeCookies] = useCookies(['refresh_token'])
+    const [cookies, setCookie, removeCookie] = useCookies(['refresh_token'])
 
-    const logOut = () => {
-        return logout(cookies.refresh_token);
+    const logOut = (refreshToken) => {
+        return logout(refreshToken);
     }
 
     useEffect(() => {
-        logOut()
-            .then(() => {
-                removeCookies('refresh_token');
-                sessionStorage.removeItem('access_token');
-                unauthenticate();
-                history.push('/login');
-            })
+        logOut(cookies.refresh_token);
+        removeCookie('refresh_token');
+        sessionStorage.removeItem('access_token');
+        unauthenticate();
+        history.push('/login');
     }, []);
 
 

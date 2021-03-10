@@ -1,6 +1,6 @@
 import { injectable } from "inversify";
 import { IUserTag, UserTag } from "../models/usertag.model";
-import uuid from 'uuid';
+import * as uuid from 'uuid';
 
 export interface IUserTagRepository {
     addUserTagToPost(userTag: IUserTag): Promise<IUserTag>;

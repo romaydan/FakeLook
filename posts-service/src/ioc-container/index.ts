@@ -19,6 +19,7 @@ import TagController from "../controllers/tag.controller";
 import { ILikeRepository, LikeRepository } from "../repositories/like.repository";
 import { ILikeService, LikeService } from "../services/like.service";
 import LikeController from "../controllers/like.controller";
+import { INotificationService, NotificationService } from "../services/notification.service";
 
 const container = new Container();
 
@@ -38,6 +39,7 @@ container.bind<IUserTagService>(TYPES.IUserTagService).to(UserTagService).inSing
 container.bind<ITagService>(TYPES.ITagService).to(TagService).inSingletonScope();
 container.bind<IImageUploader>(TYPES.IImageUploader).to(ImageUploader).inSingletonScope();
 container.bind<ILikeService>(TYPES.ILikeService).to(LikeService).inSingletonScope();
+container.bind<INotificationService>(TYPES.INotificationService).to(NotificationService).inSingletonScope();
 
 container.bind<PostController>(TYPES.PostController).to(PostController).inTransientScope();
 container.bind<CommentController>(TYPES.CommentController).to(CommentController).inTransientScope();

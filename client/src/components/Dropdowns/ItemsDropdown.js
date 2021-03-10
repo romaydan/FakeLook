@@ -1,7 +1,7 @@
 import { useState } from "react";
 
-const Dropdown = props => {
-    const { children, direction, title } = props;
+const ItemsDropdown = props => {
+    const { items, render, direction, title } = props;
     const [visibility, setVisibility] = useState(true);
 
     const changeVisibility = () => setVisibility(!visibility);
@@ -25,7 +25,7 @@ const Dropdown = props => {
                 <div hidden={visibility} class={"z-10 origin-top-right absolute mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 " + (direction === 'right' ? 'right-0' : 'left-0')}>
                     <div class="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
                         {
-                            children
+                            render ? render(items) : null
                         }
                     </div>
                 </div>
@@ -34,4 +34,4 @@ const Dropdown = props => {
     )
 }
 
-export default Dropdown;
+export default ItemsDropdown;

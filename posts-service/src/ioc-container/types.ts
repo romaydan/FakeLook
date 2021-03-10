@@ -11,6 +11,7 @@ const TYPES = {
     IUserTagService: Symbol('IUserTagService'),
     ITagService: Symbol('ITagService'),
     IImageUploader: Symbol('IImageUploader'),
+    INotificationService: Symbol('INotificationService'),
     
     Sequelize: Symbol('Sequelize'),
 

@@ -96,16 +96,16 @@ const dbTest = async () => {
   console.log(tags);
 };
 
-db.sync()
-    .then(async () => {
-        app.use(cors());
-        app.use(express.json());
-        app.use(jwtValidation);
-        app.use('/posts', postRouter);
-        app.use('/comments', commentRouter);
-        app.use('/usertags', usertagRouter);
-        app.use('/tags', tagRouter);
-        app.use('/likes', likeRouter);
+db.sync({ force: false })
+  .then(async () => {
+    app.use(cors());
+    app.use(express.json());
+    app.use(jwtValidation);
+    app.use('/posts', postRouter);
+    app.use('/comments', commentRouter);
+    app.use('/usertags', usertagRouter);
+    app.use('/tags', tagRouter);
+    app.use('/likes', likeRouter);
 
     app.listen(PORT, () => {
       console.log(`Listening on port: ${PORT}...`);
