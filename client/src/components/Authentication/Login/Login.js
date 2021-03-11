@@ -95,8 +95,8 @@ const Login = props => {
                             mt-7' type='submit' onClick={submitForm}>Log in</button>
 
                                 <span className='flex flex-row justify-around text-xs mt-8'>
-                                    <NavLink to='/'
-                                        className='text-blue-600 font-bold underline'>Forgot password?</NavLink>
+                                    <NavLink to='/reset'
+                                        className='text-blue-600 font-bold underline'>Reset password?</NavLink>
                                     <NavLink to='/register'
                                         className='text-blue-600 font-bold underline'>Don't have an account?</NavLink>
                                 </span>

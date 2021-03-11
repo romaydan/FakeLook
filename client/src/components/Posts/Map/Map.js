@@ -56,12 +56,14 @@ const Map = props => {
                 style={'mapbox://styles/mapbox/streets-v9'}>
                 {
                     posts.map((post, i) => <div onClick={() => setSelectedPost(post)}>
-                        <Marker
-                            anchor='bottom'
-                            coordinates={post.location.coordinates}
-                            className='cursor-pointer mt-5 ml-4'>
-                            <Image post={post} delay={i} scaleFactor={scaleFactor} />
-                        </Marker>
+                        {
+                            posts.length < 30 && <Marker
+                                anchor='bottom'
+                                coordinates={post.location.coordinates}
+                                className='cursor-pointer mt-5 ml-4'>
+                                <Image post={post} delay={i} scaleFactor={scaleFactor} />
+                            </Marker>
+                        }
                         <Marker
                             anchor='center'
                             coordinates={post.location.coordinates}>
@@ -69,7 +71,7 @@ const Map = props => {
                         </Marker>
                     </div>)
                 }
-                <Marker coordinates={defualtSettings.center} anchor='center' className='absolute'> 
+                <Marker coordinates={defualtSettings.center} anchor='center' className='absolute'>
                     <div className=' bg-red-600 h-5 w-5 cursor-pointer shadow-md z-10 hover:scale-125 transform transition' style={{ borderRadius: '50%' }}
                         onDoubleClick={() => FlyToCoordiantes(defualtSettings.center, defualtSettings.zoom)} />
                 </Marker>

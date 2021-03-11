@@ -504,8 +504,8 @@ const UserDetails = props => {
                     <span className='w-36'>
                         Country
                     </span>
-                    <Field as='select' name='country' className={'w-full outline-none '}>
-                        <option value='' disabled selected>Select a country...</option>
+                    <Field as='select' value='' name='country' className={'w-full outline-none '}>
+                        <option value='' disabled selected unselectable>Select a country...</option>
                         {
                             nationList.map((nation, i) => <option key={i} value={nation}>{nation}</option>)
                         }
