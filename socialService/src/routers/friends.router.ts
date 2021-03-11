@@ -6,16 +6,17 @@ import { TYPES } from '../ioc-container/types';
 const controller = container.get<FriendsController>(TYPES.FriendsController);
 const router = Router();
 
-router.get('/:userId', controller.getUsersFriends);
-router.delete('/:userId&:friendId', controller.removeFriend);
+router.get('/', controller.getUsersFriends);
+router.delete('/', controller.removeFriend);
 
-router.get('/request/:userId', controller.getUsersFriendRequests);
+router.get('/request', controller.getUsersFriendRequests);
 router.post('/request', controller.newFriendRequest);
-router.put('/accept', controller.acceptfriendRequest);
-router.put('/decline', controller.declinefriendRequest);
+router.patch('/request/accept', controller.acceptfriendRequest);
+router.patch('/request/decline', controller.declinefriendRequest);
 
-router.get('/block/:id', controller.usersBlocks);
-router.patch('/block/:userId&:blockedId', controller.blockUser);
-router.patch('/unblock/:userId&:blockedId', controller.unblockUser);
+router.get('/blocks', controller.usersBlocks);
+router.get('/blockers', controller.usersBlockers);
+router.patch('/block', controller.blockUser);
+router.patch('/unblock', controller.unblockUser);
 
 export default router;

@@ -34,6 +34,6 @@ export default class FriendRequestService implements IFriendRequestService {
 
   async declineFriendRequest(userId: string, senderId: string) {
     const result = await this.friendReqRepo.removeFriendRequests(userId, senderId);
-    return result === 2;
+    return result === 1;
   }
 }

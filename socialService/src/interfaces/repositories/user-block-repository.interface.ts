@@ -5,4 +5,6 @@ export default interface IBlockUserRepository {
   removeBlockedUser(blockerId: string, blockedId: string): Promise<number>;
   getUsersBlockedUsers(userId: string): Promise<IBlockedUser[]>;
   BlockUsersExists(blockerId: string, blockedId: string): Promise<boolean>;
+  getUsersBlockers(userId: string): Promise<IBlockedUser[]>;
+  userBlockExists(blockerId: string, blockedId: string): Promise<boolean>;
 }

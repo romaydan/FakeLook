@@ -15,16 +15,18 @@ function App() {
 
   return (
     <div className='h-full'>
-      <BrowserRouter>
-        <AuthenticationRouter />
-        <Container>
-          <PostRouter />
-          <SocialRouter />
-        </Container>
-        {/* <div className='flex w-full items-center justify-center'>
+      <DndProvider backend={HTML5Backend}>
+        <BrowserRouter>
+          <AuthenticationRouter />
+          <Container>
+            <PostRouter />
+            <SocialRouter />
+          </Container>
+          {/* <div className='flex w-full items-center justify-center'>
           <Notifications notifications={notifications} />
         </div> */}
-      </BrowserRouter>
+        </BrowserRouter>
+      </DndProvider>
     </div>
   );
 }

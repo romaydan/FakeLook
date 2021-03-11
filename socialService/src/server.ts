@@ -7,13 +7,19 @@ import friendsRouter from './routers/friends.router';
 import jwtValidateToken from './middleware/jwt.validation';
 
 const app = new App({
-  port: 5002,
+  port: 5006,
   routers: [
     { path: '/api/groups', router: groupsRouter },
     { path: '/api/friends', router: friendsRouter },
   ],
-  middleWares: [cors(), express.json(), loggerMiddleware],
+  middleWares: [
+    cors({
+      origin: '*',
+    }),
+    express.json(),
+    loggerMiddleware,
+  ],
 });
-// jwtValidateToken,
 
 app.listen();
+//    jwtValidateToken,

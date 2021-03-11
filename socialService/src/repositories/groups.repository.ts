@@ -39,7 +39,7 @@ export default class GroupsRepositorySequelize implements IGroupsRepository {
   async getUsersGroups(userId: string): Promise<IGroup[]> {
     const groupFriends = await GroupFriends.findAll({ where: { friendId: userId } });
     if (groupFriends.length === 0) {
-      throw new Error('the user has no groups');
+      return [];
     } else {
       const groupFriendsIds = groupFriends.map((gf) => gf.groupId);
       return Group.findAll({ where: { id: { [Op.in]: groupFriendsIds } }, include: GroupFriends });

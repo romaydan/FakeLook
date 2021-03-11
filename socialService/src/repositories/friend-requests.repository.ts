@@ -18,7 +18,7 @@ export default class FriendRequestRepositorySequelize implements IFriendRequestR
     });
   }
 
-  removeFriendRequests(senderId: string, recipientId: string): Promise<number> {
+  removeFriendRequests(recipientId: string, senderId: string): Promise<number> {
     return FriendRequest.destroy({ where: { senderId, recipientId } });
   }
 
