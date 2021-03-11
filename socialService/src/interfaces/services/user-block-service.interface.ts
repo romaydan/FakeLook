@@ -6,4 +6,5 @@ export default interface IBlockUserService {
   blockUser(userId: string, blockId: string): Promise<IBlockedUser>;
   unblockUser(userId: string, blockId: string): Promise<boolean>;
   getUsersBlockedUsers(userId: string): Promise<IBlockedUser[]>;
+  getUsersBlockers(userId: string): Promise<IBlockedUser[]>;
 }
