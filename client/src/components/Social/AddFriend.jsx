@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getUsersByName } from '../../services/Idenity';
-import { sendFriendRequest } from '../../services/Social/friendsService';
+import { getUsersByName, sendFriendRequest } from '../../services/Friends/friends.service';
 import Button from '../../shared/components/Button';
 import Card from '../../shared/components/Card';
 
@@ -11,8 +10,8 @@ const AddFriend = (props) => {
 
   const searchFriend = async (e) => {
     setFriendName(e.target.value);
-    const result = await getUsersByName(e.target.value);
-    setUsers(result.data);
+    const result = await getUsersByName(userId, e.target.value);
+    setUsers(result);
   };
 
   useEffect(() => {

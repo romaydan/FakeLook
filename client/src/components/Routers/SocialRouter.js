@@ -4,11 +4,11 @@ import GroupsFriendsPage from '../../pages/GroupsFriendsPage';
 import { useState, useEffect } from 'react';
 
 const SocialRouter = props => {
-    const [userId, setUserId] = useState("")
+    const [userId, setUserId] = useState("cc19e705-41fc-4037-9a7b-c5b488f87a53")
     useEffect(() => {
-        setUserId("cc19e705-41fc-4037-9a7b-c5b488f87a53");
+        setUserId("cc19e705-41fc-4037-9a7b-c5b488f87a53"); //gal 
         //setUserId("2ee1ab6f-b701-422e-8244-161335b89fbb"); //romaydan
-        // setUserId("1716dc65-485f-4447-92ca-d780f708cb1d"); //elior
+        //  setUserId("1716dc65-485f-4447-92ca-d780f708cb1d"); //elior
     }, [])
     return (
         <Switch>

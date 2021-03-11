@@ -34,7 +34,7 @@ export const addNewPost = async post => {
 }
 
 export const addComment = async (comment, postId) => {
-    const accessToken = sessionStorage.getItem('access_token'); 
+    const accessToken = sessionStorage.getItem('access_token');
     const response = await axois.post(`${POSTS_BASE_URL}/posts/comment`, { comment, postId }, {
         headers: {
             authorization: accessToken
@@ -45,7 +45,7 @@ export const addComment = async (comment, postId) => {
 }
 
 export const addLike = async (postId, userId) => {
-    const accessToken = sessionStorage.getItem('access_token'); 
+    const accessToken = sessionStorage.getItem('access_token');
     const response = await axois.post(`${POSTS_BASE_URL}/posts/like`, { userId, postId }, {
         headers: {
             authorization: accessToken
@@ -56,7 +56,7 @@ export const addLike = async (postId, userId) => {
 }
 
 export const removeLike = async (postId, userId) => {
-    const accessToken = sessionStorage.getItem('access_token'); 
+    const accessToken = sessionStorage.getItem('access_token');
     const response = await axois.delete(`${POSTS_BASE_URL}/posts/like`, {
         headers: {
             authorization: accessToken
