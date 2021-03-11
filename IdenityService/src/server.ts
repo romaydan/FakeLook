@@ -5,11 +5,20 @@ import cors from 'cors';
 
 import loggerMiddleware from './middleware/logger';
 import router from './routers/users.router';
+import validateToken from './middleware/jwt.validation';
 
 const app = new App({
   port: 5004,
   routers: [{ path: '/api/users', router }],
-  middleWares: [cors(), express.json(), loggerMiddleware],
+  middleWares: [
+    cors({
+      origin: '*',
+    }),
+
+    express.json(),
+    loggerMiddleware,
+  ],
 });
 
 app.listen();
+//    validateToken,

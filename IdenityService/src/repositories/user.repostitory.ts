@@ -12,6 +12,7 @@ import User from '../models/user.model';
 export default class UserRepository implements IUserRepository {
   constructor() {}
   getUsersByName(name: string): Promise<IUser[]> {
+    name = name.toLowerCase();
     return User.findAll({ where: { name: { [Op.like]: `%${name}%` } } });
   }
   getUsersById(userIds: string[]): Promise<IUser[]> {
@@ -19,6 +20,8 @@ export default class UserRepository implements IUserRepository {
   }
 
   async addUser(user: IUser, address: IAddress): Promise<IUser> {
+    user.name = user.name.toLowerCase();
+    console.log('user.name', user.name);
     return User.create({ id: uuid.v4(), ...user, address: { id: uuid.v4(), ...address } }, { include: Address });
   }
   async getUserByAuthId(id: string): Promise<IUser> {

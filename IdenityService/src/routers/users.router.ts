@@ -7,10 +7,10 @@ import UserController from '../controllers/user.controller';
 const controller = container.get<UserController>(TYPES.UserController);
 const router = Router();
 
-router.put('/', controller.getUsersByIds);
+router.get('/', controller.getUsersByIds);
 router.post('/', controller.addUser);
 router.get('/', controller.getUser);
-router.delete('/:id', controller.deleteUser);
+router.delete('/', controller.deleteUser);
 router.put('/:id', controller.updateUser);
-router.get('/name/:name', controller.getUsersByName);
+router.get('/name', controller.getUsersByName);
 export default router;
