@@ -22,7 +22,8 @@ router.get('/', async (req, res) => {
             }
         });
         const friendsIds = group.friends.map(f => (f.friendId))
-        const { data: groupFriends } = await axios.get(usersUrl, {
+        const { data: groupFriends } = await axios.get(usersUrl + '/all', {
+
             headers: {
                 authorization
             },
@@ -33,7 +34,8 @@ router.get('/', async (req, res) => {
         group.friends = [...groupFriends]
         res.json(group);
     } catch (error) {
-        res.status(error.response.status).json(error.response)
+        returnError(res, error);
+
     }
 })
 
@@ -53,7 +55,8 @@ router.get('/user', async (req, res) => {
         res.json(usersGroups);
     } catch (error) {
         console.log('error.message', error.message)
-        res.status(error.response.status).json(error.response)
+        returnError(res, error);
+
     }
 
 })
@@ -75,7 +78,7 @@ router.delete('/', async (req, res) => {
         })
         res.send(data);
     } catch (error) {
-        res.status(error.response.status).json(error.response)
+        returnError(res, error);
 
     }
 })
@@ -94,7 +97,7 @@ router.post('/', async (req, res) => {
         })
         res.send(data);
     } catch (error) {
-        res.status(error.response.status).json(error.response)
+        returnError(res, error);
 
     }
 
@@ -116,7 +119,7 @@ router.put('/name', async (req, res) => {
         })
         res.send(data);
     } catch (error) {
-        res.status(error.response.status).json(error.response)
+        returnError(res, error);
 
     }
 
@@ -138,7 +141,7 @@ router.put('/add', async (req, res) => {
         })
         res.send(data);
     } catch (error) {
-        res.status(error.response.status).json(error.response)
+        returnError(res, error);
     }
 
 })
@@ -159,11 +162,20 @@ router.put('/remove', async (req, res) => {
         })
         res.send(data);
     } catch (error) {
-        res.status(error.response.status).json(error.response)
+        returnError(res, error);
     }
 })
 
 
+const returnError = (res, error) => {
+    try {
+        res.status(error.response.status).json(error.response)
+    } catch (error) {
+        res.status(500).json(error)
+
+    }
+
+}
 
 module.exports = router;
 

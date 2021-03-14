@@ -37,7 +37,7 @@ router.get('/all', async (req, res) => {
             }
         });
         if (friendsList.length > 0) {
-            const { data: friends } = await axios.get(usersUrl, {
+            const { data: friends } = await axios.get(usersUrl + '/all', {
                 headers: {
                     authorization
                 },
@@ -89,8 +89,16 @@ router.get('/name', async (req, res) => {
                 userId
             }
         });
+
+
+        const { data: reqsSent } = await axios.get(friendsUrl + '/request/sent', {
+            headers: { authorization },
+            params: { userId }
+        });
+
         console.log('friendsList', friendsList)
-        const noFriendUsers = users.filter(u => !friendsList.includes(u.authId))
+        let noFriendUsers = users.filter(u => !friendsList.includes(u.authId))
+        noFriendUsers = noFriendUsers.map(u => reqsSent.includes(u.authId) ? { ...u, sent: true } : { ...u })
         res.json(noFriendUsers);
     } catch (error) {
         console.log('error', error.message)
@@ -172,7 +180,7 @@ router.get('/request', async (req, res) => {
             params: { userId }
         });
 
-        const { data: users } = await axios.get(usersUrl, {
+        const { data: users } = await axios.get(usersUrl + '/all', {
             headers: {
                 authorization
             },
@@ -180,6 +188,7 @@ router.get('/request', async (req, res) => {
                 userIds: [...reqList]
             }
         });
+
         res.json(users);
     } catch (error) {
         returnError(res, error);
@@ -194,6 +203,7 @@ router.post('/request', async (req, res) => {
 
         res.json(result);
     } catch (error) {
+        returnError(res, error);
 
     }
 })

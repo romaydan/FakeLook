@@ -22,7 +22,7 @@ const Container = props => {
         onModalPostViewClosed, user,
         setUserLocation, location,
         friends, setFriends, updatePost } = props;
-
+    console.log(`user`, user)
     const history = useHistory();
 
     const now = new Date();

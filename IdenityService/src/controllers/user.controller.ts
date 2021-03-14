@@ -4,7 +4,7 @@ import IAddress from './../interfaces/IAddress';
 import IUser from './../interfaces/IUser';
 import { userInfo } from 'os';
 import IControllerBase from '../interfaces/Icontroller';
-import UserRepo from '../repositories/user.repostitory';
+import UserRepo from '../models/repositories/user.repostitory';
 import { inject, injectable } from 'inversify';
 import IUserService from '../interfaces/user-service.interface';
 
@@ -25,7 +25,7 @@ class UsersController {
 
   addUser = async (req: Request, res: Response) => {
     try {
-      const { user, address } = req.body.data;
+      const { user, address } = req.body;
       const newUser = await this.userServ.addUser(user, address);
       res.json(newUser);
     } catch (error) {

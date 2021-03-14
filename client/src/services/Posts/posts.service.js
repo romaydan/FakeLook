@@ -1,6 +1,6 @@
 import * as axois from 'axios';
 
-const POSTS_BASE_URL = 'http://localhost:5010'
+const POSTS_BASE_URL = process.env.REACT_APP_API_GATEWAY_URL
 
 export const getPosts = async (values) => {
     const accessToken = sessionStorage.getItem('access_token');

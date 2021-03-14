@@ -6,4 +6,5 @@ export default interface IFriendRequestService {
   acceptFriendRequest(userId: string, senderId: string);
   declineFriendRequest(userId: string, senderId: string);
   getUsersFriendRequests(userId: string): Promise<IFriendRequest[]>;
+  getUsersFriendRequestSent(userId: string): Promise<IFriendRequest[]>;
 }

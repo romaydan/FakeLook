@@ -1,3 +1,4 @@
+require('dotenv').config();
 import App from './app';
 import express from 'express';
 import * as bodyParser from 'body-parser';
@@ -14,11 +15,10 @@ const app = new App({
     cors({
       origin: '*',
     }),
-
+    validateToken,
     express.json(),
     loggerMiddleware,
   ],
 });
 
 app.listen();
-//    validateToken,

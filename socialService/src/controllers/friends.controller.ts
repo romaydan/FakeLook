@@ -59,6 +59,16 @@ export default class FriendsController {
       res.status(500).send(error.message);
     }
   };
+  getUsersSentRequests = async (req: Request, res: Response) => {
+    try {
+      const { userId } = req.query;
+      const result = await this.friendReqSrv.getUsersFriendRequestSent(userId as string);
+      res.send(result.map((fr) => fr.recipientId));
+    } catch (error) {
+      console.log('error', error);
+      res.status(500).send(error.message);
+    }
+  };
 
   newFriendRequest = async (req: Request, res: Response) => {
     try {

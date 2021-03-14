@@ -44,6 +44,7 @@ const Login = props => {
     const login = (email, password) => {
         fakelookLogin(email, password)
             .then(({ user, accessToken }) => {
+                console.log('user', user)
                 sessionStorage.setItem('access_token', accessToken)
                 console.log(user);
                 setUser(user);

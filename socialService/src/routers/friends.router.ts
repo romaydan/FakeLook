@@ -10,6 +10,7 @@ router.get('/', controller.getUsersFriends);
 router.delete('/', controller.removeFriend);
 
 router.get('/request', controller.getUsersFriendRequests);
+router.get('/request/sent', controller.getUsersSentRequests);
 router.post('/request', controller.newFriendRequest);
 router.patch('/request/accept', controller.acceptfriendRequest);
 router.patch('/request/decline', controller.declinefriendRequest);

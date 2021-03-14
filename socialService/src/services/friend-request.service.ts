@@ -15,12 +15,12 @@ export default class FriendRequestService implements IFriendRequestService {
     @inject(TYPES.IFriendsRepository)
     private friendsRepo: IFriendsRepository
   ) {}
+  getUsersFriendRequestSent(userId: string): Promise<IFriendRequest[]> {
+    return this.friendReqRepo.getUsersSent(userId);
+  }
 
   getUsersFriendRequests(userId: string): Promise<IFriendRequest[]> {
-    if (uuid.validate(userId)) {
-      return this.friendReqRepo.getUsersFriendRequests(userId);
-    }
-    throw Error('not a valid uuid');
+    return this.friendReqRepo.getUsersFriendRequests(userId);
   }
 
   newFriendRequest(fromId: string, toId: string): Promise<IFriendRequest> {
@@ -37,3 +37,6 @@ export default class FriendRequestService implements IFriendRequestService {
     return result === 1;
   }
 }
+//if (uuid.validate(userId)) {
+//  }
+//  throw Error('not a valid uuid');

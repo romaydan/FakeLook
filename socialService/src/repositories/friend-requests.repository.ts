@@ -6,6 +6,11 @@ import IFriendRequestRepository from '../interfaces/repositories/friend-request-
 
 @injectable()
 export default class FriendRequestRepositorySequelize implements IFriendRequestRepository {
+  getUsersSent(userId: string): Promise<IFriendRequest[]> {
+    return FriendRequest.findAll({
+      where: { senderId: userId },
+    });
+  }
   async validateFriendRequestNotExists(senderId: string, recipientId: string): Promise<boolean> {
     const result = await FriendRequest.findAll({ where: { senderId, recipientId } });
     return !(result.length > 0);

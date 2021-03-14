@@ -1,8 +1,8 @@
 import * as axios from 'axios';
 
-const BASE_AUTH_URL = 'http://localhost:5000/auth';
-const BASE_IDENTITY_URL = 'http://localhost:5004/api/users';
-const API_GATEWAY_URL = 'http://localhost:5010'
+// const BASE_AUTH_URL = 'http://localhost:5000/auth';s
+// const BASE_IDENTITY_URL = 'http://localhost:5004/api/users';
+const API_GATEWAY_URL = process.env.REACT_APP_API_GATEWAY_URL
 
 export const fakelookLogin = async (email, password) => {
     const { status, data } = await axios.post(`${API_GATEWAY_URL}/auth/fakelook/signin`, { email, password });
@@ -12,6 +12,7 @@ export const fakelookLogin = async (email, password) => {
 }
 
 export const fakelookRegister = async (email, password, confirmPassword, user, address) => {
+    console.log(`${API_GATEWAY_URL}/auth/fakelook/signup`);
     // const { data: { statusCode, userId } } = await axios.post(`${BASE_AUTH_URL}/fakelook/signup`, { email, password, confirmPassword });
     const response = await axios.post(`${API_GATEWAY_URL}/auth/fakelook/signup`, { email, password, confirmPassword, user, address });
     return response.data;
