@@ -2,14 +2,14 @@ import * as axios from 'axios';
 
 const API_GATEWAY_URL = 'http://localhost:5000'
 
-export const fakelookLogin = async (email, password) => {
+export const fakelookLoginAsync = async (email, password) => {
     const { status, data } = await axios.post(`${API_GATEWAY_URL}/auth/fakelook/signin`, { email, password });
     if (status < 300) {
         return data;
     }
 }
 
-export const facebookLogin = async (facebookToken, facebookId) => {
+export const facebookLoginAsync = async (facebookToken, facebookId) => {
     const response = await axios.get(`${API_GATEWAY_URL}/auth/facebook/signin`, {
         headers: {
             facebook_id: facebookId, facebook_token: facebookToken,
@@ -21,7 +21,7 @@ export const facebookLogin = async (facebookToken, facebookId) => {
 
 
 
-export const googleLogin = async (tokenId) => {
+export const googleLoginAsync = async (tokenId) => {
     const response = await axios.get(`${API_GATEWAY_URL}/auth/google/signin`, {
         headers: {
             token_id: tokenId
@@ -31,10 +31,10 @@ export const googleLogin = async (tokenId) => {
     return response.data;
 }
 
-export const loginWihJwt = async (refresh_token) => {
+export const loginWihJwtAsync = async (refreshToken) => {
     const response = await axios.get(`${API_GATEWAY_URL}/auth/jwt/signin`, {
         headers: {
-            refresh_token
+            refresh_token: refreshToken
         }
     })
 

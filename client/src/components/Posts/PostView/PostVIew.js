@@ -7,6 +7,7 @@ import useRefreshToken from '../../../hooks/refresh.hook';
 import { addCommentAsync, addLikeAsync, addTagAsync, addUserTagAsync, getPostByIdAsync, removeLikeAsync } from '../../../services/Posts/posts.service';
 import notifier from '../../../services/Notifications/Notifications.service';
 import Modal from 'react-modal';
+import useError from '../../../hooks/error.hook';
 
 const TYPES = {
     ADD_COMMENT: 'ADD_COMMENT',
@@ -24,7 +25,7 @@ const TYPES = {
 }
 
 const PostView = props => {
-    const { postId, user, updatePostLikes, friends } = props;
+    const { postId, user, updatePostLikes, friends, accessToken } = props;
 
     const [post, setPost] = useState(null);
     const [isUserTagModalOpen, setIsUserTagModalOpen] = useState(false);
@@ -33,19 +34,23 @@ const PostView = props => {
     const commentRef = useRef();
     const history = useHistory();
     const refresh = useRefreshToken();
+    const setError = useError();
 
     const onRefreshFailed = () => {
         history.push('/logout');
     }
 
+    const onError = (err, onSuccess) => {
+        if (err.response?.status === 401) {
+            refresh(onSuccess, onRefreshFailed);
+        }
+        setError(err.message ?? err);
+    }
+
     const getPostData = () => {
-        getPostByIdAsync(postId)
+        getPostByIdAsync(postId, accessToken)
             .then(post => setPost(post))
-            .catch(err => {
-                if (err.response?.status === 401) {
-                    refresh(getPostData, onRefreshFailed);
-                }
-            });
+            .catch(err => onError(err, getPostData));
     }
 
     useEffect(() => {
@@ -143,20 +148,20 @@ const PostView = props => {
     }
 
     const addTag = (content) => {
-        addTagAsync(content, postId)
+        addTagAsync(content, postId, accessToken)
             .then(tag => {
                 setPost({ ...post, tags: [...post.tags, tag] });
             })
-            .catch(console.error)
+            .catch(err => onError(err, () => addTag(content)))
     }
 
     const addUserTag = (userId, name) => {
-        addUserTagAsync(userId, postId, name)
+        addUserTagAsync(userId, postId, name, accessToken)
             .then(userTag => {
                 setPost({ ...post, userTags: [...post.userTags, userTag] });
                 console.log('userId', userId, 'name', name);
             })
-            .catch(console.error);
+            .catch(err => onError(err, () => addUserTag(userId, name)));
     }
 
     if (post)

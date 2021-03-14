@@ -7,7 +7,7 @@ const controller = container.get<GroupsController>(TYPES.GroupsController);
 const router = Router();
 
 router.get('/:groupId', controller.getGroup);
-router.get('/user/:userId', controller.getUsersGroup);
+router.get('/:userId', controller.getUsersGroup);
 router.post('/', controller.addGroup);
 router.delete('/:userId&:groupId', controller.deleteGroup);
 router.put('/name', controller.changeGroupName);

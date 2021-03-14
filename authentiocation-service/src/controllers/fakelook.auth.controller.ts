@@ -8,18 +8,21 @@ import UserError from "../errors/user.error";
 import settings from "../settings";
 import { IEmailValidator } from "../services/emailvalidator";
 import UniqueConstraintError from "sequelize/lib/errors/validation/unique-constraint-error";
+import { ILogger } from "../services/logger.service";
 
 @injectable()
 export class FakeLookAuthController {
 
     constructor(@inject(TYPES.IFakeLookAuthenticationService) private service: IFakeLookAuthenticationService,
         @inject(TYPES.IJwtService) private jwtService: IJwtService,
-        @inject(TYPES.IEmailValidator) private emailValidator: IEmailValidator) {
+        @inject(TYPES.IEmailValidator) private emailValidator: IEmailValidator,
+        @inject(TYPES.ILogger) private logger: ILogger) {
 
         this.resetPassword = this.resetPassword.bind(this);
         this.signIn = this.signIn.bind(this);
         this.signUp = this.signUp.bind(this);
         this.validateEmail = this.validateEmail.bind(this);
+        this.logError = this.logError.bind(this);
     }
 
     async resetPassword(req: Request, res: Response, next: NextFunction) {
@@ -33,20 +36,29 @@ export class FakeLookAuthController {
             const success = await this.service.resetPassword(email, oldPassword, newPassword, confirmNewPassword);
             if (success) {
                 res.json({ statusCode: 200, message: 'Password reset was successfull!' });
+                this.logger.log({ email, action: 'password reset', status: 'successfull' });
+
                 return;
             }
 
             res.status(500).json({ statusCode: 500, error: 'Reset unsuccessfull, please try again later!' });
+            this.logError({ action: 'passowrd reset', status: 'unsuccessfull', error: 'internal server error' });
 
         } catch (error) {
+            const errorLog: any = { action: 'passowrd reset', status: 'unsuccessfull' };
+
             switch (true) {
                 case error instanceof UserError:
                     res.status(400).json({ statusCode: 400, error: error.message });
+                    errorLog.error = error.message;
                     break;
                 default:
                     res.status(500).json({ statusCode: 500, error: 'Unable to proccess request at this time please try again later!' });
+                    errorLog.error = 'internal server error';
                     break;
             }
+
+            this.logError(errorLog);
         }
     }
 
@@ -65,15 +77,23 @@ export class FakeLookAuthController {
 
             res.json({ status: 200, message: 'Sign in successfull!', accessToken, refreshToken });
 
+            this.logger.log({ userId, action: 'fakelook signIn', status: 'successfull' });
+
         } catch (error) {
+            const errorLog: any = { action: 'facelook signIn', status: 'unsuccessfull' };
+
             switch (true) {
                 case error instanceof UserError:
                     res.status(400).json({ statusCode: 400, error: error.message });
+                    errorLog.error = error.message;
                     break;
                 default:
                     res.status(500).json({ statusCode: 500, error: 'Unable to proccess request at this time please try again later!' });
+                    errorLog.error = 'internal server error';
                     break;
             }
+
+            this.logError(errorLog);
         }
     }
 
@@ -85,28 +105,42 @@ export class FakeLookAuthController {
             //trys to register the new user.
             const userId = await this.service.signUp(email, password, confirmPassword);
             if (userId) {
-                res.json({ statusCode: 201, message: 'Signup successfull!', userId  });
+                res.json({ statusCode: 201, message: 'Signup successfull!', userId });
+                this.logger.log({ userId, action: 'fakelook signUp', status: 'successfull' });
+
                 return;
             }
 
             res.status(500).json({ statusCode: 500, error: 'Unable to proccess request at this time please try again later!' });
+            this.logError({ action: 'fakelook signUp', status: 'unsuccessfull', error: 'internal server error' });
 
         } catch (error) {
+            const errorLog: any = { action: 'facelook signIn', status: 'unsuccessfull' };
+
             switch (true) {
                 case error instanceof UserError:
                     res.status(400).json({ statusCode: 400, error: error.message });
+                    errorLog.error = error.message;
                     break;
                 case error instanceof UniqueConstraintError:
                     res.status(400).json({ statusCode: 400, error: 'Email address already taken!' });
+                    errorLog.error = 'email address already taken!';
                     break;
                 default:
                     res.status(500).json({ statusCode: 500, error: 'Unable to proccess request at this time please try again later!' });
+                    errorLog.error = 'internal server error';
                     break;
             }
+
+            this.logError(errorLog);
         }
     }
 
     private validateEmail(email: string): boolean | UserError {
         return this.emailValidator.validate(email);
+    }
+
+    private logError(error: any): void {
+        this.logger.error(error);
     }
 }

@@ -8,6 +8,7 @@ export const TYPES = {
     IEmailValidator: Symbol('IEmailValidator'),
     IPasswordValidator: Symbol('IPasswordValidator'),
     IUserService: Symbol('IUserService'),
+    ILogger: Symbol('ILogger'),
 
     IFakeLookAuthenticationService : Symbol('IFakeLookAuthenticationService'),
     FakeLookAuthController: Symbol('FakeLookAuthController'),

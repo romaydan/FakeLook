@@ -5,23 +5,27 @@ import { motion, useAnimation } from 'framer-motion';
 import { setPosts } from '../../../actions/posts.actions';
 import { setLocation } from '../../../actions/location.actions';
 import { connect } from 'react-redux';
-import { getPosts } from '../../../services/Posts/posts.service';
+import { getPostsAsync } from '../../../services/Posts/posts.service';
 import { addNewPostAsync } from '../../../services/Posts/posts.service';
 import Filter from '../Filter/Filter';
 import PostForm from '../PostForm/PostForm';
 import PostView from '../PostView/PostVIew';
 import Modal from 'react-modal';
 import { setFriends } from '../../../actions/friends.actions';
-import { getFriends } from '../../../services/Friends/friends.service';
-import { authenticated } from '../../../actions/authentication.actions';
+import { setGroups } from '../../../actions/groups.actions';
+import { getFriendsAsync } from '../../../services/Friends/friends.service';
+import { getGroupsAsync } from '../../../services/Groups/groups.service';
 import { useHistory } from 'react-router-dom';
 import useRefreshToken from '../../../hooks/refresh.hook';
+import useError from '../../../hooks/error.hook';
 import '../../../css/scrollbar.css';
 
 const Container = props => {
-    const { children, setPosts, post, onModalPostViewClosed, user, setUserLocation, location, friends, setFriends, updatePost, groups } = props;
+    const { children, post, user, location, friends,  groups, authentication: { accessToken } } = props;
+    const { updatePost, setUserLocation, setFriends, setGroups, onModalPostViewClosed, setPosts } = props;
 
     const refresh = useRefreshToken();
+    const setError = useError();
     const history = useHistory();
 
     const now = new Date();
@@ -39,6 +43,13 @@ const Container = props => {
         history.push('/logout');
     }
 
+    const onError = (err, onSuccess) => {
+        if (err.response?.status === 401) {
+            refresh(onSuccess, onRefreshFailed);
+        }
+        setError(err.message ?? err);
+    }
+
     useEffect(() => {
         if (post)
             setPostViewIsOpen(true);
@@ -47,25 +58,24 @@ const Container = props => {
     useEffect(() => {
         navigator.geolocation.getCurrentPosition(({ coords }) => setUserLocation([coords.longitude, coords.latitude]))
 
-        const getFriendsData = () => getFriends(user.authId)
+        const getFriendsData = () => getFriendsAsync(user.authId, accessToken)
             .then(friends => {
                 setFriends(friends);
             })
-            .catch(err => {
-                if (err.response.status === 401) {
-                    refresh(getFriendsData, onRefreshFailed);
-                }
-            });
+            .catch(err => onError(err, getFriendsData));
 
         if (!friends)
             getFriendsData();
 
+        getGroupsAsync(user.authId, accessToken)
+            .then(groups => setGroups(groups))
+            .catch(err => onError(err, () => getGroupsAsync(user.authId, accessToken)));
+
     }, []);
 
     useEffect(() => {
-        if (friends) {
+        if (friends)
             fetchPosts({ ...initialFilterValues, publishers: friends.map(f => f.authId) });
-        }
     }, [friends])
 
     const closePostViewModal = () => {
@@ -112,24 +122,17 @@ const Container = props => {
     }
 
     const fetchPosts = (values) => {
-        if (values.publishers.length === 0) {
+        if (values.publishers.length === 0)
             values.publishers = friends.map(f => f.authId);
-        }
 
         if (!values.publishers.includes(user.authId))
             values.publishers.push(user.authId);
 
-        console.log('publishers', values.publishers);
-
-        getPosts({ ...values, location: location, distance: values.distance * 1000 })
+        getPostsAsync({ ...values, location: location, distance: values.distance * 1000 }, accessToken)
             .then(posts => {
                 setPosts(posts);
             })
-            .catch(err => {
-                if (err.response?.status === 401) {
-                    refresh(() => fetchPosts(values), onRefreshFailed);
-                }
-            });
+            .catch(err => onError(err, () => fetchPosts(values)));
     }
 
     const updatePostLikes = (likes) => {
@@ -145,13 +148,9 @@ const Container = props => {
         form.append('textContent', post.textContent);
         form.append('coordinates', post.location);
         form.append('showTo', 1);
-        addNewPostAsync(form)
+        addNewPostAsync(form, accessToken)
             .then(res => setPostFormIsOpen(false))
-            .catch(err => {
-                if (err.response.status === 401) {
-                    refresh(() => addPost(post), onRefreshFailed);
-                }
-            });
+            .catch(err => onError(err, () => addPost(post)));
     }
 
     return (
@@ -174,7 +173,7 @@ const Container = props => {
                 max-h-full bg-gray-50 shadow-md overflow-y-auto scrollbar-a 
                 w-1/2 top-5 bottom-5 outline-none border-2 border-gray-100'>
                     <div className='w-full h-full flex flex-col items-center pt-5 pb-5'>
-                        {post ? <PostView postId={post.id} user={user} updatePostLikes={updatePostLikes} friends={friends} /> : null}
+                        {post ? <PostView postId={post.id} user={user} updatePostLikes={updatePostLikes} friends={friends} accessToken={accessToken} /> : null}
                     </div>
                 </Modal>
                 <Modal isOpen={postFormModalIsOpen}
@@ -203,13 +202,15 @@ const mapStateToProps = state => ({
     user: state.user,
     location: state.location,
     friends: state.friends,
-    groups: state.groups
+    groups: state.groups,
+    authentication: state.authentication
 })
 
 const mapDispatchToProps = dispatch => ({
     setPosts: (posts) => dispatch(setPosts(posts)),
     setUserLocation: location => dispatch(setLocation(location)),
-    setFriends: friends => dispatch(setFriends(friends))
+    setFriends: friends => dispatch(setFriends(friends)),
+    setGroups: groups => dispatch(setGroups(groups))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Container);

@@ -45,7 +45,7 @@ export default class GroupsController {
       const { groupId, userId } = req.params;
       console.log('groupId', groupId);
       const result = await this.groupsServ.getGroup(req.params.groupId, userId);
-      res.send(result);
+      res.json(result);
     } catch (error) {
       res.status(404).send({ message: error.message });
     }
@@ -55,7 +55,7 @@ export default class GroupsController {
     try {
       const { userId } = req.params;
       const result = await this.groupsServ.getUsersGroups(userId);
-      res.status(200).send(result);
+      res.status(200).json(result);
     } catch (error) {
       res.status(404).send(error.message);
     }
@@ -65,7 +65,7 @@ export default class GroupsController {
     try {
       const { groupId, name, userId } = req.body.data;
       const result = await this.groupsServ.updateGroupName(groupId, name, userId);
-      res.status(200).send(result);
+      res.status(200).json(result);
     } catch (error) {
       res.status(500).send(error.message);
     }
@@ -75,7 +75,7 @@ export default class GroupsController {
     try {
       const { groupId, userId, friendId } = req.body.data;
       const result = await this.groupsServ.addUserToGroup(groupId, userId, friendId);
-      res.status(200).send(result);
+      res.status(200).json(result);
     } catch (error) {
       res.status(500).send(error);
     }
@@ -86,7 +86,7 @@ export default class GroupsController {
       const { groupId, userId, friendId } = req.body.data;
       console.log('req.body.data', req.body.data);
       const result = await this.groupsServ.removeUserFromGroup(groupId, userId, friendId);
-      res.status(200).send(result);
+      res.status(200).json(result);
     } catch (error) {
       res.status(500).send(error);
     }

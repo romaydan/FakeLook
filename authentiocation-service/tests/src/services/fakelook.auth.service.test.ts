@@ -1,6 +1,7 @@
 import { IUser } from '../../../src/models/user.model';
 import { FakeLookAuthenticationService } from '../../../src/services/fakelook.authentication.service';
 import { UserRepository } from '../../../src/repositories/user.repository';
+import { PasswordValidator } from '../../../src/services/password.validator';
 
 
 let users : IUser[];
@@ -51,13 +52,13 @@ describe('testing signIn', () => {
             {
                 id: '1',
                 identifier: 'test@test.com',
-                password: '123456',
+                password: '12345678',
                 isOAuthUser: false
             },
             {
                 id: '2',
                 identifier: 'email@test.com',
-                password: '123456',
+                password: '12345678',
                 isOAuthUser: false
             }
         ];
@@ -66,15 +67,15 @@ describe('testing signIn', () => {
     test('passing valid email and password', async (done) => {
         const repository = mockRepository.getMockImplementation()();
 
-        const service = new FakeLookAuthenticationService(repository);
-        const userId = await service.signIn('test@test.com', '123456');
+        const service = new FakeLookAuthenticationService(repository, new PasswordValidator());
+        const userId = await service.signIn('test@test.com', '12345678');
         expect(userId).toEqual('1')
         done();
     });
 
     test('passing invalid email and password, expecting error', () => {
         const repository = mockRepository.getMockImplementation()();
-        const service = new FakeLookAuthenticationService(repository);
+        const service = new FakeLookAuthenticationService(repository, new PasswordValidator());
         expect(service.signIn('invalid', ''))
         .rejects
         .toThrow()
@@ -82,7 +83,7 @@ describe('testing signIn', () => {
 
     test('passing valid email and invalid password, expecting error', () => {
         const repository = mockRepository.getMockImplementation()();
-        const service = new FakeLookAuthenticationService(repository);
+        const service = new FakeLookAuthenticationService(repository, new PasswordValidator());
         expect(service.signIn('invalid', ''))
         .rejects
         .toThrow()
@@ -95,13 +96,13 @@ describe('testing signUp', () => {
             {
                 id: '1',
                 identifier: 'test@test.com',
-                password: '123456',
+                password: '12345678',
                 isOAuthUser: false
             },
             {
                 id: '2',
                 identifier: 'email@test.com',
-                password: '123456',
+                password: '12345678',
                 isOAuthUser: false
             }
         ];
@@ -109,7 +110,7 @@ describe('testing signUp', () => {
 
     test('passing valid email and password, expecting a new user', () => {
         const repository = mockRepository.getMockImplementation()();
-        const service = new FakeLookAuthenticationService(repository);
+        const service = new FakeLookAuthenticationService(repository, new PasswordValidator());
         const email = 'email@valid.com', password = '12345', confirmPassword = '12345';
 
         expect(service.signUp(email, password, confirmPassword))
@@ -119,8 +120,8 @@ describe('testing signUp', () => {
 
     test('passing taken email, expecting error', () => {
         const repository = mockRepository.getMockImplementation()();
-        const service = new FakeLookAuthenticationService(repository);
-        const email = 'test@test.com', password = '12345', confirmPassword = '12345';
+        const service = new FakeLookAuthenticationService(repository, new PasswordValidator());
+        const email = 'test@test.com', password = '12345678', confirmPassword = '12345678';
 
         expect(service.signUp(email, password, confirmPassword))
         .rejects
@@ -129,8 +130,8 @@ describe('testing signUp', () => {
 
     test('passing differant password and confirmPassword, expecting error', () => {
         const repository = mockRepository.getMockImplementation()();
-        const service = new FakeLookAuthenticationService(repository);
-        const email = 'test@test.com', password = '12345', confirmPassword = '123';
+        const service = new FakeLookAuthenticationService(repository, new PasswordValidator());
+        const email = 'test@test.com', password = '12345678', confirmPassword = '123';
 
         expect(service.signUp(email, password, confirmPassword))
         .rejects
@@ -139,7 +140,7 @@ describe('testing signUp', () => {
 
     test('passing undefined email and password, expecting error', () => {
         const repository = mockRepository.getMockImplementation()();
-        const service = new FakeLookAuthenticationService(repository);
+        const service = new FakeLookAuthenticationService(repository, new PasswordValidator());
 
         expect(service.signUp(undefined, undefined, undefined))
         .rejects
@@ -153,13 +154,13 @@ describe('testing resetPassword', () => {
             {
                 id: '1',
                 identifier: 'test@test.com',
-                password: '123456',
+                password: '12345678',
                 isOAuthUser: false
             },
             {
                 id: '2',
                 identifier: 'email@test.com',
-                password: '123456',
+                password: '12345678',
                 isOAuthUser: false
             }
         ];
@@ -167,9 +168,9 @@ describe('testing resetPassword', () => {
 
     test('passing valid arguments, expecting user\'s password to change', async (done) => {
         const repository = mockRepository.getMockImplementation()();
-        const service = new FakeLookAuthenticationService(repository);
+        const service = new FakeLookAuthenticationService(repository, new PasswordValidator());
         const user = users[0];
-        const newPassowrd = '1234567';
+        const newPassowrd = '12345678';
 
         await service.resetPassword(user.identifier, user.password, newPassowrd, newPassowrd);
 
@@ -181,9 +182,9 @@ describe('testing resetPassword', () => {
 
     test('passing invalid arguments expecting error', () => {
         const repository = mockRepository.getMockImplementation()();
-        const service = new FakeLookAuthenticationService(repository);
+        const service = new FakeLookAuthenticationService(repository, new PasswordValidator());
 
-        expect(service.resetPassword('invalid@email.com', '123', '123456', '123456'))
+        expect(service.resetPassword('invalid@email.com', '12345678', '123456789', '123456'))
         .rejects
         .toThrow();
     });

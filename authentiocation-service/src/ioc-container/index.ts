@@ -17,6 +17,7 @@ import "reflect-metadata"
 import { EmailValidator, IEmailValidator } from '../services/emailvalidator';
 import { IUserService, UserService } from '../services/user.service';
 import { IPasswordValidator, PasswordValidator } from '../services/password.validator';
+import { ILogger, RedisPubSubLogger } from '../services/logger.service';
 
 const container = new Container();
 
@@ -29,6 +30,7 @@ container.bind<ITokenBlackListService>(TYPES.ITokenBlackListService).to(TokenBla
 container.bind<IEmailValidator>(TYPES.IEmailValidator).to(EmailValidator).inSingletonScope();
 container.bind<IPasswordValidator>(TYPES.IPasswordValidator).to(PasswordValidator).inSingletonScope();
 container.bind<IUserService>(TYPES.IUserService).to(UserService).inSingletonScope();
+container.bind<ILogger>(TYPES.ILogger).to(RedisPubSubLogger).inSingletonScope();
 
 //db
 container.bind<Sequelize>(TYPES.Sequelize).toDynamicValue(() => db).inSingletonScope();

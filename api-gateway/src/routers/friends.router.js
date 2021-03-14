@@ -22,7 +22,7 @@ router.get('/all', async (req, res) => {
     
         res.json(friends);
     } catch (error) {
-        res.status(error.response.status).json(error.response)
+        res.status(error.response.status).json(error.response.data)
     }
 })
 
