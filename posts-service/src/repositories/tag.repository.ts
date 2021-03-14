@@ -47,7 +47,7 @@ export class TagRepository implements ITagRepository {
         });
 
         if (t) {
-            await new PostTag({ tagId: t.id, postId: postId }).save();
+            await new PostTag({ tagId: t.id, postId: postId, id: uuid.v4() }).save();
             return t;
         }
 

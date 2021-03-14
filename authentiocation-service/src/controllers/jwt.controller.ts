@@ -45,10 +45,10 @@ export class JwtValidtaionController {
         } catch (error) {
             switch (true) {
                 case error instanceof (TokenExpiredError):
-                    res.status(400).json({ statusCode: 400, error: 'Expired token!' });
+                    res.status(401).json({ statusCode: 401, error: 'Expired token!' });
                     break;
                 case error instanceof (JsonWebTokenError):
-                    res.status(400).json({ statusCode: 400, error: 'Invalid token!' });
+                    res.status(403).json({ statusCode: 403, error: 'Invalid token!' });
                     break;
                 default:
                     res.status(500).json({ statusCode: 500, error: 'Internal error. Please try again later' })
@@ -61,7 +61,7 @@ export class JwtValidtaionController {
     //generates a new JWT access token using a refresh token. 
     async refresh(req: Request, res: Response, next: NextFunction) {
         try {
-            const { refresh_token: token } = req.cookies;
+            const { refresh_token: token } = req.headers;
 
             if (!token) {
                 res.status(400).json({ statusCode: 400, error: 'No token provided!' });
@@ -69,14 +69,14 @@ export class JwtValidtaionController {
             }
 
             //checks to see if the refresh token is in the blacklist.
-            if (await this.blackListService.isBlackedListed(token)) {
+            if (await this.blackListService.isBlackedListed(<string>token)) {
                 this.clearRefreshTokenCookie(res);
                 res.status(401).json({ statusCode: 401, error: 'This token is blacklisted!' });
                 return;
             }
 
             //verifies the refresh token and recives its payload.
-            const { userId } = this.service.verifyToken(token);
+            const { userId } = this.service.verifyToken(<string>token);
             //finds the user by the userId.
             const user = await this.userService.getUserById(userId);
 
@@ -88,7 +88,7 @@ export class JwtValidtaionController {
             }
 
             //adds the token to the blacklist
-            await this.blackListService.blackListToken(token);
+            await this.blackListService.blackListToken(<string>token);
             //if the user doesn't exists anymore the refresh token is cleared from the cookies.
             this.clearRefreshTokenCookie(res);
             res.status(403).json({ statusCode: 403, error: 'User does not exist!' });
@@ -113,10 +113,10 @@ export class JwtValidtaionController {
 
     async logout(req: Request, res: Response, next: NextFunction) {
         try {
-            const { refresh_token: token } = req.cookies;
+            const { refresh_token: token } = req.headers;
 
             //adds the refresh token to the blacklist.
-            const success = await this.blackListService.blackListToken(token);
+            const success = await this.blackListService.blackListToken(<string>token);
             //clears the token from the user's cookies.
             this.clearRefreshTokenCookie(res);
 

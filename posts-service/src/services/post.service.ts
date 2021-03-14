@@ -4,13 +4,14 @@ import { IImageUploader } from "./image.uploader";
 import { IPost } from "../models/post.model";
 import TYPES from "../ioc-container/types";
 import * as uuid from 'uuid';
+import UserError from "../errors/user.error";
 
 
 export interface IPostService {
     addPost(post: IPost, uploadFile: object, accessToken: string): Promise<IPost>;
-    removePostById(postId: string, accessToken: string): Promise<boolean>;
+    removePostById(postId: string, userId: string, accessToken: string): Promise<boolean>;
     getFilteredPosts(userFilter: string[], tagFilter: string[], publishers: string[], location: number[], distance: number, from: Date, to: Date): Promise<IPost[]>;
-    getPostDataById(postId: string): Promise<IPost>;
+    getPostById(postId: string): Promise<IPost>;
     getAllPostsByUserId(userId: string): Promise<IPost[]>;
     updatePost(post: IPost): Promise<boolean>;
 }
@@ -22,7 +23,7 @@ export class PostService implements IPostService {
         this.addPost = this.addPost.bind(this);
         this.removePostById = this.removePostById.bind(this);
         this.getFilteredPosts = this.getFilteredPosts.bind(this);
-        this.getPostDataById = this.getPostDataById.bind(this);
+        this.getPostById = this.getPostById.bind(this);
         this.getAllPostsByUserId = this.getAllPostsByUserId.bind(this);
         this.updatePost = this.updatePost.bind(this);
     }
@@ -50,28 +51,44 @@ export class PostService implements IPostService {
         return newPost;
     }
 
-    async removePostById(postId: string, accessToken: string): Promise<boolean> {
+    async removePostById(postId: string, userId: string, accessToken: string): Promise<boolean> {
         if (!postId) {
             throw new ReferenceError('No post id proivded!');
         }
 
+        const foundPost = await this.repository.getPostById(postId);
+
+        if (foundPost && foundPost.publisherId !== userId) {
+            throw new UserError('Only the posts publisher can remove this post!');
+        }
+
         //removes the post from the database.
         const post = await this.repository.removePost(postId);
-        //deletes the image from the static image server.
-        const success = await this.uploader.deleteImage(post.imageUrl, accessToken);
 
-        return post != undefined;
+        if (post) {
+            //deletes the image from the static image server.
+            const success = await this.uploader.deleteImage(post.imageUrl, accessToken);
+            return true;
+        }
+
+        return false;
     }
 
     getFilteredPosts(userFilter: string[], tagFilter: string[], publishers: string[], location: number[], distance: number, from: Date, to: Date): Promise<IPost[]> {
         return this.repository.getFilteredPost(userFilter, tagFilter, publishers, location, distance, from, to);
     }
 
-    getPostDataById(postId: string): Promise<IPost> {
+    getPostById(postId: string): Promise<IPost> {
+        if(!postId)
+            throw new UserError('Invalid postId!');
+        
         return this.repository.getPostById(postId);
     }
 
     getAllPostsByUserId(userId: string): Promise<IPost[]> {
+        if(!userId)
+            throw new UserError('Invalid userId!');
+
         return this.repository.getAllPostsByUserId(userId);
     }
 

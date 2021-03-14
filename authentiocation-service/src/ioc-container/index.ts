@@ -16,6 +16,7 @@ import db from '../db';
 import "reflect-metadata"
 import { EmailValidator, IEmailValidator } from '../services/emailvalidator';
 import { IUserService, UserService } from '../services/user.service';
+import { IPasswordValidator, PasswordValidator } from '../services/password.validator';
 
 const container = new Container();
 
@@ -26,6 +27,7 @@ container.bind<IFacebookAuthenticationService>(TYPES.IFacebookAuthenticationServ
 container.bind<IJwtService>(TYPES.IJwtService).to(JwtService).inSingletonScope();
 container.bind<ITokenBlackListService>(TYPES.ITokenBlackListService).to(TokenBlackListService).inSingletonScope();
 container.bind<IEmailValidator>(TYPES.IEmailValidator).to(EmailValidator).inSingletonScope();
+container.bind<IPasswordValidator>(TYPES.IPasswordValidator).to(PasswordValidator).inSingletonScope();
 container.bind<IUserService>(TYPES.IUserService).to(UserService).inSingletonScope();
 
 //db

@@ -2,8 +2,9 @@ import 'reflect-metadata';
 import { injectable, inject } from 'inversify'
 import { TYPES } from "../ioc-container/types";
 import { IUserRepository } from "../repositories/user.repository";
-import { verify, generate } from 'password-hash';
+import { generate } from 'password-hash';
 import UserError from '../errors/user.error';
+import { IPasswordValidator } from './password.validator';
 
 export interface IFakeLookAuthenticationService {
     signIn(email: string, password: string): Promise<string>,
@@ -13,7 +14,8 @@ export interface IFakeLookAuthenticationService {
 
 @injectable()
 export class FakeLookAuthenticationService implements IFakeLookAuthenticationService {
-    constructor(@inject(TYPES.IUserRepository) private repository: IUserRepository) {
+    constructor(@inject(TYPES.IUserRepository) private repository: IUserRepository,
+        @inject(TYPES.IPasswordValidator) private passwordValidator: IPasswordValidator) {
         this.resetPassword = this.resetPassword.bind(this);
         this.signIn = this.signIn.bind(this);
         this.signUp = this.signUp.bind(this);
@@ -31,8 +33,11 @@ export class FakeLookAuthenticationService implements IFakeLookAuthenticationSer
             throw new UserError('Can not update a user registered using google or facebook');
 
         //varifies the given password to the one save in the db.
-        if (!verify(oldPassword, user.password))
+        if (!this.passwordValidator.verifyHashed(oldPassword, user.password))
             throw new UserError('The original password is incorrect! please check old password bfore tryin again!');
+
+        //checks if the new password matches the validation requirements.
+        this.passwordValidator.validatePassword(newPassword);
 
         if (newPassword !== cofrimNewPassowrd)
             throw new UserError('The new passwords do not match! please try again!');
@@ -60,7 +65,7 @@ export class FakeLookAuthenticationService implements IFakeLookAuthenticationSer
 
 
         //varifies that the password matches the hashed password from the db.
-        if (verify(password, user.password))
+        if (this.passwordValidator.verifyHashed(password, user.password))
             return user.id;
 
         throw new UserError('Passwords do not match!');
@@ -69,6 +74,9 @@ export class FakeLookAuthenticationService implements IFakeLookAuthenticationSer
     async signUp(email: string, password: string, confirmPassword: string): Promise<string> {
         if (password !== confirmPassword)
             throw new UserError('Passwords do not match! please try again!');
+
+        //checks if the password matches the validation requirements.
+        this.passwordValidator.validatePassword(password);
 
         //hashes the users password.
         const hashedPassword = generate(password);

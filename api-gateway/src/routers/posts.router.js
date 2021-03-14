@@ -81,7 +81,7 @@ router.get('/', async (req, res) => {
         res.json(posts);
 
     } catch (error) {
-        res.status(error.response.status).json(error.response)
+        res.status(error.response.status).json(error.response.data)
     }
 
 })
@@ -91,15 +91,23 @@ router.get('/:postId', async (req, res) => {
         const { postId } = req.params;
         const { authorization } = req.headers;
 
-        const response = await axios.get(`${POSTS_SERVICE_URL}/posts/${postId}`, {
+        const { data: post } = await axios.get(`${POSTS_SERVICE_URL}/posts/${postId}`, {
             headers: {
                 authorization
             }
         })
 
-        res.json(response.data);
+        const { data: users } = await axios.get(`${IDENTITY_SERVICE_URL}/all`, {
+            headers: {
+                authorization
+            },
+            params: { userIds: [post.publisherId] }
+        })
+        post.name = users[0].name
+
+        res.json(post);
     } catch (error) {
-        res.status(error.response.status).json(error.response);
+        res.status(error.response.status).json(error.response.data);
     }
 })
 
@@ -115,7 +123,7 @@ router.post('/comment', async (req, res) => {
         res.json(newComment);
 
     } catch (error) {
-        res.status(error.response.status).json(error.response)
+        res.status(error.response.status).json(error.response.data)
     }
 })
 
@@ -131,7 +139,7 @@ router.post('/like', async (req, res) => {
         res.json(like);
 
     } catch (error) {
-        res.status(error.response.status).json(error.response);
+        res.status(error.response.status).json(error.response.data);
     }
 });
 
@@ -148,8 +156,39 @@ router.delete('/like', async (req, res) => {
         res.json(data);
 
     } catch (error) {
-        res.status(error.response.status).json(error.response);
+        res.status(error.response.status).json(error.response.data);
     }
 });
+
+router.post('/tag', async (req, res) => {
+    try {
+        const { postId, tag } = req.body;
+        const { authorization } = req.headers;
+
+        const postResponse = await axios.post(`${POSTS_SERVICE_URL}/tags/add`, { postId, tag }, {
+            headers: { authorization }
+        })
+
+        res.json(postResponse.data);
+    } catch (error) {
+        res.status(error.response?.status ?? 500).json(error.response?.data);
+    }
+})
+
+router.post('/usertag', async (req, res) => {
+    try {
+        const { postId, userId, name } = req.body;
+        const { authorization } = req.headers;
+
+        const postResponse = await axios.post(`${POSTS_SERVICE_URL}/usertags/add`, { postId, userId, name }, {
+            headers: { authorization }
+        })
+
+        res.json(postResponse.data);
+
+    } catch (error) {
+        res.status(error.response?.status ?? 500).json(error.response?.data);
+    }
+})
 
 module.exports = router;

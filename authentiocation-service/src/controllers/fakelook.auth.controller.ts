@@ -62,8 +62,7 @@ export class FakeLookAuthController {
       //generates a refresh token with the user id.
       const refreshToken = this.jwtService.signToken({ userId: userId }, settings.jwtSettings.refreshToken.expiration);
 
-      res.cookie('refresh_token', refreshToken);
-      res.json({ statusCode: 200, message: 'Signup successfull!', accessToken: accessToken });
+      res.json({ status: 200, message: 'Sign in successfull!', accessToken, refreshToken });
     } catch (error) {
       switch (true) {
         case error instanceof UserError:
@@ -83,9 +82,8 @@ export class FakeLookAuthController {
       this.validateEmail(email);
       //trys to register the new user.
       const userId = await this.service.signUp(email, password, confirmPassword);
-      const accessToken = this.jwtService.signToken({ userId: userId }, settings.jwtSettings.accessToken.expiration);
       if (userId) {
-        res.json({ statusCode: 201, message: 'Signup successfull!', userId, accessToken });
+        res.json({ statusCode: 201, message: 'Signup successfull!', userId });
         return;
       }
 

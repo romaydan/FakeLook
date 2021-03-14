@@ -1,6 +1,7 @@
+import UserError from "../../src/errors/user.error";
 import { IPost, ShowOptions } from "../../src/models/post.model";
 import { PostRepository } from "../../src/repositories/post.repository";
-import { ImageUploader, IImageUploader } from "../../src/services/image.uploader";
+import { IImageUploader } from "../../src/services/image.uploader";
 import { PostService } from "../../src/services/post.service";
 
 let posts: IPost[];
@@ -15,7 +16,7 @@ mockPostRespository.mockImplementation(() => {
         getAllPostsByUserId: (userId) => {
             return Promise.resolve(posts.filter(p => p.publisherId === userId));
         },
-        getFilteredPost: (userFilter, tagFliter, publisherId, distance, from, to) => {
+        getFilteredPost: (userFilter, tagFliter, publisherId, location, distance, from, to) => {
             return Promise.resolve(posts.filter(p => {
                 return p.createdAt >= from && p.createdAt <= to && publisherId.includes(p.publisherId)
                     && p.userTags.some(ut => userFilter.includes(ut.id))
@@ -52,7 +53,7 @@ jest.mock('../../src/services/image.uploader');
 
 class MockImageUploader implements IImageUploader {
     uploadImage(userId, postId, uploadFile, accessToken) {
-        if(!accessToken || !userId || !postId || !uploadFile) {
+        if (!accessToken || !userId || !postId || !uploadFile) {
             throw new Error();
         }
 
@@ -73,7 +74,7 @@ describe('testing addPost', () => {
                 publisherId: '1234',
                 location: {
                     type: 'Point',
-                    coordinates: [2,1]
+                    coordinates: [2, 1]
                 },
                 textContent: 'test',
                 showTo: ShowOptions.Followers,
@@ -85,6 +86,7 @@ describe('testing addPost', () => {
                 comments: [{
                     id: '2',
                     postId: '1',
+                    name: 'test',
                     userId: '123',
                     content: 'test comment post1'
                 }],
@@ -95,6 +97,7 @@ describe('testing addPost', () => {
                 }],
                 userTags: [{
                     id: '2',
+                    name: 'test2',
                     userId: '123',
                     postId: '1'
                 }]
@@ -116,6 +119,7 @@ describe('testing addPost', () => {
                 comments: [{
                     id: '1',
                     postId: '2',
+                    name: 'test',
                     userId: '123',
                     content: 'test comment'
                 }],
@@ -126,6 +130,7 @@ describe('testing addPost', () => {
                 }],
                 userTags: [{
                     id: '1',
+                    name: 'test2',
                     userId: '123',
                     postId: '2'
                 }]
@@ -148,8 +153,8 @@ describe('testing addPost', () => {
         const service = new PostService(repository, uploader);
 
         expect(service.addPost(newPost, uploadFile, accessToken))
-        .resolves
-        .toBe(newPost);
+            .resolves
+            .toBe(newPost);
     });
 
     test('passing no post, expecting an error', () => {
@@ -158,8 +163,8 @@ describe('testing addPost', () => {
         const service = new PostService(repository, uploader);
 
         expect(service.addPost(undefined, uploadFile, accessToken))
-        .rejects
-        .toThrow();
+            .rejects
+            .toThrow();
     })
 
     test('passing no accessToken and uploadFile, expecting an error', () => {
@@ -177,11 +182,334 @@ describe('testing addPost', () => {
         const service = new PostService(repository, uploader);
 
         expect(service.addPost(newPost, undefined, undefined))
-        .rejects
-        .toThrow();
+            .rejects
+            .toThrow();
     });
-})
+});
 
 describe('testing removePost', () => {
+    beforeEach(() => {
+        posts = [
+            {
+                id: '1',
+                publisherId: '1234',
+                location: {
+                    type: 'Point',
+                    coordinates: [2, 1]
+                },
+                textContent: 'test',
+                showTo: ShowOptions.Followers,
+                imageUrl: 'http://images.com/image/test.jpeg',
+                tags: [{
+                    id: '1',
+                    content: 'test'
+                }],
+                comments: [{
+                    id: '2',
+                    postId: '1',
+                    name: 'test',
+                    userId: '123',
+                    content: 'test comment post1'
+                }],
+                likes: [{
+                    id: '2',
+                    userId: '123',
+                    postId: '1'
+                }],
+                userTags: [{
+                    id: '2',
+                    name: 'test2',
+                    userId: '123',
+                    postId: '1'
+                }]
+            },
+            {
+                id: '2',
+                publisherId: '1234',
+                location: {
+                    type: 'Point',
+                    coordinates: [3, 4]
+                },
+                textContent: 'test',
+                showTo: ShowOptions.All,
+                imageUrl: 'http://images.com/image/test.jpeg',
+                tags: [{
+                    id: '1',
+                    content: 'test'
+                }],
+                comments: [{
+                    id: '1',
+                    postId: '2',
+                    name: 'test',
+                    userId: '123',
+                    content: 'test comment'
+                }],
+                likes: [{
+                    id: '1',
+                    userId: '123',
+                    postId: '2'
+                }],
+                userTags: [{
+                    id: '1',
+                    name: 'test2',
+                    userId: '123',
+                    postId: '2'
+                }]
+            }
+        ]
+    });
+
+    test('passing valid parameters, expecting post to be removed', async () => {
+        const repository = mockPostRespository.getMockImplementation()(), uploader = new MockImageUploader()
+        const service = new PostService(repository, uploader);
+
+        const postId = '1', userId = '1234';
+
+        await service.removePostById(postId, userId, 'token');
+
+        expect(posts.find(p => p.id === postId)).toBeUndefined();
+    });
+
+    test('passing invalid userId, expecting an error', async () => {
+        try {
+            const repository = mockPostRespository.getMockImplementation()(), uploader = new MockImageUploader()
+            const service = new PostService(repository, uploader);
+            const postId = '1', userId = 'invalid';
+
+            await service.removePostById(postId, userId, 'token');
+        } catch (error) {
+            expect(error).toBeInstanceOf(UserError)
+        }
+    });
+
+    test('passing invalid postId, expecting undefined', async () => {
+        const repository = mockPostRespository.getMockImplementation()(), uploader = new MockImageUploader()
+        const service = new PostService(repository, uploader);
+        const postId = 'invalid', userId = '1234';
+
+        const success = await service.removePostById(postId, userId, 'token');
+        expect(success).toBe(false);
+    })
+
+    test('not passing postId, expecting a error', async () => {
+        try {
+            const repository = mockPostRespository.getMockImplementation()(), uploader = new MockImageUploader()
+            const service = new PostService(repository, uploader);
+            const userId = '1234';
+
+            await service.removePostById(undefined, userId, 'token');
+
+        } catch (error) {
+            expect(error).toBeInstanceOf(ReferenceError);
+        }
+    })
+});
+
+describe('testing getAllPostsByUserId', () => {
+    beforeEach(() => {
+        posts = [
+            {
+                id: '1',
+                publisherId: '1234',
+                location: {
+                    type: 'Point',
+                    coordinates: [2, 1]
+                },
+                textContent: 'test',
+                showTo: ShowOptions.Followers,
+                imageUrl: 'http://images.com/image/test.jpeg',
+                tags: [{
+                    id: '1',
+                    content: 'test'
+                }],
+                comments: [{
+                    id: '2',
+                    postId: '1',
+                    name: 'test',
+                    userId: '123',
+                    content: 'test comment post1'
+                }],
+                likes: [{
+                    id: '2',
+                    userId: '123',
+                    postId: '1'
+                }],
+                userTags: [{
+                    id: '2',
+                    name: 'test2',
+                    userId: '123',
+                    postId: '1'
+                }]
+            },
+            {
+                id: '2',
+                publisherId: '1234',
+                location: {
+                    type: 'Point',
+                    coordinates: [3, 4]
+                },
+                textContent: 'test',
+                showTo: ShowOptions.All,
+                imageUrl: 'http://images.com/image/test.jpeg',
+                tags: [{
+                    id: '1',
+                    content: 'test'
+                }],
+                comments: [{
+                    id: '1',
+                    postId: '2',
+                    name: 'test',
+                    userId: '123',
+                    content: 'test comment'
+                }],
+                likes: [{
+                    id: '1',
+                    userId: '123',
+                    postId: '2'
+                }],
+                userTags: [{
+                    id: '1',
+                    name: 'test2',
+                    userId: '123',
+                    postId: '2'
+                }]
+            }
+        ]
+    });
+
+    test('passing valid userId, expecting 2 posts', async () => {
+        const repository = mockPostRespository.getMockImplementation()(), uploader = new MockImageUploader()
+        const service = new PostService(repository, uploader);
+        const userId = '1234';
+
+        const posts = await service.getAllPostsByUserId(userId);
+
+        expect(posts.length).toEqual(2);
+    });
+
+    test('passing none existing userId, expecting no posts', async () => {
+        const repository = mockPostRespository.getMockImplementation()(), uploader = new MockImageUploader()
+        const service = new PostService(repository, uploader);
+        const userId = 'invalid';
+
+        const posts = await service.getAllPostsByUserId(userId);
+
+        expect(posts.length).toEqual(0);
+    })
+
+    test('passing undefiend as userId, expecting an error', async () => {
+        try {
+            const repository = mockPostRespository.getMockImplementation()(), uploader = new MockImageUploader()
+            const service = new PostService(repository, uploader);
+
+            await service.getAllPostsByUserId(undefined);
+
+        } catch (error) {
+            expect(error).toBeInstanceOf(UserError);
+        }
+    })
+});
+
+describe('testing getPostById', () => {
+    beforeEach(() => {
+        posts = [
+            {
+                id: '1',
+                publisherId: '1234',
+                location: {
+                    type: 'Point',
+                    coordinates: [2, 1]
+                },
+                textContent: 'test',
+                showTo: ShowOptions.Followers,
+                imageUrl: 'http://images.com/image/test.jpeg',
+                tags: [{
+                    id: '1',
+                    content: 'test'
+                }],
+                comments: [{
+                    id: '2',
+                    postId: '1',
+                    name: 'test',
+                    userId: '123',
+                    content: 'test comment post1'
+                }],
+                likes: [{
+                    id: '2',
+                    userId: '123',
+                    postId: '1'
+                }],
+                userTags: [{
+                    id: '2',
+                    name: 'test2',
+                    userId: '123',
+                    postId: '1'
+                }]
+            },
+            {
+                id: '2',
+                publisherId: '1234',
+                location: {
+                    type: 'Point',
+                    coordinates: [3, 4]
+                },
+                textContent: 'test',
+                showTo: ShowOptions.All,
+                imageUrl: 'http://images.com/image/test.jpeg',
+                tags: [{
+                    id: '1',
+                    content: 'test'
+                }],
+                comments: [{
+                    id: '1',
+                    postId: '2',
+                    name: 'test',
+                    userId: '123',
+                    content: 'test comment'
+                }],
+                likes: [{
+                    id: '1',
+                    userId: '123',
+                    postId: '2'
+                }],
+                userTags: [{
+                    id: '1',
+                    name: 'test2',
+                    userId: '123',
+                    postId: '2'
+                }]
+            }
+        ]
+    });
+
+    test('passing valid postId, expecting a post', async () => {
+        const repository = mockPostRespository.getMockImplementation()(), uploader = new MockImageUploader()
+        const service = new PostService(repository, uploader);
+        const postId = '1';
+
+        expect(await service.getPostById(postId)).toBe(posts[0]);
+    });
+
+    test('passing none exsitent postId, expecting undefined', async () => {
+        const repository = mockPostRespository.getMockImplementation()(), uploader = new MockImageUploader()
+        const service = new PostService(repository, uploader);
+        const postId = 'none exsitent';
+
+        expect(await service.getPostById(postId)).toBeUndefined();
+    });
+
+    test('passing undefined as postId, expecting an error', async () => {
+        try {
+            const repository = mockPostRespository.getMockImplementation()(), uploader = new MockImageUploader()
+            const service = new PostService(repository, uploader);
+
+            await service.getPostById(undefined);
+        } catch (error) {
+            expect(error).toBeInstanceOf(UserError);
+        }
+    });
+});
+
+describe('testing updatePost', () => {
     
 })

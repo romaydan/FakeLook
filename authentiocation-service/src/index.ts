@@ -9,6 +9,7 @@ import cors from 'cors';
 import container from './ioc-container';
 import cookieParser from 'cookie-parser';
 import { Sequelize } from 'sequelize-typescript';
+import accessControl from 'express-ip-access-control';
 import { TYPES } from './ioc-container/types';
 
 env.config();

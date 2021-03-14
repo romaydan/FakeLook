@@ -95,7 +95,7 @@ const dbTest = async () => {
   console.log(tags);
 };
 
-db.sync()
+db.sync({ force: false })
   .then(async () => {
     app.use(cors());
     app.use(express.json());

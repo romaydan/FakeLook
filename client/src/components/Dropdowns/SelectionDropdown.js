@@ -7,7 +7,7 @@ const SelectionDropdown = props => {
 
   const [selectedCount, setSelectedCount] = useState(0);
   const [visibility, setVisibility] = useState(true);
-  const [displayItems, setDisplayItems] = useState(items.map(item => ({ isSelected: false, ...item })));
+  const [displayItems, setDisplayItems] = useState(items?.map(item => ({ isSelected: false, ...item })));
 
   const changeVisibility = () => {
     setVisibility(!visibility);
@@ -23,7 +23,7 @@ const SelectionDropdown = props => {
   }
 
   useEffect(() => {
-    if(reset) {
+    if (reset) {
       setVisibility(false);
       setSelectedCount(0);
       setDisplayItems(items?.map(item => ({ isSelected: false, ...item })));
@@ -50,7 +50,7 @@ const SelectionDropdown = props => {
       <div hidden={visibility} class={"z-10 origin-top-right absolute mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 " + (direction === 'right' ? 'right-0' : 'left-0')}>
         <div class="py-1 overflow-y-auto max-h-52 overflow-x-hidden scrollbar-a scrollbar-right-curve" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
           {
-            displayItems?.map((item, index) => <div key={index} className='flex flex-row items-center m-1.5 hover:bg-gray-100'>
+            displayItems?.map((item, index) => <div key={index + '_items'} className='flex flex-row items-center m-1.5 hover:bg-gray-100'>
               <AiOutlineCheck size={25} className={item.isSelected ? 'fill-check-green' : 'fill-transparent'} />
               <span
                 class="block px-4 py-2 text-sm text-gray-700 hover:text-gray-900

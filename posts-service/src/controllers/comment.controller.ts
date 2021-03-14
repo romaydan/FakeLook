@@ -3,10 +3,12 @@ import { inject, injectable } from "inversify";
 import TYPES from "../ioc-container/types";
 import { IComment } from "../models/comment.model";
 import { ICommentService } from "../services/comment.service";
+import { INotificationService } from "../services/notification.service";
 
 @injectable()
 export default class CommentController {
-    constructor(@inject(TYPES.ICommentService) private service: ICommentService) {
+    constructor(@inject(TYPES.ICommentService) private service: ICommentService,
+        @inject(TYPES.INotificationService) private notifier: INotificationService) {
         this.addComment = this.addComment.bind(this);
         this.removeComment = this.removeComment.bind(this);
         this.updateComment = this.updateComment.bind(this);
@@ -17,10 +19,12 @@ export default class CommentController {
             const comment: IComment = req.body.comment;
             const postId: string = req.body.postId;
             const newComment = await this.service.addComment(comment, postId);
-
+            
             res.status(201).json(newComment);
+
+            this.notifier.publish({ event: postId, type: 'ADD_COMMENT', payload: { comment: newComment, userId: req['userId'] } })
         } catch (error) {
-            this.sendErrorResponse(res, error);
+            res.writableEnded ? this.sendErrorResponse(res, error) : null;
         }
     }
 
@@ -28,10 +32,13 @@ export default class CommentController {
         try {
             const { commentId, postId } = req.body;
             const success = await this.service.removeCommentById(commentId, postId, req['userId']);
-
+            
             res.json({ statusCode: 200, message: 'Comment was successfully removed!' });
+
+            if (success)
+                this.notifier.publish({ event: postId, type: 'REMOVE_COMMNET', payload: { commentId, userId: req['userId'] } });
         } catch (error) {
-            this.sendErrorResponse(res, error);
+            res.writableEnded ? this.sendErrorResponse(res, error) : null;
         }
     }
 
@@ -39,10 +46,13 @@ export default class CommentController {
         try {
             const { comment } = req.body;
             const success = await this.service.updateComment(comment);
-
+            
             res.json({ statusCode: 200, message: 'Comment successfully updated!' });
+
+            if (success)
+                this.notifier.publish({ event: comment.postId, type: 'UPDATE_COMMENT', payload: { comment: comment, userId: req['userId'] } })
         } catch (error) {
-            this.sendErrorResponse(res, error);
+            res.writableEnded ? this.sendErrorResponse(res, error) : null;
         }
     }
 

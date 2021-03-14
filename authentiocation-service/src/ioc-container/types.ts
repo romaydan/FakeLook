@@ -6,6 +6,7 @@ export const TYPES = {
     IJwtService : Symbol('IJwtService'),
     ITokenBlackListService: Symbol('ITokenBlackListService'),
     IEmailValidator: Symbol('IEmailValidator'),
+    IPasswordValidator: Symbol('IPasswordValidator'),
     IUserService: Symbol('IUserService'),
 
     IFakeLookAuthenticationService : Symbol('IFakeLookAuthenticationService'),

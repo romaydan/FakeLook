@@ -16,7 +16,7 @@ router.get('/all', async (req, res) => {
                 authorization
             },
             params: {
-                userId
+                userIds: friendsList
             }
         });
         const { data: blockers } = await axios.get(friendsUrl + '/blockers', {

@@ -23,8 +23,7 @@ export class FacebookAuthController {
             //generates a refresh token with the user id.
             const refreshToken = this.jwt.signToken({ userId },settings.jwtSettings.refreshToken.expiration);
 
-            res.cookie('refresh_token', refreshToken);
-            res.json({ status: 200, message: 'Sign in successfull!', accessToken: accessToken });
+            res.json({ status: 200, message: 'Sign in successfull!', accessToken, refreshToken });
             
         } catch (error) {
             if (error instanceof Error)

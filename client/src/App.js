@@ -1,34 +1,78 @@
-import { DndProvider } from 'react-dnd';
 import Modal from 'react-modal';
-import { BrowserRouter } from 'react-router-dom';
+import { useHistory, Route } from 'react-router-dom';
 import AuthenticationRouter from './components/Routers/AuthenticationRouter';
 import PostRouter from './components/Routers/PostRouter';
-import Notifications from './components/Notifications/Notifications';
 import Container from './components/Container/Container';
 import SocialRouter from './components/Routers/SocialRouter';
-import { HTML5Backend } from 'react-dnd-html5-backend'
+import { connect } from 'react-redux';
+import { useEffect } from 'react';
+import { useCookies } from 'react-cookie';
+import { loginWihJwt } from './services/Authentication/login.service';
+import { authenticated } from './actions/authentication.actions';
+import { setUser } from './actions/user.actions';
+import NotFound from './components/Misc/NotFound';
 
 Modal.setAppElement('#root');
 
+function App({ authentication, setUser, authenticate }) {
 
-function App() {
+  const [cookies, setCookies, removeCookies] = useCookies('refresh_token');
+  const history = useHistory();
+
+  const logInWithJwt = () => {
+    const token = cookies.refresh_token;
+
+    const path = history.location.pathname;
+
+    if (path === '/login' || path === '/register') {
+      return;
+    }
+
+    if (token) {
+      loginWihJwt(token)
+        .then(({ accessToken, user }) => {
+          setUser(user);
+          authenticate(accessToken);
+          history.push(path);
+        })
+        .catch(err => history.push('/login'))
+
+      return;
+    }
+
+    if (path === '/')
+      history.push('/login')
+  }
+
+  useEffect(() => {
+    logInWithJwt();
+  }, [])
 
   return (
     <div className='h-full'>
-      <DndProvider backend={HTML5Backend}>
-        <BrowserRouter>
-          <AuthenticationRouter />
-          <Container>
-            <PostRouter />
-            <SocialRouter />
-          </Container>
-          {/* <div className='flex w-full items-center justify-center'>
-          <Notifications notifications={notifications} />
-        </div> */}
-        </BrowserRouter>
-      </DndProvider>
+
+      <AuthenticationRouter />
+      {
+        authentication.isAuthenticated &&
+        <Container>
+          <PostRouter />
+          <SocialRouter />
+        </Container>
+      }
+
+      <Route path={/[^\s \n].+/} component={NotFound} />
+
     </div>
   );
 }
 
-export default App;
+const mapStateToProps = state => ({
+  authentication: state.authentication
+});
+
+const mapDispatchToProps = dispatch => ({
+  authenticate: (accessToken) => dispatch(authenticated(accessToken)),
+  setUser: (user) => dispatch(setUser(user))
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);

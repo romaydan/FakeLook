@@ -4,7 +4,7 @@ import { IUserTag } from "../models/usertag.model";
 import { IUserTagRepository } from "../repositories/usertag.repository";
 
 export interface IUserTagService {
-    addUserTagToPost(userId: string, posId: string) : Promise<IUserTag>;
+    addUserTagToPost(userId: string, posId: string, name: string) : Promise<IUserTag>;
     removeUserTagFromPost(userTagId: string, postId: string): Promise<boolean>;
     getAllPostUserTags(postId: string): Promise<IUserTag[]>;
 }
@@ -16,10 +16,11 @@ export class UserTagService implements IUserTagService {
         this.removeUserTagFromPost = this.removeUserTagFromPost.bind(this);
     }
 
-    addUserTagToPost(userId: string, postId: string): Promise<IUserTag> {
+    addUserTagToPost(userId: string, postId: string, name: string): Promise<IUserTag> {
         return this.repository.addUserTagToPost({
             userId,
-            postId
+            postId,
+            name
         });
     }
 

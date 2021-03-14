@@ -1,15 +1,13 @@
-import { useState } from "react"
-
+import { useState } from "react";
 
 const Dropdown = props => {
-    const { items, render, direction, title } = props;
+    const { children, direction, title } = props;
     const [visibility, setVisibility] = useState(true);
 
     const changeVisibility = () => setVisibility(!visibility);
 
     return (
-        <div class="relative inline-block text-left"
-        onBlur={() => setVisibility(true)}>
+        <div class="relative inline-block text-left">
             <div className='overflow-x-hidden overflow-y-hidden min-w-full max-w-lg'>
                 <button type="button" class="inline-flex justify-center rounded-md border 
                 border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 
@@ -27,7 +25,7 @@ const Dropdown = props => {
                 <div hidden={visibility} class={"z-10 origin-top-right absolute mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 " + (direction === 'right' ? 'right-0' : 'left-0')}>
                     <div class="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
                         {
-                            render ? render(items) : null
+                            children
                         }
                     </div>
                 </div>
