@@ -5,6 +5,7 @@ import userReducer from './user.reducer';
 import friendsReducer from './friends.reducer';
 import authenticationReducer from './authentication.reducer';
 import groupsReducer from './groups.reducer';
+import errorReducer from './error.reducer';
 
 export default combineReducers({
     posts: postsReducer,
@@ -12,5 +13,6 @@ export default combineReducers({
     location: locationReducer,
     friends: friendsReducer,
     authentication: authenticationReducer,
-    groups: groupsReducer
+    groups: groupsReducer,
+    error: errorReducer
 })

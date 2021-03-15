@@ -1,19 +1,34 @@
 import { UserRepository } from '../../../src/repositories/user.repository';
 import { User, IUser } from '../../../src/models/user.model';
-import { Sequelize } from 'sequelize-typescript';
+import { Sequelize, } from 'sequelize-typescript';
+import { mocked } from 'ts-jest/utils';
+import { ModelStatic } from 'sequelize/types';
 
-const path = __dirname + '\\db\\authDb.test.db';
-const db = new Sequelize({
-    dialect: 'sqlite',
-    storage: path,
-    logging: false
-});
-db.addModels([User]);
+// const path = __dirname + '\\db\\authDb.test.db';
+// const db = new Sequelize({
+//     validateOnly: true
+// });
+// db.addModels([User]);
 
 
+
+jest.mock('../../../src/models/user.model', () => ({
+    User: jest.fn().mockImplementation(() => ({
+        save: () => Promise.resolve(this)
+    }))
+}))
 
 beforeEach(async () => {
-    await db.sync({ force: true });
+    //await db.sync();
+
+    User.create = function (this: ModelStatic<User>, values) { return Promise.resolve(new User(values) as any) };
+    User.build = function (this: ModelStatic<any>, values) { 
+        Object.keys(values).forEach(key => {
+            if(!values[key])
+                throw new Error();
+        })
+        return new User(values) as any};
+
 })
 
 describe('testing addUser', () => {

@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useCookies } from 'react-cookie';
 import { connect } from "react-redux";
 import { unauthnticate } from "../../../actions/authentication.actions";
-import { logout } from '../../../services/Authentication/logout.service';
+import { logoutAsync } from '../../../services/Authentication/logout.service';
 
 
 const Logout = props => {
@@ -11,7 +11,7 @@ const Logout = props => {
     const [cookies, setCookie, removeCookie] = useCookies(['refresh_token'])
 
     const logOut = (refreshToken) => {
-        return logout(refreshToken);
+        return logoutAsync(refreshToken);
     }
 
     useEffect(() => {

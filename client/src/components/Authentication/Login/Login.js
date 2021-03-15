@@ -3,17 +3,19 @@ import { useMemo } from 'react';
 import * as yup from 'yup';
 import { GoogleLogin } from 'react-google-login';
 import FacebookLogin from 'react-facebook-login';
-import { facebookLogin, fakelookLogin, googleLogin } from '../../../services/Authentication/login.service';
+import { facebookLoginAsync, fakelookLoginAsync, googleLoginAsync } from '../../../services/Authentication/login.service';
 import { NavLink } from 'react-router-dom';
 import { setUser } from '../../../actions/user.actions';
 import { connect } from 'react-redux';
 import { authenticated } from '../../../actions/authentication.actions';
 import { useCookies } from 'react-cookie';
+import useError from '../../../hooks/error.hook';
 
 const Login = props => {
     const { history, setUser, authenticate } = props;
 
-    const [cookies, setCookie] = useCookies(['refresh_token'])
+    const [cookies, setCookie] = useCookies(['refresh_token']);
+    const setError = useError();
 
     const validationSchema = useMemo(() => yup.object({
         email: yup.string().required().email(),
@@ -31,28 +33,28 @@ const Login = props => {
 
     const onFacebookResponse = async response => {
         const { id: facebookId, accessToken } = response;
-        facebookLogin(accessToken, facebookId)
+        facebookLoginAsync(accessToken, facebookId)
             .then(({ user, accessToken, refreshToken }) => {
                 login(user, accessToken, refreshToken);
             })
-            .catch(console.error);
+            .catch(err => setError(err.message));
     }
 
     const onGoogleResponse = response => {
         const { tokenId } = response;
-        googleLogin(tokenId)
+        googleLoginAsync(tokenId)
             .then(({ user, accessToken, refreshToken }) => {
                 login(user, accessToken, refreshToken);
             })
-            .catch(console.error);
+            .catch(err => setError(err.message));
     }
 
-    const facelookLogin = (email, password) => {
-        fakelookLogin(email, password)
+    const fakelookLogin = (email, password) => {
+        fakelookLoginAsync(email, password)
             .then(({ user, accessToken, refreshToken }) => {
                 login(user, accessToken, refreshToken);
             })
-            .catch(err => console.error('error', err))
+            .catch(err => setError(err.message))
     }
 
     return (
@@ -65,7 +67,7 @@ const Login = props => {
                     validationSchema={validationSchema}
                     initialValues={{ password: '', email: '' }}
                     onSubmit={(values) => {
-                        facelookLogin(values.email, values.password)
+                        fakelookLogin(values.email, values.password)
                     }}>
                     {
                         ({ values, errors, touched, dirty, submitForm }) => (

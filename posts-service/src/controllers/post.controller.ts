@@ -2,13 +2,15 @@ import { NextFunction, Request, Response } from "express";
 import { inject, injectable } from "inversify";
 import UserError from "../errors/user.error";
 import TYPES from "../ioc-container/types";
+import { ILogger } from "../services/logger.service";
 import { IPostService } from "../services/post.service";
 import { ITagService } from "../services/tag.service";
 
 @injectable()
 export default class PostController {
     constructor(@inject(TYPES.IPostService) private service: IPostService,
-        @inject(TYPES.ITagService) private tagService: ITagService) {
+        @inject(TYPES.ITagService) private tagService: ITagService,
+        @inject(TYPES.ILogger) private logger: ILogger) {
         this.getFilteredPosts = this.getFilteredPosts.bind(this);
         this.addPost = this.addPost.bind(this);
         this.removePost = this.removePost.bind(this);
@@ -30,8 +32,10 @@ export default class PostController {
             const posts = await this.service.getFilteredPosts(<string[]>userTags, <string[]>tags, <string[]>publishers, loc, dis, from, to);
 
             res.json(posts);
+
+            this.logger.log({ userId: req['userId'], action: 'posts fetching', status: 'successfull' });
         } catch (error) {
-            this.sendErrorResponse(error, res);
+            res.writableEnded ? this.sendErrorResponse(error, res, 'posts fetching', req['userId']) : null;
         }
     }
 
@@ -41,8 +45,10 @@ export default class PostController {
             const post = await this.service.getPostById(postId as string);
 
             res.json(post);
+
+            this.logger.log({ userId: req['userId'], action: 'fetchin post by id', status: 'successfull' })
         } catch (error) {
-            this.sendErrorResponse(error, res);
+            res.writableEnded ? this.sendErrorResponse(error, res, 'fetching post by id', req['userId']) : null;
         }
     }
 
@@ -70,8 +76,9 @@ export default class PostController {
 
             res.json(post);
 
+            this.logger.log({ action: 'adding post', status: 'successfull', userId: req['userId'] });
         } catch (error) {
-            this.sendErrorResponse(error, res);
+            res.writableEnded ? this.sendErrorResponse(error, res, 'adding post', req['userId']) : null;
         }
     }
 
@@ -84,13 +91,16 @@ export default class PostController {
 
             if (success) {
                 res.json({ statusCode: 200, message: 'The post was removed successfully!' });
+                this.logger.log({ action: 'remove post', status: 'successfull', userId: req['userId'] })
+
                 return;
             }
 
             res.status(500).json({ statusCode: 500, message: 'Unable to remove post at this time!' })
+            this.logger.log({ action: 'remove post', status: 'unsuccessfull', userId: req['userId'], reason: 'internal server error' });
 
         } catch (error) {
-            this.sendErrorResponse(error, res);
+            res.writableEnded ? this.sendErrorResponse(error, res, 'remove post', req['userId']) : null;
         }
     }
 
@@ -102,7 +112,7 @@ export default class PostController {
             res.json(posts);
 
         } catch (error) {
-            this.sendErrorResponse(error, res);
+            res.writableEnded ? this.sendErrorResponse(error, res, 'fetching user posts', req['userId']) : null;
         }
     }
 
@@ -119,19 +129,26 @@ export default class PostController {
             res.status(500).json({ statusCode: 500, error: 'Unable to update post at this time!' });
 
         } catch (error) {
-            this.sendErrorResponse(error, res);
+            res.writableEnded ? this.sendErrorResponse(error, res, 'update post', req['userId']) : null;
         }
     }
 
-    private sendErrorResponse(error: any, res: Response) {
+    private sendErrorResponse(error: any, res: Response, action: string, userId: string) {
+        const errorLog: any = { userId, action, status: 'unsuccessfull' };
+
         switch (true) {
             case error instanceof ReferenceError:
             case error instanceof UserError:
                 res.status(400).json({ statusCode: 400, error: error.message });
+                errorLog.error = error.message;
                 break;
             default:
-                res.status(500).json({ statusCode: 500, error: error.message ?? 'Uexpected error! please try again later!' });
+                const msg = error.message ?? 'Uexpected error! please try again later!';
+                res.status(500).json({ statusCode: 500, error: msg });
+                errorLog.error = msg;
                 break;
         }
+
+        this.logger.error(errorLog);
     }
 }

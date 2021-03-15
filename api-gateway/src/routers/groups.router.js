@@ -1,7 +1,6 @@
 const { Router } = require('express');
 const axios = require('axios');
 
-
 const groupsUrl = process.env.SOCIAL_SERVICE_API_URL + '/api/groups'
 const usersUrl = process.env.IDENITY_SERVICE_API_URL + '/api/users'
 
@@ -178,4 +177,3 @@ const returnError = (res, error) => {
 }
 
 module.exports = router;
-

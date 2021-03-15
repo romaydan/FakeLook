@@ -5,12 +5,13 @@ import PostRouter from './components/Routers/PostRouter';
 import Container from './components/Container/Container';
 import SocialRouter from './components/Routers/SocialRouter';
 import { connect } from 'react-redux';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
-import { loginWihJwt } from './services/Authentication/login.service';
+import { loginWihJwtAsync } from './services/Authentication/login.service';
 import { authenticated } from './actions/authentication.actions';
 import { setUser } from './actions/user.actions';
 import NotFound from './components/Misc/NotFound';
+import ErrorPopup from './components/Misc/ErrorPopup';
 
 Modal.setAppElement('#root');
 
@@ -18,6 +19,8 @@ function App({ authentication, setUser, authenticate }) {
 
   const [cookies, setCookies, removeCookies] = useCookies('refresh_token');
   const history = useHistory();
+
+  const [error, setError] = useState(null);
 
   const logInWithJwt = () => {
     const token = cookies.refresh_token;
@@ -29,7 +32,7 @@ function App({ authentication, setUser, authenticate }) {
     }
 
     if (token) {
-      loginWihJwt(token)
+      loginWihJwtAsync(token)
         .then(({ accessToken, user }) => {
           setUser(user);
           authenticate(accessToken);
@@ -61,7 +64,7 @@ function App({ authentication, setUser, authenticate }) {
       }
 
       <Route path={/[^\s \n].+/} component={NotFound} />
-
+      <ErrorPopup error={error} clearError={() => setError(null)} />
     </div>
   );
 }

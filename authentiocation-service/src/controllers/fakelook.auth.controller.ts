@@ -1,3 +1,4 @@
+
 'use strict';
 import { IJwtService } from '../services/jwt.service';
 import { inject, injectable } from 'inversify';
@@ -100,10 +101,16 @@ export class FakeLookAuthController {
           res.status(500).json({ statusCode: 500, error: 'Unable to proccess request at this time please try again later!' });
           break;
       }
+
     }
   }
 
-  private validateEmail(email: string): boolean | UserError {
-    return this.emailValidator.validate(email);
-  }
+    private validateEmail(email: string): boolean | UserError {
+        return this.emailValidator.validate(email);
+    }
+
+    private logError(error: any): void {
+        this.logger.error(error);
+    }
 }
+
