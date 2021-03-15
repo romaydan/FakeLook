@@ -1,6 +1,8 @@
+require('dotenv').config();
 const express = require('express');
 const env = require('dotenv');
 const cors = require('cors');
+
 const authRouter = require('./routers/authentication.router');
 const postRouter = require('./routers/posts.router');
 const friendsRouter = require('./routers/friends.router');

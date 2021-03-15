@@ -29,8 +29,8 @@ export default class FriendsController {
 
   getUsersFriends = async (req: Request, res: Response) => {
     try {
-      const { userId } = req.params;
-      const result = await this.friendsSrv.getUsersFriends(userId);
+      const { userId } = req.query;
+      const result = await this.friendsSrv.getUsersFriends(userId as string);
       const ids = result.map((fr) => fr.friendId);
       res.send(ids);
     } catch (error) {
@@ -40,8 +40,8 @@ export default class FriendsController {
 
   removeFriend = async (req: Request, res: Response) => {
     try {
-      const { userId, friendId } = req.params;
-      const result = await this.friendsSrv.removeFriend(userId, friendId);
+      const { userId, friendId } = req.query;
+      const result = await this.friendsSrv.removeFriend(userId as string, friendId as string);
       res.send(result);
     } catch (error) {
       console.log('error', error);
@@ -51,9 +51,19 @@ export default class FriendsController {
 
   getUsersFriendRequests = async (req: Request, res: Response) => {
     try {
-      const { userId } = req.params;
-      const result = await this.friendReqSrv.getUsersFriendRequests(userId);
+      const { userId } = req.query;
+      const result = await this.friendReqSrv.getUsersFriendRequests(userId as string);
       res.send(result.map((fr) => fr.senderId));
+    } catch (error) {
+      console.log('error', error);
+      res.status(500).send(error.message);
+    }
+  };
+  getUsersSentRequests = async (req: Request, res: Response) => {
+    try {
+      const { userId } = req.query;
+      const result = await this.friendReqSrv.getUsersFriendRequestSent(userId as string);
+      res.send(result.map((fr) => fr.recipientId));
     } catch (error) {
       console.log('error', error);
       res.status(500).send(error.message);
@@ -64,7 +74,7 @@ export default class FriendsController {
     try {
       const { userId, recepientId } = req.body.data;
 
-      const result = await this.friendReqSrv.newFriendRequest(userId, recepientId);
+      const result = await this.friendReqSrv.newFriendRequest(userId as string, recepientId as string);
       res.send(result);
     } catch (error) {
       console.log('error', error);
@@ -75,9 +85,7 @@ export default class FriendsController {
   acceptfriendRequest = async (req: Request, res: Response) => {
     try {
       const { userId, senderId } = req.body.data;
-      console.log('userId', userId);
-      console.log('senderId', senderId);
-      const result = await this.friendReqSrv.acceptFriendRequest(userId, senderId);
+      const result = await this.friendReqSrv.acceptFriendRequest(userId as string, senderId as string);
       res.send(result);
     } catch (error) {
       res.status(500).send(error.message);
@@ -86,9 +94,29 @@ export default class FriendsController {
 
   declinefriendRequest = async (req: Request, res: Response) => {
     try {
-      const { userId, recepientId } = req.body.data;
-      const result = await this.friendReqSrv.declineFriendRequest(userId, recepientId);
+      const { userId, senderId } = req.body.data;
+      const result = await this.friendReqSrv.declineFriendRequest(userId as string, senderId as string);
       res.send(result);
+    } catch (error) {
+      res.status(500).send(error.message);
+    }
+  };
+
+  usersBlocks = async (req: Request, res: Response) => {
+    try {
+      const { userId } = req.query;
+      const result = await this.blockSrv.getUsersBlockedUsers(userId as string);
+      res.send(result.map((ub) => ub.blockedId));
+    } catch (error) {
+      res.status(500).send(error.message);
+    }
+  };
+
+  usersBlockers = async (req: Request, res: Response) => {
+    try {
+      const { userId } = req.query;
+      const result = await this.blockSrv.getUsersBlockers(userId as string);
+      res.send(result.map((ub) => ub.blockerId));
     } catch (error) {
       res.status(500).send(error.message);
     }
@@ -96,10 +124,8 @@ export default class FriendsController {
 
   blockUser = async (req: Request, res: Response) => {
     try {
-      const { userId, blockedId } = req.params;
-      console.log('userId', userId);
-      console.log('blockedId', blockedId);
-      const result = await this.blockSrv.blockUser(userId, blockedId);
+      const { userId, friendId } = req.body.data;
+      const result = await this.blockSrv.blockUser(userId as string, friendId as string);
       res.send(result);
     } catch (error) {
       console.log('error.message', error.message);
@@ -109,19 +135,9 @@ export default class FriendsController {
 
   unblockUser = async (req: Request, res: Response) => {
     try {
-      const { userId, blockedId } = req.params;
-      const result = await this.blockSrv.unblockUser(userId, blockedId);
+      const { userId, friendId } = req.body.data;
+      const result = await this.blockSrv.unblockUser(userId as string, friendId as string);
       res.send(result);
-    } catch (error) {
-      res.status(500).send(error.message);
-    }
-  };
-
-  usersBlocks = async (req: Request, res: Response) => {
-    try {
-      const { id } = req.params;
-      const result = await this.blockSrv.getUsersBlockedUsers(id);
-      res.send(result.map((ub) => ub.blockedId));
     } catch (error) {
       res.status(500).send(error.message);
     }

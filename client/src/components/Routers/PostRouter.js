@@ -8,7 +8,7 @@ const PostRouter = props => {
         <Switch>
             <Route path='/map*' component={Map} />
             <Route path='/feed' component={Feed} />
-        </Switch>
+        </ Switch >
     )
 }
 

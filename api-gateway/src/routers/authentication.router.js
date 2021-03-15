@@ -4,8 +4,8 @@ const cookie = require('cookie');
 
 const router = Router();
 
-const AUTH_URL = 'http://localhost:5003/auth';
-const IDENTITY_URL = 'http://localhost:5004/api';
+const authServiceBaseUrl = process.env.AUTH_SERVICE_API_URL + '/auth';
+const identityServiceBaseUrl = process.env.IDENITY_SERVICE_API_URL + '/api';
 
 router.post('/fakelook/signup', async (req, res) => {
     try {
@@ -42,6 +42,7 @@ router.post('/facebook/signup', async (req, res) => {
         const { user, address, facebook_id, facebook_token } = req.body;
 
         const { data: { userId } } = await authPostRequest(req.path, { facebook_id, facebook_token });
+
         const { data } = await identityPostRequest('/users', { user: { authId: userId, ...user }, address });
 
         res.json(data);
@@ -72,6 +73,7 @@ router.post('/google/signup', async (req, res) => {
         const { token_id, user, address } = req.body;
 
         const { data: { userId } } = await authPostRequest(req.path, { token_id });
+
         const { data } = await identityPostRequest('/users', { user: { authId: userId, ...user }, address });
 
         res.json(data);

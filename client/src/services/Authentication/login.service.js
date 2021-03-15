@@ -1,6 +1,8 @@
 import * as axios from 'axios';
 
-const API_GATEWAY_URL = 'http://localhost:5000'
+// const BASE_AUTH_URL = 'http://localhost:5000/auth';s
+// const BASE_IDENTITY_URL = 'http://localhost:5004/api/users';
+const API_GATEWAY_URL = process.env.REACT_APP_API_GATEWAY_URL
 
 export const fakelookLoginAsync = async (email, password) => {
     const { status, data } = await axios.post(`${API_GATEWAY_URL}/auth/fakelook/signin`, { email, password });

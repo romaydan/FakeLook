@@ -1,3 +1,4 @@
+require('dotenv').config();
 import App from './app';
 import express from 'express';
 import * as bodyParser from 'body-parser';
@@ -10,7 +11,14 @@ import validateToken from './middleware/jwt.validation';
 const app = new App({
   port: 5004,
   routers: [{ path: '/api/users', router }],
-  middleWares: [cors(), express.json(), loggerMiddleware],
+  middleWares: [
+    cors({
+      origin: '*',
+    }),
+    validateToken,
+    express.json(),
+    loggerMiddleware,
+  ],
 });
 
 app.listen();

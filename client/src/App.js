@@ -64,14 +64,7 @@ function App({ authentication, setUser, authenticate }) {
       }
 
       <Route path={/[^\s \n].+/} component={NotFound} />
-
       <ErrorPopup error={error} clearError={() => setError(null)} />
-
-      {/* <Redirect path={'*'} exact to='/404' /> */}
-
-      {/* <div className='flex w-full items-center justify-center'>
-          <Notifications notifications={notifications} />
-        </div> */}
     </div>
   );
 }

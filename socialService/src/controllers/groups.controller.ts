@@ -16,12 +16,34 @@ export default class GroupsController {
     this.remvoeFriendFromGroup = this.remvoeFriendFromGroup.bind(this);
   }
 
+  async getGroup(req: Request, res: Response) {
+    try {
+      const { groupId, userId } = req.query;
+      const group = await this.groupsServ.getGroup(groupId as string, userId as string);
+
+      res.send(group);
+    } catch (error) {
+      res.status(404).send({ message: error.message });
+    }
+  }
+
+  async getUsersGroup(req: Request, res: Response) {
+    try {
+      const { userId } = req.query;
+      const result = await this.groupsServ.getUsersGroups(userId as string);
+      res.status(200).send(result);
+    } catch (error) {
+      res.status(404).send(error.message);
+    }
+  }
+
   async addGroup(req: Request, res: Response) {
     const { userId, name } = req.body.data;
-    console.log('req.body.data', req.body.data);
     try {
-      const result = await this.groupsServ.addNewGroup(userId, name);
-      res.send(result);
+      const { groupId, userId } = req.params;
+      console.log('groupId', groupId);
+      const result = await this.groupsServ.getGroup(req.params.groupId, userId);
+      res.json(result);
     } catch (error) {
       console.log('error', error);
       res.status(500).send({ message: error.message });
@@ -30,34 +52,11 @@ export default class GroupsController {
 
   async deleteGroup(req: Request, res: Response) {
     try {
-      const { userId, groupId } = req.params;
-      console.log('userId', userId);
-      console.log('groupId', groupId);
-      const result = await this.groupsServ.removeGroup(groupId, userId);
-      res.send(result);
-    } catch (error) {
-      res.status(500).send(error);
-    }
-  }
-
-  async getGroup(req: Request, res: Response) {
-    try {
-      const { groupId, userId } = req.params;
-      console.log('groupId', groupId);
-      const result = await this.groupsServ.getGroup(req.params.groupId, userId);
-      res.json(result);
-    } catch (error) {
-      res.status(404).send({ message: error.message });
-    }
-  }
-
-  async getUsersGroup(req: Request, res: Response) {
-    try {
       const { userId } = req.params;
       const result = await this.groupsServ.getUsersGroups(userId);
       res.status(200).json(result);
     } catch (error) {
-      res.status(404).send(error.message);
+      res.status(500).send(error);
     }
   }
 

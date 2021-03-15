@@ -43,6 +43,6 @@ export default class GroupsService implements IGroupsService {
     } else throw new Error('group Didnt Change user is not creator');
   }
   private async validateCreator(groupId: string, userId: string) {
-    if (!(await this.groupsRepo.checkIfUserIsCreator(groupId, userId))) throw new Error('name already taken');
+    if (!(await this.groupsRepo.checkIfUserIsCreator(groupId, userId))) throw new Error('user is not creator');
   }
 }

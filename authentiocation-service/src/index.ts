@@ -20,31 +20,22 @@ const app = express();
 const db = container.get<Sequelize>(TYPES.Sequelize);
 
 db.sync()
-    .then(() => {
-        app.use(accessControl({
-            allows: ['127.0.0.1'],
-            log: function (clientIp, access) {
-                console.log(clientIp + (access ? ' accessed.' : ' denied.'));
+  .then(() => {
+    app.use(cors());
+    app.use(express.json());
+    app.use(cookieParser());
+    app.use(express.urlencoded({ extended: true }));
 
-            },
-            statusCode: 403,
-            redirectTo: '',
-            message: 'Forbbiden'
-        }))
-        app.use(express.json())
-        app.use(cookieParser())
-        app.use(express.urlencoded({ extended: true }))
+    app.use('/auth/fakelook', flAuthRotuer);
+    app.use('/auth/google', googleAuthRouter);
+    app.use('/auth/facebook', fbAuthRouter);
+    app.use('/auth', jwtValidationRouter);
 
-        app.use('/auth/fakelook', flAuthRotuer);
-        app.use('/auth/google', googleAuthRouter);
-        app.use('/auth/facebook', fbAuthRouter);
-        app.use('/auth', jwtValidationRouter);
-
-        app.listen(PORT, () => {
-            console.log(`listening on port ${PORT}...`);
-        });
-    })
-    .catch((err) => {
-        console.error(err);
-        process.exit(1);
+    app.listen(PORT, () => {
+      console.log(`listening on port ${PORT}...`);
     });
+  })
+  .catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });

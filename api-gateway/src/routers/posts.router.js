@@ -6,8 +6,8 @@ const formidable = require('express-formidable');
 
 const router = Router();
 
-const POSTS_SERVICE_URL = 'http://localhost:5005';
-const IDENTITY_SERVICE_URL = 'http://localhost:5004/api/users';
+const POSTS_SERVICE_URL = process.env.POSTS_SERVICE_API_URL;
+const IDENTITY_SERVICE_URL = process.env.IDENITY_SERVICE_API_URL + '/api/users';
 
 const formidableMiddleWare = formidable({
     type: 'multipart',

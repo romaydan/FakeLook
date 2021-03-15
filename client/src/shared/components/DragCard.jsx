@@ -10,11 +10,7 @@ const DragCard = (props) => {
     collect: (monitor) => ({ isDragging: !!monitor.isDragging() }),
   });
   return (
-    <div
-      ref={drag}
-      style={{ opacity: isDragging ? '0.5' : '1' }}
-      className='flex justify-between border-1 rounded bg-green-100 border-gray-900 shadow p-4 m-1'
-    >
+    <div ref={drag} style={{ opacity: isDragging ? '0.5' : '1' }} className='flex justify-between border-1 rounded  border-gray-900 shadow p-4 m-1'>
       {children}
     </div>
   );

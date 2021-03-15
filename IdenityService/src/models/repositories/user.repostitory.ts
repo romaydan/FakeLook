@@ -2,16 +2,17 @@ import { injectable } from 'inversify';
 import { Op } from 'sequelize';
 import * as uuid from 'uuid';
 
-import Address from '../models/address.model';
-import IAddress from '../interfaces/IAddress';
-import IUser from '../interfaces/IUser';
-import IUserRepository from '../interfaces/user-repository.interface';
-import User from '../models/user.model';
+import Address from '../address.model';
+import IAddress from '../../interfaces/IAddress';
+import IUser from '../../interfaces/IUser';
+import IUserRepository from '../../interfaces/user-repository.interface';
+import User from '../user.model';
 
 @injectable()
 export default class UserRepository implements IUserRepository {
   constructor() {}
   getUsersByName(name: string): Promise<IUser[]> {
+    name = name.toLowerCase();
     return User.findAll({ where: { name: { [Op.like]: `%${name}%` } } });
   }
   getUsersById(userIds: string[]): Promise<IUser[]> {
@@ -19,6 +20,8 @@ export default class UserRepository implements IUserRepository {
   }
 
   async addUser(user: IUser, address: IAddress): Promise<IUser> {
+    user.name = user.name.toLowerCase();
+    console.log('user.name', user.name);
     return User.create({ id: uuid.v4(), ...user, address: { id: uuid.v4(), ...address } }, { include: Address });
   }
   async getUserByAuthId(id: string): Promise<IUser> {
@@ -53,14 +56,14 @@ export default class UserRepository implements IUserRepository {
       where: { userId: id },
     });
     const [userRowsAffected, users] = await User.update(user, {
-      where: { id },
+      where: { authId: id },
     });
     console.log('users', users);
     return addressRowsAffected + userRowsAffected > 0 ? true : false;
   }
   private async findUserbyId(id): Promise<User> {
     const userFromDb = await User.findOne({
-      where: { id },
+      where: { authId: id },
       include: [Address],
     });
     if (userFromDb === null) {

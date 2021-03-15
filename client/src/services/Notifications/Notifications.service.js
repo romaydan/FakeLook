@@ -2,7 +2,7 @@ import { io } from 'socket.io-client';
 
 class NotificationService {
     constructor() {
-        this.socket = io('http://localhost:5001', {
+        this.socket = io(process.env.REACT_APP_NOTIFICATION_SERVICE_URL, {
             reconnectionAttempts: 5
         });
         this.close = this.disconnect.bind(this);
@@ -17,13 +17,13 @@ class NotificationService {
     }
 
     subscribe(event, listener) {
-        if(this.socket.connected) {
+        if (this.socket.connected) {
             this.socket.on(event, listener);
         }
     }
 
     unsubscribe(event, listener) {
-        if(this.socket.connected) {
+        if (this.socket.connected) {
             this.socket.off(event, listener);
         }
     }

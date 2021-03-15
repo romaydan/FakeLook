@@ -11,20 +11,22 @@ const PORT = process.env.PORT || 5001;
 const server = createServer();
 const redisClient = createClient();
 const io = new Server(server, {
-    cors: {
-        origin: '*',
-        methods: ['GET', 'POST']
-    }
+  cors: {
+    origin: '*',
+    methods: ['GET', 'POST'],
+  },
 });
 const clientManager = new ClientManager();
 
 //Socket.io
 io.on('connection', (socket: Socket) => {
+  socket.on('init', (userId: string) => {
+    const client = clientManager.addClient(userId, socket);
+    console.log(`User: ${client.userId}, Socket: ${client.socket.id} has connected!`);
+  });
 
-    socket.on('init', (userId: string) => {
-        const client = clientManager.addClient(userId, socket);
-        console.log(`User: ${client.userId}, Socket: ${client.socket.id} has connected!`);
-    });
+  socket.on('disconnect', () => {
+    const client = clientManager.getClientBySocketId(socket.id);
 
     socket.on('disconnect', () => {
         const client = clientManager.getClientBySocketId(socket.id);
@@ -35,7 +37,6 @@ io.on('connection', (socket: Socket) => {
         }
     });
 });
-
 
 //Redis pub/sub
 redisClient.on('message', (channel: string, data: string) => {
@@ -71,5 +72,5 @@ const notifyUser = (userId: string, notification: object) => {
 redisClient.subscribe('notification');
 
 server.listen(PORT, () => {
-    console.log(`Server now listening on port ${PORT}...`);
+  console.log(`Server now listening on port ${PORT}...`);
 });

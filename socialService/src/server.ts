@@ -12,8 +12,14 @@ const app = new App({
     { path: '/api/groups', router: groupsRouter },
     { path: '/api/friends', router: friendsRouter },
   ],
-  middleWares: [cors(), express.json(), loggerMiddleware],
+  middleWares: [
+    cors({
+      origin: '*',
+    }),
+    express.json(),
+    loggerMiddleware,
+  ],
 });
-// jwtValidateToken,
 
 app.listen();
+//    jwtValidateToken,

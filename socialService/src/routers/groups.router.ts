@@ -9,7 +9,7 @@ const router = Router();
 router.get('/:groupId', controller.getGroup);
 router.get('/:userId', controller.getUsersGroup);
 router.post('/', controller.addGroup);
-router.delete('/:userId&:groupId', controller.deleteGroup);
+router.delete('/', controller.deleteGroup);
 router.put('/name', controller.changeGroupName);
 router.put('/addFriend', controller.addFriendToGroup);
 router.put('/removeFriend', controller.remvoeFriendFromGroup);

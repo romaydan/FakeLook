@@ -1,6 +1,6 @@
 import * as axois from 'axios';
 
-const POSTS_BASE_URL = 'http://localhost:5000'
+const POSTS_BASE_URL = process.env.REACT_APP_API_GATEWAY_URL
 
 export const getPostsAsync = async (values, accessToken) => {
     const response = await axois.get(`${POSTS_BASE_URL}/posts`, {
@@ -48,6 +48,7 @@ export const addLikeAsync = async (postId, userId, accessToken) => {
 
     return response.data;
 }
+
 
 export const removeLikeAsync = async (postId, userId, accessToken) => {
     const response = await axois.delete(`${POSTS_BASE_URL}/posts/like`, {
