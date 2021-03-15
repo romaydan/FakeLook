@@ -152,7 +152,7 @@ const PostView = props => {
             .then(tag => {
                 setPost({ ...post, tags: [...post.tags, tag] });
             })
-            .catch(err => onError(err, () => addTag(content)))
+            .catch(err => onError(err, () => addTag(content)));
     }
 
     const addUserTag = (userId, name) => {

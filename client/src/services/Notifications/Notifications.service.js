@@ -11,8 +11,9 @@ class NotificationService {
         this.unsubscribe = this.unsubscribe.bind(this);
     }
 
-    connect() {
+    connect(userId) {
         this.socket.connect();
+        this.socket.emit('init', userId)
     }
 
     subscribe(event, listener) {
