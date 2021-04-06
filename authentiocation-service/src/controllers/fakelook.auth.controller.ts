@@ -9,13 +9,15 @@ import UserError from '../errors/user.error';
 import settings from '../settings';
 import { IEmailValidator } from '../services/emailvalidator';
 import UniqueConstraintError from 'sequelize/lib/errors/validation/unique-constraint-error';
+import { ILogger } from '../services/logger.service';
 
 @injectable()
 export class FakeLookAuthController {
   constructor(
     @inject(TYPES.IFakeLookAuthenticationService) private service: IFakeLookAuthenticationService,
     @inject(TYPES.IJwtService) private jwtService: IJwtService,
-    @inject(TYPES.IEmailValidator) private emailValidator: IEmailValidator
+    @inject(TYPES.IEmailValidator) private emailValidator: IEmailValidator,
+    @inject(TYPES.ILogger) private logger: ILogger
   ) {
     this.resetPassword = this.resetPassword.bind(this);
     this.signIn = this.signIn.bind(this);

@@ -1,0 +1,24 @@
+{
+  "name": "dev",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "authentication": "ts-node -r ../authentiocation-service/src/index.ts",
+    "identity": "ts-node -r ../IdenityService/src/server.ts",
+    "images": "node -r ../images-server/src/index.js",
+    "notifications": "node -r ../notification-service/dist/index.js",
+    "posts": "ts-node ../posts-service/src/index.ts",
+    "social": "ts-node ../socialService/src/server.ts",
+    "start": "concurrently --names 'Indentity,Images,Notifications,Posts,Social' --prefix-colors \"green,yellow,blue,red,orange\" \"npm run images\" \"npm run notifications\" \"npm run posts\" \"npm run social\" "
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "concurrently": "^6.0.0",
+    "ts-node": "^9.1.1",
+    "typescript": "^4.2.3"
+  }
+}

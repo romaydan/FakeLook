@@ -10,12 +10,6 @@ const validateToken = async (req: Request, res: Response, next: NextFunction) =>
       return;
     }
 
-    const { data } = await axios.get('http://localhost:5003/auth/validate', {
-      headers: {
-        authorization: token,
-      },
-    });
-
     const { data } = await axios.get(process.env.AUTH_SERVICE_API_URL + '/auth/validate', {
       headers: {
         authorization: token,

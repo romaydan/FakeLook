@@ -1,0 +1,20 @@
+version: '3.3'
+
+services:
+  redis:
+    image: redis
+    restart: always
+    ports: 
+      - "6379:6379"
+  
+  auth:
+    depends_on: 
+      - redis
+    image: auth:latest
+    ports: 
+      - "5003:5003"
+    restart: always
+    environment: 
+      JWT_SECRET_KEY: FakeLook
+      REDIS_HOST: redis
+      GOOGLE_CLIENT_ID: 332337525586-rpk6kqpc36ja5st3dsc40g8593e5kjkj.apps.googleusercontent.com

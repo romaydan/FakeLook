@@ -140,21 +140,21 @@ router.get('/jwt/signin', async (req, res) => {
 })
 
 const authPostRequest = (path, body) => {
-    return axios.post(`${AUTH_URL}${path}`, body);
+    return axios.post(`${authServiceBaseUrl}${path}`, body);
 }
 
 const authGetRequest = (path, headers) => {
-    return axios.get(`${AUTH_URL}${path}`, {
+    return axios.get(`${authServiceBaseUrl}${path}`, {
         headers: headers
     });
 }
 
 const identityPostRequest = (path, body) => {
-    return axios.post(`${IDENTITY_URL}${path}`, body);
+    return axios.post(`${identityServiceBaseUrl}${path}`, body);
 }
 
 const identityGetRequest = (path, headers) => {
-    return axios.get(`${IDENTITY_URL}${path}`, {
+    return axios.get(`${identityServiceBaseUrl}${path}`, {
         headers: headers
     });
 }

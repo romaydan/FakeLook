@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useReducer } from 'react';
 import { useForm } from 'react-hook-form';
-import { getFriends } from '../../services/Friends/friends.service';
+import { getFriendsAsync } from '../../services/Friends/friends.service';
 import { addFriendToGroup, addNewGroup, removeFriendFromGroup, getGroup } from '../../services/Groups/groups.service';
 import buttonStyle from '../../shared/components/buttonStyle';
 import DragCard from '../../shared/components/DragCard';
@@ -51,7 +51,7 @@ const NewGroup = (props) => {
         const dbGrp = await getGroup(groupId, user.authId);
         console.log('dbGrp', dbGrp);
         setGroup(dbGrp);
-        const friends = await getFriends(user.authId);
+        const friends = await getFriendsAsync(user.authId);
         let friendsNotGrp = friends.filter((f) => !dbGrp.friends.map((gf) => gf.authId).includes(f.authId));
         console.log('friendsNotGrp :>> ', friendsNotGrp);
         dispatch({ type: ACTIONS.INIT_LISTS, payload: { a: friendsNotGrp, b: dbGrp.friends } });
@@ -88,7 +88,7 @@ const NewGroup = (props) => {
       console.log('data :>> ', data);
       let grp = { ...data, friends: [] };
       setGroup(grp);
-      const friends = await getFriends(user.authId);
+      const friends = await getFriendsAsync(user.authId);
       dispatch({ type: ACTIONS.INIT_LIST_A, payload: friends });
     } catch (error) {
       console.log('error.message :>> ', error.message);

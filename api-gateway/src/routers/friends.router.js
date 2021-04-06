@@ -11,15 +11,8 @@ router.get('/all', async (req, res) => {
     try {
         const { userId } = req.query;
         const { authorization } = req.headers;
-        const { data: blocks } = await axios.get(friendsUrl + '/blocks', {
-            headers: {
-                authorization
-            },
-            params: {
-                userIds: friendsList
-            }
-        });
-        const { data: blockers } = await axios.get(friendsUrl + '/blockers', {
+
+        const { data: friendsList } = await axios.get(friendsUrl, {
             headers: {
                 authorization
             },
@@ -28,7 +21,15 @@ router.get('/all', async (req, res) => {
             }
         });
 
-        const { data: friendsList } = await axios.get(friendsUrl, {
+        const { data: blocks } = await axios.get(friendsUrl + '/blocks', {
+            headers: {
+                authorization
+            },
+            params: {
+                userId: userId
+            }
+        });
+        const { data: blockers } = await axios.get(friendsUrl + '/blockers', {
             headers: {
                 authorization
             },
@@ -46,7 +47,7 @@ router.get('/all', async (req, res) => {
                 }
             });
 
-            friendsWithBlocksAndBlockers = friends.map(f => {
+            const friendsWithBlocksAndBlockers = friends.map(f => {
                 let user = { ...f };
                 if (blocks.length > 0 && blocks.includes(f.id)) {
                     user = { ...f, block: true }

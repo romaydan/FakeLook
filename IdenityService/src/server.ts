@@ -1,8 +1,10 @@
-require('dotenv').config();
+import * as dotenv from 'dotenv';
 import App from './app';
 import express from 'express';
 import * as bodyParser from 'body-parser';
 import cors from 'cors';
+
+dotenv.config();
 
 import loggerMiddleware from './middleware/logger';
 import router from './routers/users.router';
@@ -15,7 +17,6 @@ const app = new App({
     cors({
       origin: '*',
     }),
-    validateToken,
     express.json(),
     loggerMiddleware,
   ],

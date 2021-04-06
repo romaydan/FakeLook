@@ -3,7 +3,7 @@ import Modal from 'react-modal';
 
 import NewGroup from '../components/Social/NewGroup';
 import AddFriend from '../components/Social/AddFriend';
-import { blockFriend, removeFriend, getFriends, unblockFriend } from '../services/Friends/friends.service';
+import { blockFriend, removeFriend, getFriendsAsync, unblockFriend } from '../services/Friends/friends.service';
 import { deleteGroup, getUsersGroup } from '../services/Groups/groups.service';
 import Card from '../shared/components/Card';
 import FriendRequests from '../components/Social/FriendRequests';
@@ -22,7 +22,7 @@ const GroupsFriendsPage = (props) => {
     (async () => {
       try {
         const groups = await getUsersGroup(user.authId);
-        const friends = await getFriends(user.authId);
+        const friends = await getFriendsAsync(user.authId);
         setFriends(friends);
         setGroups(groups);
       } catch (error) {
@@ -37,7 +37,7 @@ const GroupsFriendsPage = (props) => {
       } else {
         await blockFriend(user.authId, friend.authId);
       }
-      const friends = await getFriends(user.authId);
+      const friends = await getFriendsAsync(user.authId);
       setFriends(friends);
     } catch (error) {
       console.log('error.message :>> ', error.message);
@@ -81,7 +81,7 @@ const GroupsFriendsPage = (props) => {
   const closeModalHandler = async () => {
     setShowModal(false);
     const groups = await getUsersGroup(user.authId);
-    const friends = await getFriends(user.authId);
+    const friends = await getFriendsAsync(user.authId);
 
     setFriends(friends);
     setGroups(groups);

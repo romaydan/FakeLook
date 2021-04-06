@@ -14,7 +14,7 @@ import Modal from 'react-modal';
 import { setFriends } from '../../../actions/friends.actions';
 import { setGroups } from '../../../actions/groups.actions';
 import { getFriendsAsync } from '../../../services/Friends/friends.service';
-import { getGroupsAsync } from '../../../services/Groups/groups.service';
+import { getUsersGroup } from '../../../services/Groups/groups.service';
 import { useHistory } from 'react-router-dom';
 import useRefreshToken from '../../../hooks/refresh.hook';
 import useError from '../../../hooks/error.hook';
@@ -67,9 +67,9 @@ const Container = props => {
         if (!friends)
             getFriendsData();
 
-        getGroupsAsync(user.authId, accessToken)
+        getUsersGroup(user.authId, accessToken)
             .then(groups => setGroups(groups))
-            .catch(err => onError(err, () => getGroupsAsync(user.authId, accessToken)));
+            .catch(err => onError(err, () => getUsersGroup(user.authId, accessToken)));
 
     }, []);
 

@@ -1,6 +1,5 @@
 import env from 'dotenv';
 import express from 'express';
-import settings from './settings';
 import flAuthRotuer from './routers/fakelook.auth.router';
 import googleAuthRouter from './routers/google.auth.router';
 import fbAuthRouter from './routers/facebook.auth.router';
@@ -9,7 +8,6 @@ import cors from 'cors';
 import container from './ioc-container';
 import cookieParser from 'cookie-parser';
 import { Sequelize } from 'sequelize-typescript';
-import accessControl from 'express-ip-access-control';
 import { TYPES } from './ioc-container/types';
 
 env.config();
