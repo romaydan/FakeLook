@@ -1,12 +1,13 @@
 const env = require('dotenv');
+
+env.config();
+
 const express = require('express');
 const config = require('./config');
 const router = require('./routers/images-router');
 const path = require('path');
 const cors = require('cors');
 const validateJwt = require('./middlewares/jwt-validation-middlewar');
-
-env.config();
 
 const PORT = process.env.PORT || 5002;
 const app = express();

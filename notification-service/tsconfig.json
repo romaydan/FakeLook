@@ -2,7 +2,7 @@
   "compilerOptions": {
     "removeComments": false,
     "esModuleInterop": true,
-    "outDir": "./dist/"
+    "outDir": "build"
   },
   "include": [
     "src/**/*"

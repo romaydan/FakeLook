@@ -5,16 +5,16 @@ import IFriendRequest from '../interfaces/models/friend-request.interface';
 })
 export default class FriendRequest extends Model implements IFriendRequest {
   @PrimaryKey
-  @Column(DataType.UUIDV4)
+  @Column(DataType.STRING)
   public id: string;
 
   @AllowNull(false)
   @NotEmpty
-  @Column(DataType.UUIDV4)
+  @Column(DataType.STRING)
   public senderId: string;
 
   @AllowNull(false)
   @NotEmpty
-  @Column(DataType.UUIDV4)
+  @Column(DataType.STRING)
   public recipientId: string;
 }

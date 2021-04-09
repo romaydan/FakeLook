@@ -20,7 +20,7 @@ const Map = props => {
     }), [location]);
 
     const Map = useMemo(() => ReactMapboxGl({
-        accessToken: 'pk.eyJ1IjoiaWRvbnYiLCJhIjoiY2tscnpsb2R1MGF1ZzJ2cDM1ZWVsbHQwMyJ9.vd9YaH0VyDnsJnjJbF8DIA',
+        accessToken: process.env.REACT_APP_MAP_API_KEY,
     }), []);
 
     const FlyToCoordiantes = (coordinates, zoom) => {

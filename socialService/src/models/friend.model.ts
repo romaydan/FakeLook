@@ -9,15 +9,15 @@ import Group from './group.model';
 })
 export default class Friend extends Model implements IFriend {
   @PrimaryKey
-  @Column(DataType.UUIDV4)
+  @Column(DataType.STRING)
   public id: string;
 
   @NotEmpty
   @AllowNull(false)
-  @Column(DataType.UUIDV4)
+  @Column(DataType.STRING)
   public userId: string;
 
   @AllowNull(false)
-  @Column(DataType.UUIDV4)
+  @Column(DataType.STRING)
   public friendId: string;
 }

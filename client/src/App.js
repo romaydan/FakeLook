@@ -5,7 +5,7 @@ import PostRouter from './components/Routers/PostRouter';
 import Container from './components/Container/Container';
 import SocialRouter from './components/Routers/SocialRouter';
 import { connect } from 'react-redux';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { loginWihJwtAsync } from './services/Authentication/login.service';
 import { authenticated } from './actions/authentication.actions';
@@ -22,9 +22,8 @@ function App({ authentication, setUser, authenticate }) {
 
   const [error, setError] = useState(null);
 
-  const logInWithJwt = () => {
+  const logInWithJwt = useCallback(() => {
     const token = cookies.refresh_token;
-
     const path = history.location.pathname;
 
     if (path === '/login' || path === '/register') {
@@ -45,7 +44,7 @@ function App({ authentication, setUser, authenticate }) {
 
     if (path === '/')
       history.push('/login')
-  }
+  }, [history])
 
   useEffect(() => {
     logInWithJwt();

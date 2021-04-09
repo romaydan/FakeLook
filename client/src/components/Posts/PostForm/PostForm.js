@@ -46,7 +46,7 @@ const PostForm = props => {
                             justify-center items-center text-xl font-semibold cursor-pointer place-self-center'
                             onClick={(e) => e.stopPropagation()}>
                                 <input className='hidden' type='file' name='image' accept='image/*' onChange={(e) => setFieldValue('image', e.target.files[0])} />
-                                {values.image?.name ?? 'Select Image'}
+                                {values.image?.name ? 'Image Selected' : 'Select Image'}
                             </label>
 
                             <span className={'container border-4 border-gray-200 p-2 col-span-3 h-96 ml-5'}>

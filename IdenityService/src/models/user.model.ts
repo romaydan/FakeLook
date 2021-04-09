@@ -9,7 +9,7 @@ import IUser from '../interfaces/IUser';
 })
 export default class User extends Model implements IUser {
   @PrimaryKey
-  @Column(DataType.UUID)
+  @Column(DataType.STRING)
   public id: string;
 
   // @AllowNull(false)

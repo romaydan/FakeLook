@@ -4,6 +4,6 @@ COPY package*.json .
 RUN npm install --save --production
 COPY ./build ./src
 COPY ./.env .
-ENV PORT=5003
-EXPOSE 5003
+ENV PORT=5006
+EXPOSE 5006
 CMD ["node", "./src/index.js"]

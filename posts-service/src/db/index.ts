@@ -5,10 +5,10 @@ import { Tag, PostTag } from '../models/tag.model';
 import { Comment } from '../models/comment.model';
 import { UserTag } from '../models/usertag.model';
 
-const db = new Sequelize('posts', 'postgres', '123456', {
+const db = new Sequelize('posts', 'postgres', process.env.POSTGRES_PASSWORD, {
   dialect: 'postgres',
-  host: '127.0.0.1',
-  port: 63847,
+  host: process.env.POSTGRES_IP,
+  port: Number(process.env.POSTGRES_PORT),
   logging: (sql, timing) => {},
 });
 

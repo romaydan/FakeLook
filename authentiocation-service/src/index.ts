@@ -1,4 +1,7 @@
-import env from 'dotenv';
+import * as env from 'dotenv';
+
+env.config();
+
 import express from 'express';
 import flAuthRotuer from './routers/fakelook.auth.router';
 import googleAuthRouter from './routers/google.auth.router';
@@ -9,8 +12,6 @@ import container from './ioc-container';
 import cookieParser from 'cookie-parser';
 import { Sequelize } from 'sequelize-typescript';
 import { TYPES } from './ioc-container/types';
-
-env.config();
 
 const PORT = process.env.PORT || 5003;
 const app = express();

@@ -25,6 +25,7 @@ class App {
 
   public listen() {
     this.app.listen(this.port, async () => {
+      console.log('before db creation')
       await sequelize.sync({ force: false });
       console.log(`App listening on the http://localhost:${this.port}`);
     });

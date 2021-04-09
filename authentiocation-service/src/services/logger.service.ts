@@ -11,10 +11,8 @@ export class RedisPubSubLogger implements ILogger {
     private client: RedisClient;
 
     constructor() {
-        console.log(process.env.REDIS_HOST)
-
         this.client = createClient({
-            host: process.env.REDIS_HOST
+            host: process.env.REDIS_HOST ?? '127.0.0.1'
         });
     }
 

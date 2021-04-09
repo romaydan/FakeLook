@@ -2,7 +2,6 @@ import Container from "../Container/Container";
 import { useState } from 'react';
 import { AiFillLike } from 'react-icons/ai/index';
 import { connect } from "react-redux";
-import { addLike } from "../../../services/Posts/posts.service";
 import { setPosts } from "../../../actions/posts.actions";
 
 const Feed = props => {

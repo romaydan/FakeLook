@@ -1,0 +1,1 @@
+docker run -e POSTGRES_USER=postgres -e POSTGRES_PASS=123456 -e POSTGRES_DBNAME=posts,auth,identity,social -p 4000:5432 kartoza/postgis:13.0

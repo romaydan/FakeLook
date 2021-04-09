@@ -7,9 +7,9 @@ import Group from './group.model';
 })
 export default class GroupFriends extends Model implements IGroupFriends {
   @ForeignKey(() => Group)
-  @Column(DataType.UUIDV4)
+  @Column(DataType.STRING)
   public groupId: string;
 
-  @Column(DataType.UUIDV4)
+  @Column(DataType.STRING)
   public friendId: string;
 }

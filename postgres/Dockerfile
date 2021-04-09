@@ -1,0 +1,6 @@
+FROM kartoza/postgis:13.0
+ENV PORT=5432
+EXPOSE $PORT
+ENV POSTGRES_PASSWORD=123456
+ENV POSTGRES_USER="postgres"
+ENV POSTGRES_DBNAME="posts,auth,identity,social"

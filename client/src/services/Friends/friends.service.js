@@ -3,6 +3,8 @@ import * as axios from 'axios';
 const url = process.env.REACT_APP_API_GATEWAY_URL + '/friends'
 
 export const getFriendsAsync = async (userId, accessToken) => {  
+    console.log(url)
+
     const { data: friends } = await axios.get(`${url}/all`, {
         headers: {
             authorization: accessToken

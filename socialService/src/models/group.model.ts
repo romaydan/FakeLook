@@ -10,18 +10,18 @@ import GroupFriends from './group-friends.model';
 })
 export default class Group extends Model implements IGroup {
   @PrimaryKey
-  @Column(DataType.UUIDV4)
+  @Column(DataType.STRING)
   public id: string;
 
   @AllowNull(false)
   @NotEmpty
-  @Column(DataType.UUIDV4)
+  @Column(DataType.STRING)
   creatorId: string;
 
   @AllowNull(false)
   @Unique
   @NotEmpty
-  @Column(DataType.UUIDV4)
+  @Column(DataType.STRING)
   name: string;
 
   @AllowNull(false)

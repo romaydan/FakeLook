@@ -12,7 +12,7 @@ export class ImageUploader implements IImageUploader {
     private baseUrl: string;
 
     constructor() {
-        this.baseUrl = `http://localhost:${process.env.IMAGE_SERVER_PORT}/`;
+        this.baseUrl = `${process.env.IMAGE_SERVER_URL}/`;
     }
     async deleteImage(imageUrl: string, accessToken: string): Promise<boolean> {
         const response = await axios.delete(this.baseUrl + 'image/delete', { 

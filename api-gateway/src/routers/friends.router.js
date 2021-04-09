@@ -7,7 +7,6 @@ const router = Router();
 
 
 router.get('/all', async (req, res) => {
-
     try {
         const { userId } = req.query;
         const { authorization } = req.headers;
@@ -64,12 +63,10 @@ router.get('/all', async (req, res) => {
 
     } catch (error) {
         returnError(res, error);
-
     }
 })
 
 router.get('/name', async (req, res) => {
-
     try {
         const { name, userId } = req.query;
         const { authorization } = req.headers;

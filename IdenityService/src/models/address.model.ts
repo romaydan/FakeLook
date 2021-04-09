@@ -18,7 +18,7 @@ import User from './user.model';
 })
 export default class Address extends Model implements IAddress {
   @PrimaryKey
-  @Column(DataType.UUIDV4)
+  @Column(DataType.STRING)
   public id: string;
 
   @AllowNull(false)

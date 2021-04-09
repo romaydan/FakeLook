@@ -366,7 +366,7 @@ const Register = props => {
 
                                 <EmailAndPassword errors={errors} isOAuth={isOAuth} dirty={dirty} touched={touched} />
 
-                                <UserDetails errors={errors} dirty={dirty} isOAuth={isOAuth} touched={touched} />
+                                <UserDetails errors={errors} dirty={dirty} isOAuth={isOAuth} touched={touched} country={values.country} />
 
                                 <SubmitButtons validateForm={validateForm} submitForm={submitForm}
                                     setIsOpen={setIsOpen} setFieldValue={setFieldValue}
@@ -449,7 +449,7 @@ const ServiceSelection = props => {
 }
 
 const UserDetails = props => {
-    const { errors, dirty, isOAuth, touched } = props;
+    const { errors, dirty, isOAuth, touched, country } = props;
 
     return (
         <div className=' mt-7 grid grid-cols-2 gap-1'>
@@ -498,8 +498,11 @@ const UserDetails = props => {
                     <span className='w-36'>
                         Country
                     </span>
-                    <Field as='select' value='' name='country' className={'w-full outline-none '}>
-                        <option value='' disabled selected unselectable>Select a country...</option>
+                    {
+                        console.log(country)
+                    }
+                    <Field as='select' value={country} name='country' className={'w-full outline-none '}>
+                        <option value='' disabled unselectable>Select a country...</option>
                         {
                             nationList.map((nation, i) => <option key={i} value={nation}>{nation}</option>)
                         }

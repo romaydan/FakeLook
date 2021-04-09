@@ -1,5 +1,5 @@
 const { Router } = require('express');
-const axios = require('axios');
+const axios = require('axios').default;
 
 const groupsUrl = process.env.SOCIAL_SERVICE_API_URL + '/api/groups'
 const usersUrl = process.env.IDENITY_SERVICE_API_URL + '/api/users'
@@ -43,7 +43,7 @@ router.get('/user', async (req, res) => {
         const { userId } = req.query;
         const { authorization } = req.headers;
 
-        const { data: usersGroups } = await axios.get(groupsUrl + '/user', {
+        const { data: usersGroups } = await axios.get(groupsUrl + '/', {
             headers: {
                 authorization
             },

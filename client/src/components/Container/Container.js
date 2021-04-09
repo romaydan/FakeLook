@@ -34,7 +34,10 @@ const Container = props => {
 
         window.addEventListener('click', onMouseClickDetected)
 
-        return () => window.removeEventListener('click', onMouseClickDetected);
+        return () => {
+            window.removeEventListener('click', onMouseClickDetected);
+            clearTimeout(handler);
+        };
     }, [])
 
     return (

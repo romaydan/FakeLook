@@ -21,7 +21,7 @@ import useError from '../../../hooks/error.hook';
 import '../../../css/scrollbar.css';
 
 const Container = props => {
-    const { children, post, user, location, friends,  groups, authentication: { accessToken } } = props;
+    const { children, post, user, location, friends, groups, authentication: { accessToken } } = props;
     const { updatePost, setUserLocation, setFriends, setGroups, onModalPostViewClosed, setPosts } = props;
 
     const refresh = useRefreshToken();
@@ -58,13 +58,15 @@ const Container = props => {
     useEffect(() => {
         navigator.geolocation.getCurrentPosition(({ coords }) => setUserLocation([coords.longitude, coords.latitude]))
 
-        const getFriendsData = () => getFriendsAsync(user.authId, accessToken)
-            .then(friends => {
-                setFriends(friends);
-            })
-            .catch(err => onError(err, getFriendsData));
+        const getFriendsData = () => {
+            return getFriendsAsync(user.authId, accessToken)
+                .then(friends => {
+                    setFriends(friends);
+                })
+                .catch(err => onError(err, getFriendsData))
+        };
 
-        if (!friends)
+        if(!friends || friends?.length === 0)
             getFriendsData();
 
         getUsersGroup(user.authId, accessToken)
@@ -74,8 +76,7 @@ const Container = props => {
     }, []);
 
     useEffect(() => {
-        if (friends)
-            fetchPosts({ ...initialFilterValues, publishers: friends.map(f => f.authId) });
+        if (friends) fetchPosts({ ...initialFilterValues, publishers: friends.map(f => f.authId) });
     }, [friends])
 
     const closePostViewModal = () => {

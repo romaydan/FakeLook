@@ -5,16 +5,16 @@ import IBlockedUser from '../interfaces/models/blocked-user.interface';
 })
 export default class BlockedUser extends Model implements IBlockedUser {
   @PrimaryKey
-  @Column(DataType.UUIDV4)
+  @Column(DataType.STRING)
   public id: string;
 
   @AllowNull(false)
   @NotEmpty
-  @Column(DataType.UUIDV4)
+  @Column(DataType.STRING)
   blockedId: string;
 
   @AllowNull(false)
   @NotEmpty
-  @Column(DataType.UUIDV4)
+  @Column(DataType.STRING)
   blockerId: string;
 }
